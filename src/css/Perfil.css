@@ -1,0 +1,204 @@
+/* Perfil.css - Estilos específicos da página Perfil */
+.perfil-bg {
+  min-height: 100vh;
+  background: #334155;
+  padding: 2rem 1rem;
+}
+.perfil-container {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+.perfil-header {
+  background: #cbd5e1;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.perfil-header-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+@media (min-width: 768px) {
+  .perfil-header-row {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+.perfil-avatar-area {
+  position: relative;
+}
+.perfil-avatar {
+  width: 8rem;
+  height: 8rem;
+  border-radius: 9999px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.perfil-avatar-icon {
+  width: 4rem;
+  height: 4rem;
+  color: #3b82f6;
+}
+.perfil-avatar-edit-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #3b82f6;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.perfil-avatar-edit-btn:hover {
+  background: #2563eb;
+}
+.perfil-header-info {
+  flex: 1;
+  text-align: center;
+}
+@media (min-width: 768px) {
+  .perfil-header-info {
+    text-align: left;
+  }
+}
+.perfil-nome {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1f2937;
+}
+.perfil-cargo {
+  color: #4b5563;
+}
+.perfil-crm {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+.perfil-main-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+@media (min-width: 768px) {
+  .perfil-main-row {
+    flex-direction: row;
+  }
+}
+.perfil-info-card {
+  background: #cbd5e1;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 22rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.perfil-info-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.perfil-info-title-icon {
+  color: #3b82f6;
+}
+.perfil-info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.perfil-info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #4b5563;
+}
+.perfil-info-icon {
+  color: #3b82f6;
+}
+.perfil-info-item-multiline {
+  align-items: flex-start;
+}
+.perfil-info-icon-multiline {
+  margin-top: 0.25rem;
+}
+.perfil-info-edit-btn {
+  margin-top: 1rem;
+  width: 100%;
+  background: #3b82f6;
+  color: #fff;
+  padding: 0.5rem 0;
+  border-radius: 0.375rem;
+  border: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.perfil-info-edit-btn:hover {
+  background: #2563eb;
+}
+.perfil-historico-area {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.perfil-config-card {
+  background: #cbd5e1;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+.perfil-config-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.perfil-config-title-icon {
+  color: #3b82f6;
+}
+.perfil-config-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.perfil-config-btn {
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  background: none;
+  color: #374151;
+  border: none;
+  font-size: 1rem;
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+.perfil-config-btn:hover {
+  background: #f3f4f6;
+}
+.perfil-config-btn-danger {
+  color: #dc2626;
+} 
