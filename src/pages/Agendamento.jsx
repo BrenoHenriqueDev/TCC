@@ -1,6 +1,5 @@
 import { useState } from "react";
 import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
-import "../css/Agendamento.css";
 
 // Dados fictícios de pontos de coleta
 const pontosMock = [
@@ -186,43 +185,52 @@ function Agendamento() {
   };
 
   return (
-    <div className="agendamento-bg flex flex-col items-center">
-      <div className="agendamento-card">
-        <h1 className="agendamento-title">Agendamento de Coleta</h1>
-        <p className="agendamento-desc">
+    <div className="w-full min-h-screen bg-slate-100 flex flex-col items-center py-10 px-2">
+      <div className="w-full max-w-4xl bg-white rounded-xl shadow-lg p-8">
+        <h1 className="text-3xl font-bold text-slate-800 mb-2 text-center">
+          Agendamento de Coleta
+        </h1>
+        <p className="text-slate-600 text-center mb-8">
           Escolha um ponto de coleta, selecione data e horário e agende a
           entrega dos seus medicamentos vencidos.
         </p>
 
         {/* Lista de pontos de coleta */}
-        <h2 className="agendamento-subtitle">Pontos de Coleta Disponíveis</h2>
-        <div className="agendamento-pontos">
+        <h2 className="text-xl font-semibold text-slate-700 mb-4">
+          Pontos de Coleta Disponíveis
+        </h2>
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {pontos.map((ponto) => (
-            <div key={ponto.id} className="agendamento-ponto-card">
-              <h3 className="agendamento-ponto-nome">{ponto.nome}</h3>
-              <p className="agendamento-ponto-endereco">{ponto.endereco}</p>
-              <p className="agendamento-ponto-horario">
+            <div
+              key={ponto.id}
+              className="bg-slate-50 border rounded-lg p-4 flex flex-col shadow-sm"
+            >
+              <h3 className="font-bold text-lg text-slate-800 mb-1">
+                {ponto.nome}
+              </h3>
+              <p className="text-slate-600 text-sm mb-1">{ponto.endereco}</p>
+              <p className="text-slate-500 text-xs mb-2">
                 Horário: {ponto.horarios}
               </p>
-              <p className="agendamento-ponto-info">
+              <p className="text-xs mb-2">
                 Aceita agendamento:{" "}
                 <span
                   className={
                     ponto.aceitaAgendamento
-                      ? "agendamento-status-sim"
-                      : "agendamento-status-nao"
+                      ? "text-green-600 font-semibold"
+                      : "text-red-600 font-semibold"
                   }
                 >
                   {ponto.aceitaAgendamento ? "Sim" : "Não"}
                 </span>
               </p>
-              <p className="agendamento-ponto-info">
+              <p className="text-xs mb-2">
                 Retira em casa:{" "}
                 <span
                   className={
                     ponto.retiraEmCasa
-                      ? "agendamento-status-sim"
-                      : "agendamento-status-nao"
+                      ? "text-green-600 font-semibold"
+                      : "text-red-600 font-semibold"
                   }
                 >
                   {ponto.retiraEmCasa ? "Sim" : "Não"}
@@ -230,7 +238,7 @@ function Agendamento() {
               </p>
               {ponto.aceitaAgendamento && (
                 <button
-                  className="agendamento-btn-agendar"
+                  className="mt-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
                   onClick={() => handleAgendarClick(ponto)}
                 >
                   Agendar
@@ -242,19 +250,22 @@ function Agendamento() {
 
         {/* Formulário de agendamento */}
         {pontoSelecionado && (
-          <div className="agendamento-modal-bg">
-            <form onSubmit={handleSubmit} className="agendamento-modal-form">
+          <div className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm">
+            <form
+              onSubmit={handleSubmit}
+              className="bg-white rounded-xl shadow-xl p-8 w-full max-w-lg flex flex-col gap-4 relative border border-slate-200 max-h-[90vh] overflow-y-auto"
+            >
               <button
                 type="button"
-                className="agendamento-modal-close"
+                className="absolute top-2 right-2 text-slate-400 hover:text-slate-700 text-xl"
                 onClick={() => setPontoSelecionado(null)}
               >
                 ×
               </button>
-              <h2 className="agendamento-modal-title">
+              <h2 className="text-xl font-bold text-slate-800 mb-2">
                 Agendar em {pontoSelecionado.nome}
               </h2>
-              <label className="agendamento-modal-label">
+              <label className="text-slate-700 font-medium">
                 Data
                 <input
                   type="date"
@@ -262,10 +273,10 @@ function Agendamento() {
                   value={form.data}
                   onChange={handleFormChange}
                   required
-                  className="agendamento-modal-input"
+                  className="block w-full border rounded px-3 py-2 mt-1"
                 />
               </label>
-              <label className="agendamento-modal-label">
+              <label className="text-slate-700 font-medium">
                 Horário
                 <input
                   type="time"
@@ -273,20 +284,20 @@ function Agendamento() {
                   value={form.horario}
                   onChange={handleFormChange}
                   required
-                  className="agendamento-modal-input"
+                  className="block w-full border rounded px-3 py-2 mt-1"
                 />
               </label>
-              <label className="agendamento-modal-label">
+              <label className="text-slate-700 font-medium">
                 Observações (opcional)
                 <textarea
                   name="obs"
                   value={form.obs}
                   onChange={handleFormChange}
-                  className="agendamento-modal-input"
+                  className="block w-full border rounded px-3 py-2 mt-1"
                 />
               </label>
               {pontoSelecionado.retiraEmCasa && (
-                <label className="agendamento-modal-label flex items-center gap-2">
+                <label className="text-slate-700 font-medium flex items-center gap-2">
                   <input
                     type="checkbox"
                     name="desejaRetirada"
@@ -294,14 +305,14 @@ function Agendamento() {
                     onChange={(e) =>
                       setForm({ ...form, desejaRetirada: e.target.checked })
                     }
-                    className="agendamento-modal-checkbox"
+                    className="accent-blue-600"
                   />
                   Desejo que o estabelecimento faça a retirada em casa
                 </label>
               )}
               {pontoSelecionado.retiraEmCasa && form.desejaRetirada && (
-                <div className="agendamento-modal-endereco-grid">
-                  <label className="agendamento-modal-label agendamento-modal-label-cep">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <label className="text-slate-700 font-medium col-span-1 md:col-span-2">
                     CEP
                     <input
                       type="text"
@@ -312,15 +323,15 @@ function Agendamento() {
                       required
                       maxLength={9}
                       placeholder="Digite o CEP"
-                      className="agendamento-modal-input"
+                      className="block w-full border rounded px-3 py-2 mt-1"
                     />
                     {buscandoCep && (
-                      <span className="agendamento-modal-buscando">
+                      <span className="text-xs text-blue-600 ml-2">
                         Buscando endereço...
                       </span>
                     )}
                   </label>
-                  <label className="agendamento-modal-label">
+                  <label className="text-slate-700 font-medium">
                     Rua
                     <input
                       type="text"
@@ -328,10 +339,10 @@ function Agendamento() {
                       value={form.rua}
                       onChange={handleFormChange}
                       required
-                      className="agendamento-modal-input"
+                      className="block w-full border rounded px-3 py-2 mt-1"
                     />
                   </label>
-                  <label className="agendamento-modal-label">
+                  <label className="text-slate-700 font-medium">
                     Número
                     <input
                       type="text"
@@ -339,10 +350,10 @@ function Agendamento() {
                       value={form.numero}
                       onChange={handleFormChange}
                       required
-                      className="agendamento-modal-input"
+                      className="block w-full border rounded px-3 py-2 mt-1"
                     />
                   </label>
-                  <label className="agendamento-modal-label">
+                  <label className="text-slate-700 font-medium">
                     Bairro
                     <input
                       type="text"
@@ -350,10 +361,10 @@ function Agendamento() {
                       value={form.bairro}
                       onChange={handleFormChange}
                       required
-                      className="agendamento-modal-input"
+                      className="block w-full border rounded px-3 py-2 mt-1"
                     />
                   </label>
-                  <label className="agendamento-modal-label">
+                  <label className="text-slate-700 font-medium">
                     Cidade
                     <input
                       type="text"
@@ -361,10 +372,10 @@ function Agendamento() {
                       value={form.cidade}
                       onChange={handleFormChange}
                       required
-                      className="agendamento-modal-input"
+                      className="block w-full border rounded px-3 py-2 mt-1"
                     />
                   </label>
-                  <label className="agendamento-modal-label">
+                  <label className="text-slate-700 font-medium">
                     Estado
                     <input
                       type="text"
@@ -372,22 +383,25 @@ function Agendamento() {
                       value={form.estado}
                       onChange={handleFormChange}
                       required
-                      className="agendamento-modal-input"
+                      className="block w-full border rounded px-3 py-2 mt-1"
                     />
                   </label>
                 </div>
               )}
-              <label className="agendamento-modal-label">
+              <label className="text-slate-700 font-medium">
                 Tipos de medicamento a descartar
-                <div className="agendamento-modal-tipos">
+                <div className="flex flex-col gap-1 mt-2">
                   {tiposMedicamento.map((tipo) => (
-                    <label key={tipo} className="agendamento-modal-tipo-item">
+                    <label
+                      key={tipo}
+                      className="flex items-center gap-2 text-slate-600"
+                    >
                       <input
                         type="checkbox"
                         value={tipo}
                         checked={form.tipos.includes(tipo)}
                         onChange={handleTipoChange}
-                        className="agendamento-modal-checkbox"
+                        className="accent-blue-600"
                       />
                       {tipo}
                     </label>
@@ -395,18 +409,21 @@ function Agendamento() {
                 </div>
               </label>
               {form.tipos.includes("Outros") && (
-                <label className="agendamento-modal-label mt-2">
+                <label className="text-slate-700 font-medium mt-2">
                   Descreva o(s) outro(s) medicamento(s)
                   <input
                     type="text"
                     name="outros"
                     value={form.outros}
                     onChange={handleFormChange}
-                    className="agendamento-modal-input"
+                    className="block w-full border rounded px-3 py-2 mt-1"
                   />
                 </label>
               )}
-              <button type="submit" className="agendamento-modal-btn-confirmar">
+              <button
+                type="submit"
+                className="mt-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold"
+              >
                 Confirmar agendamento
               </button>
             </form>
@@ -415,25 +432,24 @@ function Agendamento() {
 
         {/* Confirmação visual */}
         {sucesso && novoAgendamento && (
-          <div className="agendamento-confirmacao">
-            <p className="agendamento-confirmacao-title">
+          <div className="bg-green-100 border border-green-400 text-green-800 rounded-lg p-4 mb-6 mt-4 text-center">
+            <p className="font-semibold mb-2">
               Agendamento realizado com sucesso!
             </p>
             <p>
-              <span className="agendamento-confirmacao-label">Local:</span>{" "}
+              <span className="font-medium">Local:</span>{" "}
               {novoAgendamento.local}
             </p>
             <p>
-              <span className="agendamento-confirmacao-label">Data:</span>{" "}
-              {novoAgendamento.data}
+              <span className="font-medium">Data:</span> {novoAgendamento.data}
             </p>
             <p>
-              <span className="agendamento-confirmacao-label">Horário:</span>{" "}
+              <span className="font-medium">Horário:</span>{" "}
               {novoAgendamento.horario}
             </p>
             {novoAgendamento.tipos && novoAgendamento.tipos.length > 0 && (
               <p>
-                <span className="agendamento-confirmacao-label">Tipos:</span>{" "}
+                <span className="font-medium">Tipos:</span>{" "}
                 {novoAgendamento.tipos.join(", ")}
                 {novoAgendamento.tipos.includes("Outros") &&
                   novoAgendamento.outros &&
@@ -442,35 +458,29 @@ function Agendamento() {
             )}
             {novoAgendamento.obs && (
               <p>
-                <span className="agendamento-confirmacao-label">Obs.:</span>{" "}
-                {novoAgendamento.obs}
+                <span className="font-medium">Obs.:</span> {novoAgendamento.obs}
               </p>
             )}
             {novoAgendamento.retirada && (
               <div>
                 <p>
-                  <span className="agendamento-confirmacao-label">
-                    Retirada em casa:
-                  </span>{" "}
-                  Sim
+                  <span className="font-medium">Retirada em casa:</span> Sim
                 </p>
                 <p>
-                  <span className="agendamento-confirmacao-label">CEP:</span>{" "}
+                  <span className="font-medium">CEP:</span>{" "}
                   {novoAgendamento.retirada.cep}
                 </p>
                 <p>
-                  <span className="agendamento-confirmacao-label">Rua:</span>{" "}
+                  <span className="font-medium">Rua:</span>{" "}
                   {novoAgendamento.retirada.rua},{" "}
                   {novoAgendamento.retirada.numero}
                 </p>
                 <p>
-                  <span className="agendamento-confirmacao-label">Bairro:</span>{" "}
+                  <span className="font-medium">Bairro:</span>{" "}
                   {novoAgendamento.retirada.bairro}
                 </p>
                 <p>
-                  <span className="agendamento-confirmacao-label">
-                    Cidade/UF:
-                  </span>{" "}
+                  <span className="font-medium">Cidade/UF:</span>{" "}
                   {novoAgendamento.retirada.cidade} -{" "}
                   {novoAgendamento.retirada.estado}
                 </p>

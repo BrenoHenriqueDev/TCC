@@ -8,12 +8,12 @@ const statusColors = {
 };
 
 const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
-  <div className="bg-slate-300 rounded-2xl shadow-xl p-6 mb-6">
+  <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
     <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
       <FaHistory className="text-blue-500" /> Histórico de Agendamentos
     </h2>
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-slate-300 rounded-lg">
+      <table className="min-w-full bg-white rounded-lg">
         <thead>
           <tr className="border-b">
             <th className="py-3 px-4 text-left text-slate-600 font-semibold">
@@ -48,7 +48,7 @@ const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
             </tr>
           )}
           {agendamentos.map((a) => (
-            <tr key={a.id} className="border-b hover:bg-gray-100 transition">
+            <tr key={a.id} className="border-b hover:bg-slate-50 transition">
               <td className="py-2 px-4 font-medium text-slate-700">{a.data}</td>
               <td className="py-2 px-4 text-slate-700">{a.horario}</td>
               <td className="py-2 px-4 text-slate-700">{a.local}</td>

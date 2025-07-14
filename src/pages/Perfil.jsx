@@ -1,3 +1,4 @@
+
 import {
   FaUser,
   FaEnvelope,
@@ -8,7 +9,6 @@ import {
   FaCog,
 } from "react-icons/fa";
 import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
-import "../css/Perfil.css";
 
 function Perfil() {
   // Exemplo de dados mockados de agendamentos
@@ -32,57 +32,59 @@ function Perfil() {
   ];
 
   return (
-    <div className="perfil-bg">
-      <div className="perfil-container">
+    <div className="min-h-screen bg-slate-700 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
         {/* Cabeçalho do Perfil */}
-        <div className="perfil-header">
-          <div className="perfil-header-row">
-            <div className="perfil-avatar-area">
-              <div className="perfil-avatar">
-                <FaUser className="perfil-avatar-icon" />
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center">
+                <FaUser className="w-16 h-16 text-blue-500" />
               </div>
-              <button className="perfil-avatar-edit-btn">
+              <button className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 transition-colors">
                 <FaEdit size={16} />
               </button>
             </div>
-            <div className="perfil-header-info">
-              <h1 className="perfil-nome">Dr. João Silva</h1>
-              <p className="perfil-cargo">Médico Clínico Geral</p>
-              <p className="perfil-crm">CRM: 12345-SP</p>
+            <div className="flex-1 text-center md:text-left">
+              <h1 className="text-2xl font-bold text-gray-800">
+                Dr. João Silva
+              </h1>
+              <p className="text-gray-600">Médico Clínico Geral</p>
+              <p className="text-gray-500 text-sm mt-2">CRM: 12345-SP</p>
             </div>
           </div>
         </div>
 
         {/* Grid de Informações + Histórico lado a lado */}
-        <div className="perfil-main-row">
+        <div className="flex flex-col md:flex-row gap-6 items-stretch">
           {/* Informações Pessoais */}
-          <div className="perfil-info-card">
-            <h2 className="perfil-info-title">
-              <FaUser className="perfil-info-title-icon" />
+          <div className="bg-white rounded-lg shadow-lg p-6 w-full md:w-1/3 flex flex-col justify-between">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <FaUser className="text-blue-500" />
               Informações Pessoais
             </h2>
-            <div className="perfil-info-list">
-              <div className="perfil-info-item">
-                <FaEnvelope className="perfil-info-icon" />
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 text-gray-600">
+                <FaEnvelope className="text-blue-500" />
                 <span>joao.silva@email.com</span>
               </div>
-              <div className="perfil-info-item">
-                <FaPhone className="perfil-info-icon" />
+              <div className="flex items-center gap-3 text-gray-600">
+                <FaPhone className="text-blue-500" />
                 <span>(11) 99999-9999</span>
               </div>
-              <div className="perfil-info-item perfil-info-item-multiline">
-                <FaMapMarkerAlt className="perfil-info-icon perfil-info-icon-multiline" />
+              <div className="flex items-start gap-3 text-gray-600">
+                <FaMapMarkerAlt className="text-blue-500 mt-1" />
                 <span>Av. Paulista, 1000 - São Paulo, SP</span>
               </div>
             </div>
-            <button className="perfil-info-edit-btn">
+            <button className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition-colors flex items-center justify-center gap-2">
               <FaEdit />
               Editar Informações
             </button>
           </div>
 
           {/* Histórico de Agendamentos ao lado */}
-          <div className="perfil-historico-area">
+          <div className="w-full md:w-2/3 flex flex-col justify-between">
             <HistoricoAgendamentos
               agendamentos={agendamentosMock}
               onCancelar={() => {}}
@@ -91,18 +93,22 @@ function Perfil() {
         </div>
 
         {/* Configurações */}
-        <div className="perfil-config-card">
-          <h2 className="perfil-config-title">
-            <FaCog className="perfil-config-title-icon" />
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <FaCog className="text-blue-500" />
             Configurações
           </h2>
-          <div className="perfil-config-list">
-            <button className="perfil-config-btn">Alterar Senha</button>
-            <button className="perfil-config-btn">
+          <div className="space-y-4">
+            <button className="w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+              Alterar Senha
+            </button>
+            <button className="w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
               Preferências de Notificação
             </button>
-            <button className="perfil-config-btn">Privacidade</button>
-            <button className="perfil-config-btn perfil-config-btn-danger">
+            <button className="w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+              Privacidade
+            </button>
+            <button className="w-full text-left px-4 py-2 rounded-md hover:bg-gray-100 transition-colors text-red-600">
               Excluir Conta
             </button>
           </div>
