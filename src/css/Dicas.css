@@ -1,0 +1,73 @@
+/* Container principal da página Dicas */
+.dicas-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #334155;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2.5rem 0.5rem;
+}
+
+.dicas-box {
+  width: 100%;
+  max-width: 48rem;
+  background: #8599b8;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.dicas-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.dicas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.dicas-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dicas-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+.dicas-icon-blue {
+  background: #dbeafe;
+  color: #2563eb;
+}
+.dicas-icon-green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.dicas-icon-yellow {
+  background: #fef9c3;
+  color: #ca8a04;
+}
+.dicas-icon-red {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.dicas-text {
+  color: #334155;
+  font-size: 1rem;
+} 

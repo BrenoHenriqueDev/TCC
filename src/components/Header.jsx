@@ -3,46 +3,43 @@ import { usePage } from "../Hooks/HookHeader";
 import { useAuth } from "../hooks/HookLogin";
 import logo from "../Imagens/logo.png";
 import fundo from "../Imagens/fundo.png";
+import "../css/Header.css";
 
 export default function Header() {
   const { isCurrentPage } = usePage();
   const { isAuthenticated, logout, userType } = useAuth();
 
-  const general = "text-slate-700 hover:text-white transition-colors";
-  const current = "text-white font-bold";
+  const general = "header-link";
+  const current = "header-link-current";
 
   return (
     <header
-      className="w-full shadow sticky top-0 z-50 bg-cover bg-center bg-no-repeat"
+      className="header-container"
       style={{ backgroundImage: `url(${fundo})` }}
     >
-      <div className="max-w-7xl mx-auto flex justify-between items-center px-0 py-4">
-        <div className="flex items-center gap-2">
-          <img src={logo} alt="VenceMed Logo" className="h-15 w-auto" />
-          <h1 className="text-white font-extrabold text-2xl select-none cursor-default">
+      <div className="header-content">
+        <div className="header-logo-area">
+          <img src={logo} alt="VenceMed Logo" className="header-logo" />
+          <h1 className="header-title">
             VenceMed
           </h1>
         </div>
-        <nav className="flex gap-8 text-lg">
+        <nav className="header-nav">
           <Link to="/" className={isCurrentPage("/") ? current : general}>
             Home
           </Link>
-          {userType === "normal" && (
-            <>
-              <Link
-                to="/educacao"
-                className={isCurrentPage("/educacao") ? current : general}
-              >
-                Seção Educativa
-              </Link>
-              <Link
-                to="/dicas"
-                className={isCurrentPage("/dicas") ? current : general}
-              >
-                Dicas de Armazenamento
-              </Link>
-            </>
-          )}
+          <Link
+            to="/educacao"
+            className={isCurrentPage("/educacao") ? current : general}
+          >
+            Seção Educativa
+          </Link>
+          <Link
+            to="/dicas"
+            className={isCurrentPage("/dicas") ? current : general}
+          >
+            Dicas de Armazenamento
+          </Link>
           {!isAuthenticated ? (
             <>
               <Link
@@ -66,7 +63,7 @@ export default function Header() {
               >
                 Perfil
               </Link>
-              <button onClick={logout} className={general}>
+              <button onClick={logout} className="header-logout-btn">
                 Sair
               </button>
             </>

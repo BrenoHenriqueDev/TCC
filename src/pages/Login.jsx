@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/HookLogin";
+import "../css/Login.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -31,18 +32,13 @@ function Login() {
   };
 
   return (
-    <div className="min-h-[80vh] flex justify-center items-center py-8 px-2 bg-slate-700">
-      <div className="w-full max-w-md bg-white rounded-lg shadow-lg p-6 md:p-8">
-        <h1 className="text-2xl md:text-3xl text-slate-800 text-center font-bold mb-6 md:mb-8">
-          Login
-        </h1>
+    <div className="login-container">
+      <div className="login-box">
+        <h1 className="login-title">Login</h1>
 
-        <form className="space-y-5 md:space-y-6" onSubmit={handleSubmit}>
+        <form className="login-form" onSubmit={handleSubmit}>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="email" className="login-label">
               E-mail
             </label>
             <input
@@ -51,17 +47,14 @@ function Login() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="login-input"
               placeholder="Digite seu e-mail"
               required
             />
           </div>
 
           <div>
-            <label
-              htmlFor="senha"
-              className="block text-sm font-medium text-slate-700"
-            >
+            <label htmlFor="senha" className="login-label">
               Senha
             </label>
             <input
@@ -70,56 +63,44 @@ function Login() {
               name="senha"
               value={formData.senha}
               onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              className="login-input"
               placeholder="Digite sua senha"
               required
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
+          <div className="login-options">
+            <div className="login-remember">
               <input
                 id="lembrar"
                 name="lembrar"
                 type="checkbox"
                 checked={formData.lembrar}
                 onChange={handleChange}
-                className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-slate-300 rounded"
+                className="login-checkbox"
               />
-              <label
-                htmlFor="lembrar"
-                className="ml-2 block text-sm text-slate-700"
-              >
+              <label htmlFor="lembrar" className="login-label-remember">
                 Lembrar-me
               </label>
             </div>
 
-            <div className="text-sm">
-              <a
-                href="/esqueci-senha"
-                className="font-medium text-blue-600 hover:text-blue-500"
-              >
+            <div className="login-forgot">
+              <a href="/esqueci-senha" className="login-link">
                 Esqueceu a senha?
               </a>
             </div>
           </div>
 
-          <button
-            type="submit"
-            className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
+          <button type="submit" className="login-btn">
             Entrar
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-slate-600">
+        <p className="login-register">
           Não tem uma conta?{" "}
-          <a
-            href="/cadastro"
-            className="font-medium text-blue-600 hover:text-blue-500"
-          >
+          <Link to="/cadastro" className="login-link">
             Cadastre-se
-          </a>
+          </Link>
         </p>
       </div>
     </div>
