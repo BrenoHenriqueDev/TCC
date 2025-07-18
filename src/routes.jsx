@@ -8,6 +8,8 @@ import CadastroUnificado from "./pages/CadastroUnificado";
 import Agendamento from "./pages/Agendamento";
 import Educacao from "./pages/Educacao";
 import Dicas from "./pages/Dicas";
+import HomeEstabelecimento from "./pages/HomeEstabelecimento";
+import CadastrarPontoColeta from "./pages/CadastrarPontoColeta";
 
 export default function AppRoutes() {
   return (
@@ -21,6 +23,14 @@ export default function AppRoutes() {
         <Route path="/agendamento" element={<Agendamento />} />
         <Route path="/educacao" element={<Educacao />} />
         <Route path="/dicas" element={<Dicas />} />
+        <Route
+          path="/painel-estabelecimento"
+          element={<HomeEstabelecimento />}
+        />
+        <Route
+          path="/cadastrar-ponto-coleta"
+          element={<CadastrarPontoColeta />}
+        />
       </Routes>
       <Footer />
     </>

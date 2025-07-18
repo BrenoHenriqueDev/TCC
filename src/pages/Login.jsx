@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/HookLogin";
 import "../css/Login.css";
@@ -11,6 +11,23 @@ function Login() {
     senha: "",
     lembrar: false,
   });
+  const [erro, setErro] = useState("");
+
+  // Carregar e-mail e senha salvos quando a página carrega
+  useEffect(() => {
+    const emailSalvo = localStorage.getItem("emailLembrado");
+    const senhaSalva = localStorage.getItem("senhaLembrada");
+    const lembrarSalvo = localStorage.getItem("lembrarUsuario");
+    
+    if (emailSalvo && senhaSalva && lembrarSalvo === "true") {
+      setFormData(prev => ({
+        ...prev,
+        email: emailSalvo,
+        senha: senhaSalva,
+        lembrar: true
+      }));
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -18,17 +35,50 @@ function Login() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+    setErro("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aqui você pode adicionar a lógica de autenticação real
-    console.log("Dados do login:", formData);
+    setErro("");
+    // Busca o usuário em ambos os tipos
+    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+    const estabelecimentos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+    const usuario = usuarios.find((u) => u.email === formData.email);
+    const estabelecimento = estabelecimentos.find((e) => e.email === formData.email);
+    let encontrado = null;
+    let tipo = null;
+    if (usuario && usuario.senha === formData.senha) {
+      encontrado = usuario;
+      tipo = "usuario";
+    } else if (estabelecimento && estabelecimento.senha === formData.senha) {
+      encontrado = estabelecimento;
+      tipo = "estabelecimento";
+    }
+    if (encontrado) {
+      // Salvar ou remover e-mail e senha baseado na opção "lembrar-me"
+      if (formData.lembrar) {
+        localStorage.setItem("emailLembrado", formData.email);
+        localStorage.setItem("senhaLembrada", formData.senha);
+        localStorage.setItem("lembrarUsuario", "true");
+      } else {
+        localStorage.removeItem("emailLembrado");
+        localStorage.removeItem("senhaLembrada");
+        localStorage.removeItem("lembrarUsuario");
+      }
 
-    // Simulando um login bem-sucedido
-    login(); // Atualiza o estado de autenticação
-    alert("Login realizado com sucesso!");
-    navigate("/"); // Redireciona para a home
+      // Salva o usuário logado
+      localStorage.setItem("usuarioLogado", JSON.stringify({ email: encontrado.email, tipo }));
+      login(tipo); // Atualiza o estado de autenticação
+      alert("Login realizado com sucesso!");
+      if (tipo === "estabelecimento") {
+        navigate("/painel-estabelecimento");
+      } else {
+        navigate("/");
+      }
+    } else {
+      setErro("E-mail ou senha incorretos.");
+    }
   };
 
   return (
@@ -37,6 +87,9 @@ function Login() {
         <h1 className="login-title">Login</h1>
 
         <form className="login-form" onSubmit={handleSubmit}>
+          {erro && (
+            <div style={{ color: 'red', marginBottom: 8 }}>{erro}</div>
+          )}
           <div>
             <label htmlFor="email" className="login-label">
               E-mail

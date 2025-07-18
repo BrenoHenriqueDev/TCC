@@ -14,6 +14,10 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setIsAuthenticated(false);
     setUserType(null);
+    // Limpar dados do usuário logado do localStorage
+    localStorage.removeItem("usuarioLogado");
+    // Redirecionar para a Home após logout
+    window.location.href = "/";
   };
 
   return (

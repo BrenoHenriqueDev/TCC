@@ -7,6 +7,23 @@ export default function Home() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
+  // Busca usuário logado
+  let mensagemBoasVindas = null;
+  if (isAuthenticated) {
+    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (logado && logado.email && logado.tipo) {
+      const chave = logado.tipo === "usuario" ? "usuarios" : "estabelecimentos";
+      const lista = JSON.parse(localStorage.getItem(chave)) || [];
+      const usuario = lista.find((item) => item.email === logado.email);
+      if (usuario) {
+        mensagemBoasVindas =
+          logado.tipo === "usuario"
+            ? `Olá, ${usuario.nome}! Bem-vindo(a) ao VenceMED.`
+            : `Olá, ${usuario.nomeEstabelecimento}! Obrigado por contribuir com a saúde e o meio ambiente.`;
+      }
+    }
+  }
+
   return (
     <div className="app-main-content">
       <div className="home-container">
@@ -18,6 +35,25 @@ export default function Home() {
         {/* Seção de Boas-Vindas */}
         <section className="home-welcome-section">
           <h1 className="home-title">VenceMED</h1>
+          {mensagemBoasVindas && (
+            <div
+              style={{
+                margin: "12px auto 0 auto",
+                background: "rgba(255,255,255,0.10)",
+                color: "#fff",
+                padding: "10px 20px",
+                borderRadius: "8px",
+                fontSize: 18,
+                maxWidth: 600,
+                boxShadow: "none",
+                fontWeight: 500,
+                textAlign: "center",
+                letterSpacing: 0.2,
+              }}
+            >
+              {mensagemBoasVindas}
+            </div>
+          )}
           <p className="home-subtitle">
             "Descartar medicamentos com responsabilidade é um ato de cuidado com
             a vida e o meio ambiente".

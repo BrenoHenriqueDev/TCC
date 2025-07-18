@@ -4,17 +4,29 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem 0.5rem;
+  padding: 1rem;
+  background: #334155;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+/* Aplicar a cor de fundo ao body/html para eliminar espaços brancos */
+body {
+  background: #334155;
+}
+
+html {
   background: #334155;
 }
 
 .cadastro-unificado-box {
   width: 100%;
-  max-width: 450px;
+  max-width: 500px;
   background: #fff;
   border-radius: 0.75rem;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  padding: 1.5rem 2rem;
+  padding: 2rem 2.5rem;
+  margin: 0.5rem 0;
 }
 
 .cadastro-unificado-title {
@@ -144,10 +156,13 @@
 @media (max-width: 480px) {
   .cadastro-unificado-container {
     padding: 0.5rem;
+    margin-top: 10px;
+    margin-bottom: 10px;
   }
 
   .cadastro-unificado-box {
-    padding: 1rem 1.5rem;
+    padding: 1.5rem 1.5rem;
+    margin: 0.25rem 0;
   }
 
   .cadastro-unificado-title {
