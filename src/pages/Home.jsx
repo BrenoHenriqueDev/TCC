@@ -58,14 +58,14 @@ export default function Home() {
             "Descartar medicamentos com responsabilidade é um ato de cuidado com
             a vida e o meio ambiente".
           </p>
-          <button
-            className="home-btn-agendar"
-            onClick={() =>
-              navigate(isAuthenticated ? "/agendamento" : "/login")
-            }
-          >
-            Agende uma coleta
-          </button>
+          {isAuthenticated && (
+            <button
+              className="home-btn-agendar"
+              onClick={() => navigate("/agendamento")}
+            >
+              Agende uma coleta
+            </button>
+          )}
         </section>
 
         {/* Como Funciona */}

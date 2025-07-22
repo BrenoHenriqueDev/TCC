@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../css/AlterarSenha.css";
 
 const ModalAlterarSenha = ({ aberto, onClose, onSucesso }) => {
   const [senhaAtual, setSenhaAtual] = useState("");
@@ -53,89 +54,63 @@ const ModalAlterarSenha = ({ aberto, onClose, onSucesso }) => {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(0,0,0,0.4)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 1000,
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          padding: 24,
-          borderRadius: 8,
-          minWidth: 320,
-          boxShadow: "0 2px 16px #0002",
-        }}
-      >
-        <h2>Alterar Senha</h2>
-        <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 12 }}>
-            <label>Senha atual</label>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2 className="modal-title">Alterar Senha</h2>
+          <button className="modal-close" onClick={onClose}>
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="modal-form">
+          <div className="modal-field">
+            <label className="modal-label">Senha Atual</label>
             <input
               type="password"
               value={senhaAtual}
               onChange={(e) => setSenhaAtual(e.target.value)}
-              style={{ width: "100%" }}
+              className="modal-input"
               required
             />
           </div>
-          <div style={{ marginBottom: 12 }}>
-            <label>Nova senha</label>
+
+          <div className="modal-field">
+            <label className="modal-label">Nova Senha</label>
             <input
               type="password"
               value={novaSenha}
               onChange={(e) => setNovaSenha(e.target.value)}
-              style={{ width: "100%" }}
+              className="modal-input"
               required
+              minLength={6}
             />
           </div>
-          <div style={{ marginBottom: 12 }}>
-            <label>Confirmar nova senha</label>
+
+          <div className="modal-field">
+            <label className="modal-label">Confirmar Nova Senha</label>
             <input
               type="password"
               value={confirmarNovaSenha}
               onChange={(e) => setConfirmarNovaSenha(e.target.value)}
-              style={{ width: "100%" }}
+              className="modal-input"
               required
             />
           </div>
-          {erro && <div style={{ color: "red", marginBottom: 8 }}>{erro}</div>}
-          {sucesso && (
-            <div style={{ color: "green", marginBottom: 8 }}>{sucesso}</div>
-          )}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8 }}>
+
+          {erro && <div className="modal-error">{erro}</div>}
+          {sucesso && <div className="modal-success">{sucesso}</div>}
+
+          <div className="modal-buttons">
             <button
               type="button"
               onClick={onClose}
-              style={{
-                background: "#eee",
-                border: "none",
-                padding: "6px 16px",
-                borderRadius: 4,
-              }}
+              className="modal-btn modal-btn-cancelar"
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              style={{
-                background: "#007bff",
-                color: "#fff",
-                border: "none",
-                padding: "6px 16px",
-                borderRadius: 4,
-              }}
-            >
-              Salvar
+            <button type="submit" className="modal-btn modal-btn-confirmar">
+              Alterar Senha
             </button>
           </div>
         </form>

@@ -4,6 +4,7 @@ import Img2 from "../Imagens/medicos.jpg";
 import Img3 from "../Imagens/lampada.jpg";
 import { useNavigate } from "react-router-dom";
 import "../css/Carousel.css";
+import { useAuth } from "../hooks/HookLogin";
 
 const slides = [
   {
@@ -33,6 +34,7 @@ const Carousel = () => {
   const [current, setCurrent] = useState(0);
   const length = slides.length;
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const nextSlide = () => {
     setCurrent(current === length - 1 ? 0 : current + 1);
@@ -56,18 +58,14 @@ const Carousel = () => {
                 <p className="carousel-description">{slide.text}</p>
                 {slide.actions && (
                   <div className="carousel-actions">
-                    <button
-                      className="carousel-btn carousel-btn-secondary"
-                      onClick={() => navigate("/cadastro")}
-                    >
-                      Cadastrar ponto
-                    </button>
-                    <button
-                      className="carousel-btn carousel-btn-primary"
-                      onClick={() => navigate("/cadastro")}
-                    >
-                      Agendar coleta
-                    </button>
+                    {isAuthenticated && (
+                      <button
+                        className="carousel-btn carousel-btn-primary"
+                        onClick={() => navigate("/agendamento")}
+                      >
+                        Agendar coleta
+                      </button>
+                    )}
                   </div>
                 )}
               </div>

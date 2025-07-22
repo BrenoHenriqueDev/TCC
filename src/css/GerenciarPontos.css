@@ -1,0 +1,116 @@
+/* GerenciarPontos.css */
+.gerenciar-pontos-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #e8eef7;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.gerenciar-pontos-title {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #2a3a5e;
+  text-align: center;
+}
+.gerenciar-pontos-empty {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+}
+.gerenciar-pontos-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: center;
+}
+.gerenciar-ponto-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 20px 24px;
+  min-width: 260px;
+  max-width: 320px;
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 2px solid #e0e6f0;
+  position: relative;
+}
+.gerenciar-ponto-card.ativo {
+  border-color: #4caf50;
+}
+.gerenciar-ponto-card.inativo {
+  border-color: #e57373;
+  opacity: 0.7;
+}
+.gerenciar-ponto-nome {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2a3a5e;
+}
+.gerenciar-ponto-endereco {
+  color: #4b5c7a;
+  font-size: 1rem;
+}
+.gerenciar-ponto-info {
+  font-size: 0.97rem;
+  color: #555;
+}
+.gerenciar-ponto-status {
+  margin: 8px 0;
+}
+.gerenciar-ponto-status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 500;
+}
+.gerenciar-ponto-status-badge.ativo {
+  background: #4caf50;
+}
+.gerenciar-ponto-status-badge.inativo {
+  background: #e57373;
+}
+.gerenciar-ponto-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.gerenciar-ponto-btn-editar {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.gerenciar-ponto-btn-editar:hover {
+  background: #125ea2;
+}
+.gerenciar-ponto-btn-ativar {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.gerenciar-ponto-btn-ativar.inativo {
+  background: #e57373;
+}
+.gerenciar-ponto-btn-ativar.ativo {
+  background: #4caf50;
+}
+.gerenciar-pontos-loading {
+  text-align: center;
+  color: #1976d2;
+  font-size: 1.2rem;
+  margin-top: 40px;
+} 

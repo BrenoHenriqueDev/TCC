@@ -10,6 +10,8 @@ import Educacao from "./pages/Educacao";
 import Dicas from "./pages/Dicas";
 import HomeEstabelecimento from "./pages/HomeEstabelecimento";
 import CadastrarPontoColeta from "./pages/CadastrarPontoColeta";
+import GerenciarPontos from "./pages/GerenciarPontos";
+import VisualizarAgendamentos from "./pages/VisualizarAgendamentos";
 
 export default function AppRoutes() {
   return (
@@ -30,6 +32,11 @@ export default function AppRoutes() {
         <Route
           path="/cadastrar-ponto-coleta"
           element={<CadastrarPontoColeta />}
+        />
+        <Route path="/gerenciar-pontos" element={<GerenciarPontos />} />
+        <Route
+          path="/visualizar-agendamentos"
+          element={<VisualizarAgendamentos />}
         />
       </Routes>
       <Footer />

@@ -1,0 +1,88 @@
+/* VisualizarAgendamentos.css */
+.visualizar-agendamentos-container {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #f4f7fb;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  margin-bottom: 200px;
+  margin-top: 150px;
+}
+.visualizar-agendamentos-title {
+  font-size: 2rem;
+  margin-bottom: 24px;
+  color: #2a3a5e;
+  text-align: center;
+}
+.visualizar-agendamentos-empty {
+  text-align: center;
+  color: #888;
+  font-size: 1.1rem;
+}
+.visualizar-agendamentos-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+.visualizar-agendamentos-table th, .visualizar-agendamentos-table td {
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 1px solid #e0e6f0;
+}
+.visualizar-agendamentos-table th {
+  background: #e8eef7;
+  color: #2a3a5e;
+  font-weight: 600;
+}
+.visualizar-agendamentos-table tr:last-child td {
+  border-bottom: none;
+}
+.visualizar-agendamentos-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #fff;
+  font-weight: 500;
+  display: inline-block;
+}
+.visualizar-agendamentos-status-pendente {
+  background: #ff9800;
+}
+.visualizar-agendamentos-status-concluído, .visualizar-agendamentos-status-concluido {
+  background: #4caf50;
+}
+.visualizar-agendamentos-status-cancelado {
+  background: #e57373;
+}
+.visualizar-agendamentos-loading {
+  text-align: center;
+  color: #1976d2;
+  font-size: 1.2rem;
+  margin-top: 40px;
+}
+@media (max-width: 700px) {
+  .visualizar-agendamentos-table, .visualizar-agendamentos-table thead, .visualizar-agendamentos-table tbody, .visualizar-agendamentos-table th, .visualizar-agendamentos-table td, .visualizar-agendamentos-table tr {
+    display: block;
+  }
+  .visualizar-agendamentos-table th {
+    display: none;
+  }
+  .visualizar-agendamentos-table td {
+    position: relative;
+    padding-left: 50%;
+    border-bottom: 1px solid #e0e6f0;
+  }
+  .visualizar-agendamentos-table td:before {
+    position: absolute;
+    left: 10px;
+    top: 12px;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #2a3a5e;
+    content: attr(data-label);
+  }
+} 

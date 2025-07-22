@@ -1,4 +1,3 @@
-
 import {
   FaUser,
   FaEnvelope,
@@ -16,6 +15,8 @@ import ModalAlterarSenha from "./AlterarSenha";
 function Perfil() {
   const [usuario, setUsuario] = useState(null);
   const [modalAberto, setModalAberto] = useState(false);
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [pontosCadastrados, setPontosCadastrados] = useState([]);
 
   useEffect(() => {
     // Busca o usuário logado no localStorage
@@ -25,28 +26,37 @@ function Perfil() {
       const lista = JSON.parse(localStorage.getItem(chave)) || [];
       const encontrado = lista.find((item) => item.email === logado.email);
       setUsuario(encontrado ? { ...encontrado, tipo: logado.tipo } : null);
+
+      // Buscar dados específicos baseado no tipo de usuário
+      if (logado.tipo === "usuario") {
+        // Buscar agendamentos para usuários
+        const ags =
+          JSON.parse(localStorage.getItem(`agendamentos_${logado.email}`)) ||
+          [];
+        setAgendamentos(ags);
+      } else {
+        // Buscar pontos cadastrados para estabelecimentos
+        const pontos =
+          JSON.parse(localStorage.getItem(`pontos_${logado.email}`)) || [];
+        setPontosCadastrados(pontos);
+      }
     }
   }, []);
 
-  // Exemplo de dados mockados de agendamentos
-  const agendamentosMock = [
-    {
-      id: 1,
-      data: "2024-06-20",
-      horario: "10:00",
-      local: "Farmácia Central",
-      tipos: ["Comprimidos e cápsulas", "Xaropes"],
-      status: "Pendente",
-    },
-    {
-      id: 2,
-      data: "2024-05-10",
-      horario: "15:30",
-      local: "Drogaria Vida",
-      tipos: ["Pomadas / cremes"],
-      status: "Concluído",
-    },
-  ];
+  // Função para cancelar agendamento
+  const handleCancelar = (id) => {
+    const novos = agendamentos.map((a) =>
+      a.id === id ? { ...a, status: "Cancelado" } : a
+    );
+    setAgendamentos(novos);
+    // Atualiza no localStorage
+    if (usuario && usuario.email) {
+      localStorage.setItem(
+        `agendamentos_${usuario.email}`,
+        JSON.stringify(novos)
+      );
+    }
+  };
 
   if (!usuario) {
     return (
@@ -103,7 +113,9 @@ function Perfil() {
               {usuario.tipo === "estabelecimento" && usuario.cep && (
                 <div className="perfil-info-item">
                   <FaMapMarkerAlt className="perfil-info-icon perfil-info-icon-address" />
-                  <span>{usuario.endereco} (CEP: {usuario.cep})</span>
+                  <span>
+                    {usuario.endereco} (CEP: {usuario.cep})
+                  </span>
                 </div>
               )}
               {usuario.tipo === "usuario" && usuario.endereco && (
@@ -119,12 +131,48 @@ function Perfil() {
             </button>
           </div>
 
-          {/* Histórico de Agendamentos ao lado */}
+          {/* Histórico de Agendamentos ou Pontos Cadastrados */}
           <div className="perfil-historico-box">
-            <HistoricoAgendamentos
-              agendamentos={agendamentosMock}
-              onCancelar={() => {}}
-            />
+            {usuario.tipo === "usuario" ? (
+              <HistoricoAgendamentos
+                agendamentos={agendamentos}
+                onCancelar={handleCancelar}
+              />
+            ) : (
+              <div className="perfil-pontos-cadastrados">
+                <h2 className="perfil-pontos-title">
+                  📍 Pontos de Coleta Cadastrados
+                </h2>
+                {pontosCadastrados.length === 0 ? (
+                  <p className="perfil-pontos-empty">
+                    Nenhum ponto de coleta cadastrado ainda.
+                  </p>
+                ) : (
+                  <div className="perfil-pontos-list">
+                    {pontosCadastrados.map((ponto) => (
+                      <div key={ponto.id} className="perfil-ponto-item">
+                        <h3 className="perfil-ponto-nome">{ponto.nome}</h3>
+                        <p className="perfil-ponto-endereco">
+                          {ponto.endereco}
+                        </p>
+                        <p className="perfil-ponto-telefone">
+                          {ponto.telefone}
+                        </p>
+                        <div className="perfil-ponto-status">
+                          <span
+                            className={`perfil-ponto-status-badge ${
+                              ponto.ativo ? "ativo" : "inativo"
+                            }`}
+                          >
+                            {ponto.ativo ? "Ativo" : "Inativo"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -135,21 +183,25 @@ function Perfil() {
             Configurações
           </h2>
           <div className="perfil-config-list">
-            <button className="perfil-config-btn" onClick={() => setModalAberto(true)}>
+            <button
+              className="perfil-config-btn"
+              onClick={() => setModalAberto(true)}
+            >
               Alterar Senha
             </button>
             <button className="perfil-config-btn">
               Preferências de Notificação
             </button>
-            <button className="perfil-config-btn">
-              Privacidade
-            </button>
+            <button className="perfil-config-btn">Privacidade</button>
             <button className="perfil-config-btn perfil-config-btn-danger">
               Excluir Conta
             </button>
           </div>
         </div>
-        <ModalAlterarSenha aberto={modalAberto} onClose={() => setModalAberto(false)} />
+        <ModalAlterarSenha
+          aberto={modalAberto}
+          onClose={() => setModalAberto(false)}
+        />
       </div>
     </div>
   );

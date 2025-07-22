@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import "../css/CadastrarPontoColeta.css";
 
 const CadastrarPontoColeta = () => {
   const navigate = useNavigate();
@@ -12,7 +13,9 @@ const CadastrarPontoColeta = () => {
     estado: "",
     telefone: "",
     tiposMedicamentos: [],
-    aceitaAgendamentos: true,
+    FazRetirada: true,
+    aceitaAgendamento: false,
+    retiraEmCasa: false,
     horarioFuncionamento: {
       segunda: { inicio: "", fim: "", aberto: true },
       terca: { inicio: "", fim: "", aberto: true },
@@ -26,12 +29,12 @@ const CadastrarPontoColeta = () => {
   });
   const [erros, setErros] = useState({});
 
-  // Buscar dados do estabelecimento logado
-  const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-  if (!logado || logado.tipo !== "estabelecimento") {
-    navigate("/painel-estabelecimento");
-    return null;
-  }
+  useEffect(() => {
+    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (!logado || logado.tipo !== "estabelecimento") {
+      navigate("/painel-estabelecimento");
+    }
+  }, [navigate]);
 
   // Tipos de medicamentos disponíveis
   const tiposDisponiveis = [
@@ -44,10 +47,52 @@ const CadastrarPontoColeta = () => {
     "Embalagens vazias",
   ];
 
+  // Horários pré-definidos para facilitar a seleção
+  const horariosDisponiveis = [
+    "06:00",
+    "06:30",
+    "07:00",
+    "07:30",
+    "08:00",
+    "08:30",
+    "09:00",
+    "09:30",
+    "10:00",
+    "10:30",
+    "11:00",
+    "11:30",
+    "12:00",
+    "12:30",
+    "13:00",
+    "13:30",
+    "14:00",
+    "14:30",
+    "15:00",
+    "15:30",
+    "16:00",
+    "16:30",
+    "17:00",
+    "17:30",
+    "18:00",
+    "18:30",
+    "19:00",
+    "19:30",
+    "20:00",
+    "20:30",
+    "21:00",
+    "21:30",
+    "22:00",
+    "22:30",
+    "23:00",
+    "23:30",
+    "00:00",
+  ];
+
   // Buscar endereço pelo CEP
   const buscarEnderecoPorCep = async (cep) => {
     try {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      if (!response.ok) throw new Error("Erro na requisição do CEP");
       const data = await response.json();
       if (!data.erro) {
         setForm((prev) => ({
@@ -57,16 +102,32 @@ const CadastrarPontoColeta = () => {
           cidade: data.localidade || "",
           estado: data.uf || "",
         }));
+      } else {
+        setForm((prev) => ({
+          ...prev,
+          endereco: "",
+          bairro: "",
+          cidade: "",
+          estado: "",
+        }));
+        alert("CEP não encontrado. Verifique e tente novamente.");
       }
-    } catch (error) {
-      console.log("Erro ao buscar CEP");
+    } catch {
+      setForm((prev) => ({
+        ...prev,
+        endereco: "",
+        bairro: "",
+        cidade: "",
+        estado: "",
+      }));
+      alert("Erro ao buscar o CEP. Tente novamente mais tarde.");
     }
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
 
-    if (name === "cep" && value.length === 8) {
+    if (name === "cep" && (value.length === 8 || value.length === 9)) {
       buscarEnderecoPorCep(value);
     }
 
@@ -117,6 +178,7 @@ const CadastrarPontoColeta = () => {
 
     if (Object.keys(validacao).length === 0) {
       // Salvar no localStorage
+      const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
       const pontosSalvos =
         JSON.parse(localStorage.getItem(`pontos_${logado.email}`)) || [];
       const novoPonto = {
@@ -138,57 +200,32 @@ const CadastrarPontoColeta = () => {
   };
 
   return (
-    <div
-      className="app-main-content"
-      style={{ background: "#334155", minHeight: "100vh" }}
-    >
-      <div
-        style={{
-          padding: "2rem",
-          maxWidth: "800px",
-          margin: "0 auto",
-          color: "#fff",
-        }}
-      >
-        <div style={{ marginBottom: "2rem" }}>
+    <div className="app-main-content">
+      <div className="cadastrar-ponto-container">
+        <div className="cadastrar-ponto-header">
           <button
             onClick={() => navigate("/painel-estabelecimento")}
-            style={{
-              background: "rgba(255,255,255,0.1)",
-              border: "1px solid rgba(255,255,255,0.2)",
-              color: "#fff",
-              padding: "0.5rem 1rem",
-              borderRadius: "6px",
-              cursor: "pointer",
-              marginBottom: "1rem",
-            }}
+            className="cadastrar-ponto-voltar-btn"
           >
             ← Voltar ao Painel
           </button>
-          <h1 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
+          <h1 className="cadastrar-ponto-title">
             📍 Cadastrar Ponto de Coleta
           </h1>
-          <p style={{ color: "#e2e8f0" }}>
+          <p className="cadastrar-ponto-subtitle">
             Preencha as informações do novo ponto de coleta
           </p>
         </div>
 
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            padding: "2rem",
-            borderRadius: "12px",
-          }}
-        >
+        <form onSubmit={handleSubmit} className="cadastrar-ponto-form">
           {/* Informações básicas */}
-          <div style={{ marginBottom: "2rem" }}>
-            <h3 style={{ color: "#60a5fa", marginBottom: "1rem" }}>
+          <div className="cadastrar-ponto-section">
+            <h3 className="cadastrar-ponto-section-title">
               Informações Básicas
             </h3>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">
                 Nome do Ponto de Coleta *
               </label>
               <input
@@ -196,133 +233,82 @@ const CadastrarPontoColeta = () => {
                 name="nome"
                 value={form.nome}
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: erros.nome
-                    ? "1px solid #ef4444"
-                    : "1px solid rgba(255,255,255,0.2)",
-                  background: "rgba(255,255,255,0.1)",
-                  color: "#fff",
-                }}
+                className={`cadastrar-ponto-input ${
+                  erros.nome ? "cadastrar-ponto-input-error" : ""
+                }`}
                 placeholder="Ex: Farmácia Central - Ponto de Coleta"
               />
               {erros.nome && (
-                <span style={{ color: "#ef4444", fontSize: "0.875rem" }}>
-                  {erros.nome}
-                </span>
+                <span className="cadastrar-ponto-error">{erros.nome}</span>
               )}
             </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                CEP *
-              </label>
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">CEP *</label>
               <input
                 type="text"
                 name="cep"
                 value={form.cep}
                 onChange={handleChange}
-                maxLength={8}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: erros.cep
-                    ? "1px solid #ef4444"
-                    : "1px solid rgba(255,255,255,0.2)",
-                  background: "rgba(255,255,255,0.1)",
-                  color: "#fff",
+                onBlur={() => {
+                  if (form.cep.length === 8 || form.cep.length === 9) {
+                    buscarEnderecoPorCep(form.cep);
+                  }
                 }}
+                maxLength={9}
+                className={`cadastrar-ponto-input ${
+                  erros.cep ? "cadastrar-ponto-input-error" : ""
+                }`}
                 placeholder="Digite o CEP"
               />
               {erros.cep && (
-                <span style={{ color: "#ef4444", fontSize: "0.875rem" }}>
-                  {erros.cep}
-                </span>
+                <span className="cadastrar-ponto-error">{erros.cep}</span>
               )}
             </div>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                Endereço *
-              </label>
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">Endereço *</label>
               <input
                 type="text"
                 name="endereco"
                 value={form.endereco}
                 onChange={handleChange}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: erros.endereco
-                    ? "1px solid #ef4444"
-                    : "1px solid rgba(255,255,255,0.2)",
-                  background: "rgba(255,255,255,0.1)",
-                  color: "#fff",
-                }}
+                className={`cadastrar-ponto-input ${
+                  erros.endereco ? "cadastrar-ponto-input-error" : ""
+                }`}
                 placeholder="Rua, número, complemento"
               />
               {erros.endereco && (
-                <span style={{ color: "#ef4444", fontSize: "0.875rem" }}>
-                  {erros.endereco}
-                </span>
+                <span className="cadastrar-ponto-error">{erros.endereco}</span>
               )}
             </div>
 
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "1rem",
-                marginBottom: "1rem",
-              }}
-            >
+            <div className="cadastrar-ponto-grid">
               <div>
-                <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                  Bairro
-                </label>
+                <label className="cadastrar-ponto-label">Bairro</label>
                 <input
                   type="text"
                   name="bairro"
                   value={form.bairro}
                   onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    borderRadius: "6px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    background: "rgba(255,255,255,0.1)",
-                    color: "#fff",
-                  }}
+                  className="cadastrar-ponto-input"
                   placeholder="Bairro"
                 />
               </div>
               <div>
-                <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                  Telefone *
-                </label>
+                <label className="cadastrar-ponto-label">Telefone *</label>
                 <input
                   type="text"
                   name="telefone"
                   value={form.telefone}
                   onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    padding: "0.75rem",
-                    borderRadius: "6px",
-                    border: erros.telefone
-                      ? "1px solid #ef4444"
-                      : "1px solid rgba(255,255,255,0.2)",
-                    background: "rgba(255,255,255,0.1)",
-                    color: "#fff",
-                  }}
+                  className={`cadastrar-ponto-input ${
+                    erros.telefone ? "cadastrar-ponto-input-error" : ""
+                  }`}
                   placeholder="(11) 99999-9999"
                 />
                 {erros.telefone && (
-                  <span style={{ color: "#ef4444", fontSize: "0.875rem" }}>
+                  <span className="cadastrar-ponto-error">
                     {erros.telefone}
                   </span>
                 )}
@@ -331,8 +317,8 @@ const CadastrarPontoColeta = () => {
           </div>
 
           {/* Tipos de medicamentos */}
-          <div style={{ marginBottom: "2rem" }}>
-            <h3 style={{ color: "#34d399", marginBottom: "1rem" }}>
+          <div className="cadastrar-ponto-section">
+            <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-green">
               Tipos de Medicamentos Aceitos *
             </h3>
             <select
@@ -340,17 +326,9 @@ const CadastrarPontoColeta = () => {
               multiple
               value={form.tiposMedicamentos}
               onChange={handleChange}
-              style={{
-                width: "100%",
-                padding: "0.75rem",
-                borderRadius: "6px",
-                border: erros.tiposMedicamentos
-                  ? "1px solid #ef4444"
-                  : "1px solid rgba(255,255,255,0.2)",
-                background: "rgba(255,255,255,0.1)",
-                color: "#fff",
-                minHeight: "120px",
-              }}
+              className={`cadastrar-ponto-select ${
+                erros.tiposMedicamentos ? "cadastrar-ponto-input-error" : ""
+              }`}
             >
               {tiposDisponiveis.map((tipo) => (
                 <option key={tipo} value={tipo}>
@@ -358,78 +336,59 @@ const CadastrarPontoColeta = () => {
                 </option>
               ))}
             </select>
-            <p
-              style={{
-                fontSize: "0.875rem",
-                color: "#94a3b8",
-                marginTop: "0.5rem",
-              }}
-            >
+            <p className="cadastrar-ponto-help-text">
               Pressione Ctrl (ou Cmd) para selecionar múltiplos tipos
             </p>
             {erros.tiposMedicamentos && (
-              <span style={{ color: "#ef4444", fontSize: "0.875rem" }}>
+              <span className="cadastrar-ponto-error">
                 {erros.tiposMedicamentos}
               </span>
             )}
           </div>
 
           {/* Horário de funcionamento */}
-          <div style={{ marginBottom: "2rem" }}>
-            <h3 style={{ color: "#fbbf24", marginBottom: "1rem" }}>
+          <div className="cadastrar-ponto-section">
+            <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-yellow">
               Horário de Funcionamento
             </h3>
             {Object.entries(form.horarioFuncionamento).map(([dia, horario]) => (
-              <div
-                key={dia}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "120px 1fr 1fr 80px",
-                  gap: "0.5rem",
-                  alignItems: "center",
-                  marginBottom: "0.5rem",
-                }}
-              >
-                <span style={{ textTransform: "capitalize" }}>{dia}</span>
-                <input
-                  type="time"
+              <div key={dia} className="cadastrar-ponto-horario-grid">
+                <span className="cadastrar-ponto-dia">{dia}</span>
+                <select
                   name={`horario_${dia}_inicio`}
                   value={horario.inicio}
                   onChange={handleChange}
                   disabled={!horario.aberto}
-                  style={{
-                    padding: "0.5rem",
-                    borderRadius: "4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    background: horario.aberto
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(255,255,255,0.05)",
-                    color: "#fff",
-                  }}
-                />
-                <input
-                  type="time"
+                  className="cadastrar-ponto-time-select"
+                >
+                  <option value="">Início</option>
+                  {horariosDisponiveis.map((hora) => (
+                    <option key={hora} value={hora}>
+                      {hora}
+                    </option>
+                  ))}
+                </select>
+                <select
                   name={`horario_${dia}_fim`}
                   value={horario.fim}
                   onChange={handleChange}
                   disabled={!horario.aberto}
-                  style={{
-                    padding: "0.5rem",
-                    borderRadius: "4px",
-                    border: "1px solid rgba(255,255,255,0.2)",
-                    background: horario.aberto
-                      ? "rgba(255,255,255,0.1)"
-                      : "rgba(255,255,255,0.05)",
-                    color: "#fff",
-                  }}
-                />
-                <label style={{ display: "flex", alignItems: "center" }}>
+                  className="cadastrar-ponto-time-select"
+                >
+                  <option value="">Fim</option>
+                  {horariosDisponiveis.map((hora) => (
+                    <option key={hora} value={hora}>
+                      {hora}
+                    </option>
+                  ))}
+                </select>
+                <label className="cadastrar-ponto-checkbox-label">
                   <input
                     type="checkbox"
                     name={`horario_${dia}_aberto`}
                     checked={horario.aberto}
                     onChange={handleChange}
-                    style={{ marginRight: "0.5rem" }}
+                    className="cadastrar-ponto-checkbox"
                   />
                   Aberto
                 </label>
@@ -438,77 +397,68 @@ const CadastrarPontoColeta = () => {
           </div>
 
           {/* Configurações adicionais */}
-          <div style={{ marginBottom: "2rem" }}>
-            <h3 style={{ color: "#a78bfa", marginBottom: "1rem" }}>
+          <div className="cadastrar-ponto-section">
+            <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-purple">
               Configurações Adicionais
             </h3>
 
-            <div style={{ marginBottom: "1rem" }}>
-              <label style={{ display: "flex", alignItems: "center" }}>
-                <input
-                  type="checkbox"
-                  name="aceitaAgendamentos"
-                  checked={form.aceitaAgendamentos}
-                  onChange={handleChange}
-                  style={{ marginRight: "0.5rem" }}
-                />
-                Aceita agendamentos
+            {/* Checkboxes de agendamento e retirada */}
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">
+                Aceita agendamento?
               </label>
+              <input
+                type="checkbox"
+                name="aceitaAgendamento"
+                checked={form.aceitaAgendamento || false}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    aceitaAgendamento: e.target.checked,
+                  }))
+                }
+                className="cadastrar-ponto-checkbox"
+              />
+            </div>
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">Retira em casa?</label>
+              <input
+                type="checkbox"
+                name="retiraEmCasa"
+                checked={form.retiraEmCasa || false}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    retiraEmCasa: e.target.checked,
+                  }))
+                }
+                className="cadastrar-ponto-checkbox"
+              />
             </div>
 
             <div>
-              <label style={{ display: "block", marginBottom: "0.5rem" }}>
-                Observações
-              </label>
+              <label className="cadastrar-ponto-label">Observações</label>
               <textarea
                 name="observacoes"
                 value={form.observacoes}
                 onChange={handleChange}
                 rows={4}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  borderRadius: "6px",
-                  border: "1px solid rgba(255,255,255,0.2)",
-                  background: "rgba(255,255,255,0.1)",
-                  color: "#fff",
-                  resize: "vertical",
-                }}
+                className="cadastrar-ponto-textarea"
                 placeholder="Informações adicionais sobre o ponto de coleta..."
               />
             </div>
           </div>
 
           {/* Botões */}
-          <div
-            style={{ display: "flex", gap: "1rem", justifyContent: "flex-end" }}
-          >
+          <div className="cadastrar-ponto-buttons">
             <button
               type="button"
               onClick={() => navigate("/painel-estabelecimento")}
-              style={{
-                padding: "0.75rem 1.5rem",
-                borderRadius: "6px",
-                border: "1px solid rgba(255,255,255,0.2)",
-                background: "rgba(255,255,255,0.1)",
-                color: "#fff",
-                cursor: "pointer",
-              }}
+              className="cadastrar-ponto-btn-cancelar"
             >
               Cancelar
             </button>
-            <button
-              type="submit"
-              style={{
-                padding: "0.75rem 1.5rem",
-                borderRadius: "6px",
-                border: "none",
-                background: "#60a5fa",
-                color: "#fff",
-                cursor: "pointer",
-                fontWeight: "600",
-              }}
-            >
+            <button type="submit" className="cadastrar-ponto-btn-submit">
               Cadastrar Ponto de Coleta
             </button>
           </div>

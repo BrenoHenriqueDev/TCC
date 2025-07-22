@@ -1,0 +1,243 @@
+.cadastrar-ponto-container {
+  background: #334155;
+  min-height: 100vh;
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #fff;
+}
+
+.cadastrar-ponto-header {
+  margin-bottom: 2rem;
+}
+
+.cadastrar-ponto-voltar-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.cadastrar-ponto-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.cadastrar-ponto-subtitle {
+  color: #e2e8f0;
+}
+
+.cadastrar-ponto-form {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2rem;
+  border-radius: 12px;
+}
+
+.cadastrar-ponto-section {
+  margin-bottom: 2rem;
+}
+
+.cadastrar-ponto-section-title {
+  color: #60a5fa;
+  margin-bottom: 1rem;
+}
+
+.cadastrar-ponto-section-title-green {
+  color: #34d399;
+}
+
+.cadastrar-ponto-section-title-yellow {
+  color: #fbbf24;
+}
+
+.cadastrar-ponto-section-title-purple {
+  color: #a78bfa;
+}
+
+.cadastrar-ponto-field {
+  margin-bottom: 1rem;
+}
+
+.cadastrar-ponto-label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.cadastrar-ponto-input {
+  width: 90%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cadastrar-ponto-input-error {
+  border: 1px solid #ef4444;
+}
+
+.cadastrar-ponto-input:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+
+.cadastrar-ponto-input::placeholder {
+  color: #94a3b8;
+}
+
+.cadastrar-ponto-error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  min-height: 18px;
+  display: block;
+}
+
+.cadastrar-ponto-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cadastrar-ponto-select {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  min-height: 120px;
+  box-sizing: border-box;
+}
+
+.cadastrar-ponto-select:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+
+.cadastrar-ponto-select option {
+  background: #334155;
+  color: #fff;
+}
+
+.cadastrar-ponto-help-text {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+.cadastrar-ponto-horario-grid {
+  display: grid;
+  grid-template-columns: 120px 1fr 1fr 80px;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cadastrar-ponto-dia {
+  text-transform: capitalize;
+}
+
+.cadastrar-ponto-time-input {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.cadastrar-ponto-time-input:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+}
+
+.cadastrar-ponto-time-select {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.cadastrar-ponto-time-select:disabled {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+}
+
+.cadastrar-ponto-time-select:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+
+.cadastrar-ponto-time-select option {
+  background: #334155;
+  color: #fff;
+}
+
+.cadastrar-ponto-checkbox-label {
+  display: flex;
+  align-items: center;
+}
+
+.cadastrar-ponto-checkbox {
+  margin-right: 0.5rem;
+}
+
+.cadastrar-ponto-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  resize: vertical;
+  min-height: 100px;
+}
+
+.cadastrar-ponto-textarea:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+
+.cadastrar-ponto-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.cadastrar-ponto-btn-cancelar {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+}
+
+.cadastrar-ponto-btn-cancelar:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.cadastrar-ponto-btn-submit {
+  padding: 0.75rem 1.5rem;
+  border-radius: 6px;
+  border: none;
+  background: #60a5fa;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.cadastrar-ponto-btn-submit:hover {
+  background: #3b82f6;
+}
+
+.cadastrar-ponto-btn-submit:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}

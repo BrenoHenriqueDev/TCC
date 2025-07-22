@@ -2,65 +2,34 @@ import { useState } from "react";
 import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
 import "../css/Agendamento.css";
 
-// Dados fictícios de pontos de coleta
-const pontosMock = [
-  {
-    id: 1,
-    nome: "Farmácia Central",
-    endereco: "Rua das Flores, 123 - Centro",
-    horarios: "08:00 - 18:00",
-    aceitaAgendamento: true,
-    retiraEmCasa: true,
-  },
-  {
-    id: 2,
-    nome: "Posto de Saúde Bairro Novo",
-    endereco: "Av. Brasil, 456 - Bairro Novo",
-    horarios: "09:00 - 17:00",
-    aceitaAgendamento: false,
-    retiraEmCasa: false,
-  },
-  {
-    id: 3,
-    nome: "Drogaria Vida",
-    endereco: "Rua Esperança, 789 - Jardim Alegre",
-    horarios: "07:30 - 19:00",
-    aceitaAgendamento: true,
-    retiraEmCasa: false,
-  },
-];
-
-// Dados fictícios de agendamentos do usuário
-const agendamentosMock = [
-  {
-    id: 1,
-    data: "2024-06-20",
-    horario: "10:00",
-    local: "Farmácia Central",
-    status: "Pendente",
-  },
-  {
-    id: 2,
-    data: "2024-05-10",
-    horario: "15:30",
-    local: "Drogaria Vida",
-    status: "Concluído",
-  },
-];
-
-const tiposMedicamento = [
-  "Comprimidos e cápsulas",
-  "Xaropes",
-  "Pomadas / cremes",
-  "Injetáveis (sem agulhas)",
-  "Medicamentos controlados",
-  "Antibióticos vencidos",
-  "Outros",
-];
+function buscarPontosColeta() {
+  // Busca todos os pontos de todos os estabelecimentos
+  const estabelecimentos =
+    JSON.parse(localStorage.getItem("estabelecimentos")) || [];
+  let pontos = [];
+  estabelecimentos.forEach((est) => {
+    const pontosEst =
+      JSON.parse(localStorage.getItem(`pontos_${est.email}`)) || [];
+    pontos = pontos.concat(pontosEst);
+  });
+  return pontos;
+}
 
 function Agendamento() {
-  const [pontos] = useState(pontosMock);
-  const [agendamentos, setAgendamentos] = useState(agendamentosMock);
+  // Buscar usuário logado
+  const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
+  const usuarioEmail = logado && logado.email ? logado.email : null;
+
+  // Buscar agendamentos do localStorage
+  function buscarAgendamentos() {
+    if (!usuarioEmail) return [];
+    return (
+      JSON.parse(localStorage.getItem(`agendamentos_${usuarioEmail}`)) || []
+    );
+  }
+
+  const [pontos] = useState(buscarPontosColeta());
+  const [agendamentos, setAgendamentos] = useState(buscarAgendamentos());
   const [pontoSelecionado, setPontoSelecionado] = useState(null);
   const [form, setForm] = useState({
     data: "",
@@ -76,9 +45,49 @@ function Agendamento() {
     cidade: "",
     estado: "",
   });
+  const [horariosDisponiveis, setHorariosDisponiveis] = useState([]);
   const [sucesso, setSucesso] = useState(false);
   const [novoAgendamento, setNovoAgendamento] = useState(null);
   const [buscandoCep, setBuscandoCep] = useState(false);
+
+  // Função para obter o dia da semana em português a partir de uma data yyyy-mm-dd
+  function getDiaSemana(dateStr) {
+    const dias = [
+      "domingo",
+      "segunda",
+      "terca",
+      "quarta",
+      "quinta",
+      "sexta",
+      "sabado",
+    ];
+    const d = new Date(dateStr);
+    return dias[d.getDay()];
+  }
+
+  // Atualiza horários disponíveis ao mudar a data
+  function handleDataChange(e) {
+    const data = e.target.value;
+    setForm((prev) => ({ ...prev, data, horario: "" }));
+    if (pontoSelecionado && pontoSelecionado.horarioFuncionamento) {
+      const dia = getDiaSemana(data);
+      const horario = pontoSelecionado.horarioFuncionamento[dia];
+      if (horario && horario.aberto && horario.inicio && horario.fim) {
+        setHorariosDisponiveis(gerarHorarios(horario.inicio, horario.fim));
+      } else {
+        setHorariosDisponiveis([]);
+      }
+    }
+  }
+
+  // Função para desabilitar dias que o ponto não está aberto
+  function isDiaDisponivel(dateStr) {
+    if (!pontoSelecionado || !pontoSelecionado.horarioFuncionamento)
+      return true;
+    const dia = getDiaSemana(dateStr);
+    const horario = pontoSelecionado.horarioFuncionamento[dia];
+    return horario && horario.aberto && horario.inicio && horario.fim;
+  }
 
   const handleAgendarClick = (ponto) => {
     setPontoSelecionado(ponto);
@@ -120,6 +129,7 @@ function Agendamento() {
         const response = await fetch(
           `https://viacep.com.br/ws/${form.cep.replace(/\D/g, "")}/json/`
         );
+        if (!response.ok) throw new Error("Erro na requisição do CEP");
         const data = await response.json();
         if (!data.erro) {
           setForm((prev) => ({
@@ -129,9 +139,25 @@ function Agendamento() {
             cidade: data.localidade || "",
             estado: data.uf || "",
           }));
+        } else {
+          setForm((prev) => ({
+            ...prev,
+            rua: "",
+            bairro: "",
+            cidade: "",
+            estado: "",
+          }));
+          alert("CEP não encontrado. Verifique e tente novamente.");
         }
       } catch {
-        // erro silencioso
+        setForm((prev) => ({
+          ...prev,
+          rua: "",
+          bairro: "",
+          cidade: "",
+          estado: "",
+        }));
+        alert("Erro ao buscar o CEP. Tente novamente mais tarde.");
       }
       setBuscandoCep(false);
     }
@@ -153,7 +179,7 @@ function Agendamento() {
       }
     }
     const agendamento = {
-      id: agendamentos.length + 1,
+      id: Date.now(), // id único baseado no timestamp
       data: form.data,
       horario: form.horario,
       local: pontoSelecionado.nome,
@@ -172,17 +198,42 @@ function Agendamento() {
               estado: form.estado,
             }
           : undefined,
+      usuarioEmail: usuarioEmail,
     };
-    setAgendamentos([agendamento, ...agendamentos]);
+    const novosAgendamentos = [agendamento, ...agendamentos];
+    setAgendamentos(novosAgendamentos);
+    // Salvar no localStorage
+    if (usuarioEmail) {
+      localStorage.setItem(
+        `agendamentos_${usuarioEmail}`,
+        JSON.stringify(novosAgendamentos)
+      );
+      // Salvar também no ponto de coleta
+      const agsPonto =
+        JSON.parse(
+          localStorage.getItem(`agendamentos_ponto_${pontoSelecionado.id}`)
+        ) || [];
+      localStorage.setItem(
+        `agendamentos_ponto_${pontoSelecionado.id}`,
+        JSON.stringify([{ ...agendamento }, ...agsPonto])
+      );
+    }
     setSucesso(true);
     setNovoAgendamento(agendamento);
     setPontoSelecionado(null);
   };
 
   const handleCancelar = (id) => {
-    setAgendamentos(
-      agendamentos.map((a) => (a.id === id ? { ...a, status: "Cancelado" } : a))
+    const novos = agendamentos.map((a) =>
+      a.id === id ? { ...a, status: "Cancelado" } : a
     );
+    setAgendamentos(novos);
+    if (usuarioEmail) {
+      localStorage.setItem(
+        `agendamentos_${usuarioEmail}`,
+        JSON.stringify(novos)
+      );
+    }
   };
 
   return (
@@ -262,21 +313,55 @@ function Agendamento() {
                   type="date"
                   name="data"
                   value={form.data}
-                  onChange={handleFormChange}
+                  onChange={handleDataChange}
                   required
                   className="agendamento-input"
+                  min={new Date().toISOString().split("T")[0]}
+                  // Desabilitar dias não disponíveis (apenas visual, pois input date não suporta nativamente)
+                  style={
+                    pontoSelecionado
+                      ? {
+                          color: isDiaDisponivel(form.data)
+                            ? undefined
+                            : "#aaa",
+                        }
+                      : {}
+                  }
                 />
+                {form.data && !isDiaDisponivel(form.data) && (
+                  <div style={{ color: "red", fontSize: 13, marginTop: 4 }}>
+                    O ponto não está aberto neste dia. Escolha outro dia.
+                  </div>
+                )}
               </label>
               <label className="agendamento-label">
                 Horário
-                <input
-                  type="time"
+                <select
                   name="horario"
                   value={form.horario}
                   onChange={handleFormChange}
                   required
                   className="agendamento-input"
-                />
+                  disabled={
+                    !form.data ||
+                    horariosDisponiveis.length === 0 ||
+                    !isDiaDisponivel(form.data)
+                  }
+                >
+                  <option value="">Selecione o horário</option>
+                  {horariosDisponiveis.map((h) => (
+                    <option key={h} value={h}>
+                      {h}
+                    </option>
+                  ))}
+                </select>
+                {form.data &&
+                  horariosDisponiveis.length === 0 &&
+                  isDiaDisponivel(form.data) && (
+                    <div style={{ color: "red", fontSize: 13, marginTop: 4 }}>
+                      Nenhum horário disponível para este dia.
+                    </div>
+                  )}
               </label>
               <label className="agendamento-label">
                 Observações (opcional)
@@ -382,7 +467,7 @@ function Agendamento() {
               <label className="agendamento-label">
                 Tipos de medicamento a descartar
                 <div className="agendamento-tipos-list">
-                  {tiposMedicamento.map((tipo) => (
+                  {(pontoSelecionado?.tiposMedicamentos || []).map((tipo) => (
                     <label
                       key={tipo}
                       className="agendamento-tipo-checkbox-label"
@@ -490,6 +575,23 @@ function Agendamento() {
       </div>
     </div>
   );
+}
+
+// Função utilitária para gerar horários de X em X minutos entre dois horários
+function gerarHorarios(inicio, fim, intervalo = 30) {
+  const horarios = [];
+  let [hIni, mIni] = inicio.split(":").map(Number);
+  let [hFim, mFim] = fim.split(":").map(Number);
+  let totalIni = hIni * 60 + mIni;
+  let totalFim = hFim * 60 + mFim;
+  for (let t = totalIni; t <= totalFim; t += intervalo) {
+    let h = Math.floor(t / 60)
+      .toString()
+      .padStart(2, "0");
+    let m = (t % 60).toString().padStart(2, "0");
+    horarios.push(`${h}:${m}`);
+  }
+  return horarios;
 }
 
 export default Agendamento;
