@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../css/GerenciarPontos.css";
+import EditarModal from "../components/EditarPonto";
 
 const GerenciarPontos = () => {
   const navigate = useNavigate();
   const [pontos, setPontos] = useState([]);
   const [carregando, setCarregando] = useState(true);
+
+  // Estado para controlar qual ponto está sendo editado (modal)
+  const [pontoSelecionado, setPontoSelecionado] = useState(null);
 
   useEffect(() => {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
@@ -19,6 +23,17 @@ const GerenciarPontos = () => {
     setCarregando(false);
   }, [navigate]);
 
+  // Atualiza o ponto editado
+  const handleSalvarEdicao = (pontoEditado) => {
+    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    const novosPontos = pontos.map((p) =>
+      p.id === pontoEditado.id ? pontoEditado : p
+    );
+    setPontos(novosPontos);
+    localStorage.setItem(`pontos_${logado.email}`, JSON.stringify(novosPontos));
+    setPontoSelecionado(null);
+  };
+
   const handleAtivarDesativar = (id) => {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
     const novosPontos = pontos.map((p) =>
@@ -26,11 +41,6 @@ const GerenciarPontos = () => {
     );
     setPontos(novosPontos);
     localStorage.setItem(`pontos_${logado.email}`, JSON.stringify(novosPontos));
-  };
-
-  const handleEditar = (id) => {
-    // Redireciona para a página de edição (pode ser implementada depois)
-    alert("Funcionalidade de edição pode ser implementada aqui.");
   };
 
   if (carregando)
@@ -69,7 +79,7 @@ const GerenciarPontos = () => {
               <div className="gerenciar-ponto-actions">
                 <button
                   className="gerenciar-ponto-btn-editar"
-                  onClick={() => handleEditar(ponto.id)}
+                  onClick={() => setPontoSelecionado(ponto)}
                 >
                   Editar
                 </button>
@@ -85,6 +95,15 @@ const GerenciarPontos = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Renderizar o modal só se pontoSelecionado tiver valor */}
+      {pontoSelecionado && (
+        <EditarModal
+          ponto={pontoSelecionado}
+          onClose={() => setPontoSelecionado(null)}
+          onSave={handleSalvarEdicao}
+        />
       )}
     </div>
   );

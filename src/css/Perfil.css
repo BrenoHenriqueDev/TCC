@@ -110,8 +110,11 @@
   max-width: 320px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start; /* Alinha conteúdo no topo */
+  gap: 1rem; /* Cria espaço entre título, infos e botão */
 }
+
+
 .perfil-info-title {
   font-size: 1.25rem;
   font-weight: 600;
@@ -122,7 +125,8 @@
   gap: 0.5rem;
 }
 .perfil-info-icon {
-  color: #2563eb;
+  color: #2563eb; /* azul do ícone */
+  font-size: 1rem; /* tamanho uniforme */
 }
 .perfil-info-list {
   display: flex;
@@ -132,8 +136,12 @@
 .perfil-info-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  color: #64748b;
+  gap: 0.5rem; /* espaço entre ícone e texto */ 
+  font-size: 0.95rem;
+}
+.perfil-info-item span {
+  color: #1e293b; /* cinza padrão */
+  line-height: 1.2;
 }
 .perfil-info-item-address .perfil-info-icon-address {
   margin-top: 0.25rem;

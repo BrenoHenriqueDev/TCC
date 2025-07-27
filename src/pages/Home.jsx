@@ -100,37 +100,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Para quem é o VenceMED? */}
-        <section className="home-who-section">
-          <h2 className="home-section-title">Para quem é o VenceMED?</h2>
-          <div className="home-who-cards">
-            <div className="home-who-card">
-              <h3 className="home-who-card-title">Sou cidadão</h3>
-              <p className="home-who-card-text">
-                Deseja agendar a coleta de medicamentos vencidos?
-              </p>
-              <button
-                className="home-who-btn-blue"
-                onClick={() => navigate("/login")}
-              >
-                Sou cidadão
-              </button>
-            </div>
-            <div className="home-who-card">
-              <h3 className="home-who-card-title">Sou estabelecimento</h3>
-              <p className="home-who-card-text">
-                Deseja receber descartes e ajudar o meio ambiente?
-              </p>
-              <button
-                className="home-who-btn-green"
-                onClick={() => navigate("/login")}
-              >
-                Sou ponto de coleta
-              </button>
-            </div>
-          </div>
-        </section>
-
         {/* Impacto ambiental */}
         <section className="home-impact-section">
           <div className="home-impact-content">

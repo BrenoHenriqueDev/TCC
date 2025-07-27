@@ -19,8 +19,7 @@ const Footer = () => {
           <div className="footer-about">
             <h3 className="footer-title">VenceMED</h3>
             <p className="footer-description">
-              Transformando a saúde através da tecnologia e inovação. Nossa
-              missão é tornar o acesso à saúde mais eficiente e acessível.
+              Transformando a saúde através da tecnologia e inovação.<br /> Nossa missão é tornar o acesso à saúde mais eficiente e acessível.
             </p>
             <div className="footer-social">
               <a
@@ -51,45 +50,9 @@ const Footer = () => {
           </div>
 
           {/* Coluna 2 - Links Rápidos */}
-          <div className="footer-links">
-            <h4 className="footer-links-title">
-              Links Rápidos
-            </h4>
-            <ul className="footer-links-list">
-              <li>
-                <a
-                  href="/sobre"
-                  className="footer-link"
-                >
-                  Sobre Nós
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/servicos"
-                  className="footer-link"
-                >
-                  Nossos Serviços
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/blog"
-                  className="footer-link"
-                >
-                  Blog
-                </a>
-              </li>
-              <li>
-                <a
-                  href="/contato"
-                  className="footer-link"
-                >
-                  Contato
-                </a>
-              </li>
-            </ul>
-          </div>
+          
+            
+            
 
           {/* Coluna 3 - Contato */}
           <div className="footer-contact">

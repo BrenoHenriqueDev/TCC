@@ -1,0 +1,14 @@
+html, body, #root {
+  height: 100%;
+  margin: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* altura mínima da tela */
+}
+
+.app-content {
+  flex: 1; /* ocupa o espaço disponível e empurra o footer */
+}

@@ -17,7 +17,7 @@
   border-radius: 12px;
   max-width: 400px;
   width: 90%;
-  color: #fff;
+  color: #334155;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -30,7 +30,7 @@
 
 .modal-title {
   font-size: 1.5rem;
-  color: #60a5fa;
+  color: #334155;
   margin: 0;
 }
 
@@ -52,7 +52,7 @@
 
 .modal-close:hover {
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: #ef4444;
 }
 
 .modal-form {
@@ -68,26 +68,26 @@
 
 .modal-label {
   margin-bottom: 0.5rem;
-  color: #e2e8f0;
+  color: #334155;
   font-weight: 500;
 }
 
 .modal-input {
   padding: 0.75rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid #60a5fa;
   background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  color: #334155;
   font-size: 1rem;
 }
 
 .modal-input:focus {
   outline: none;
-  border-color: #60a5fa;
+  border-color: #0073ff;
 }
 
 .modal-input::placeholder {
-  color: #94a3b8;
+  color: #334155;
 }
 
 .modal-input-error {
@@ -123,13 +123,13 @@
 }
 
 .modal-btn-cancelar {
-  background: rgba(255, 255, 255, 0.1);
+  background: #ef4444;
   color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .modal-btn-cancelar:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #ed1616;
 }
 
 .modal-btn-confirmar {

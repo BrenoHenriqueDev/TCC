@@ -2,8 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Perfil from "./pages/Perfil";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
 import CadastroUnificado from "./pages/CadastroUnificado";
 import Agendamento from "./pages/Agendamento";
 import Educacao from "./pages/Educacao";
@@ -12,11 +10,11 @@ import HomeEstabelecimento from "./pages/HomeEstabelecimento";
 import CadastrarPontoColeta from "./pages/CadastrarPontoColeta";
 import GerenciarPontos from "./pages/GerenciarPontos";
 import VisualizarAgendamentos from "./pages/VisualizarAgendamentos";
+import Editar from "./components/EditarPonto";
 
 export default function AppRoutes() {
   return (
     <>
-      <Header />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -34,12 +32,12 @@ export default function AppRoutes() {
           element={<CadastrarPontoColeta />}
         />
         <Route path="/gerenciar-pontos" element={<GerenciarPontos />} />
+        <Route path="/editar" element={<Editar />} />
         <Route
           path="/visualizar-agendamentos"
           element={<VisualizarAgendamentos />}
         />
       </Routes>
-      <Footer />
     </>
   );
 }

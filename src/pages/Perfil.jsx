@@ -4,13 +4,13 @@ import {
   FaPhone,
   FaMapMarkerAlt,
   FaEdit,
-  FaHistory,
   FaCog,
 } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
 import "../css/Perfil.css";
 import ModalAlterarSenha from "./AlterarSenha";
+import ModalEditarInfo from "../components/EditarInfo";
 
 function Perfil() {
   const [usuario, setUsuario] = useState(null);
@@ -109,7 +109,14 @@ function Perfil() {
                 <FaEnvelope className="perfil-info-icon" />
                 <span>{usuario.email}</span>
               </div>
-              {/* Telefone não cadastrado, pode adicionar campo no futuro */}
+              {usuario.telefone && (
+                <div className="perfil-info-item">
+                  <FaPhone className="perfil-info-icon" />
+                  <span>{usuario.telefone}</span>
+                </div>
+              )}
+            </div>
+            <div>
               {usuario.tipo === "estabelecimento" && usuario.cep && (
                 <div className="perfil-info-item">
                   <FaMapMarkerAlt className="perfil-info-icon perfil-info-icon-address" />
@@ -125,7 +132,10 @@ function Perfil() {
                 </div>
               )}
             </div>
-            <button className="perfil-info-edit-btn">
+            <button
+              className="perfil-info-edit-btn"
+              onClick={() => setModalAberto("editarInfo")}
+            >
               <FaEdit />
               Editar Informações
             </button>
@@ -185,23 +195,30 @@ function Perfil() {
           <div className="perfil-config-list">
             <button
               className="perfil-config-btn"
-              onClick={() => setModalAberto(true)}
+              onClick={() => setModalAberto("alterarSenha")}
             >
               Alterar Senha
             </button>
-            <button className="perfil-config-btn">
-              Preferências de Notificação
-            </button>
-            <button className="perfil-config-btn">Privacidade</button>
             <button className="perfil-config-btn perfil-config-btn-danger">
               Excluir Conta
             </button>
           </div>
         </div>
-        <ModalAlterarSenha
-          aberto={modalAberto}
-          onClose={() => setModalAberto(false)}
-        />
+        {modalAberto === "alterarSenha" && (
+          <ModalAlterarSenha
+            aberto={true}
+            onClose={() => setModalAberto(false)}
+          />
+        )}
+
+        {modalAberto === "editarInfo" && (
+          <ModalEditarInfo
+            aberto={true}
+            usuario={usuario}
+            onClose={() => setModalAberto(false)}
+            onSave={(dadosAtualizados) => setUsuario(dadosAtualizados)}
+          />
+        )}
       </div>
     </div>
   );
