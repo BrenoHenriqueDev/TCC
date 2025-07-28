@@ -92,3 +92,139 @@
   font-size: 1rem;
   padding-left: 0;
 } 
+
+.educacao-intro,
+.dicas-intro {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #1e293b;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Efeito hover nas seções */
+.educacao-section:hover,
+.dicas-item:hover {
+  transform: translateY(-3px);
+  transition: 0.3s ease;
+}
+
+/* Cor verde para ícone adicional */
+.educacao-section-title-green {
+  color: #16a34a;
+}
+.educacao-icon-green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+/* Ícone roxo para dicas */
+.dicas-icon-purple {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+.educacao-title,
+.dicas-title {
+  font-size: 2.2rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.educacao-intro,
+.dicas-intro {
+  text-align: center;
+  font-size: 1.25rem;
+  color: #334155;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+}
+
+/* Imagens dentro das seções */
+.educacao-image {
+  width: 100%;
+  max-width: 300px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.educacao-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.educacao-section.reverse {
+  flex-direction: column-reverse;
+}
+
+@media (min-width: 768px) {
+  .educacao-section {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+  .educacao-section.reverse {
+    flex-direction: row-reverse;
+  }
+}
+
+.educacao-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Grid para dicas */
+.dicas-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .dicas-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dicas-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  transition: transform 0.3s;
+}
+
+.dicas-item:hover {
+  transform: translateY(-3px);
+}
+
+.dicas-icon {
+  width: 50px;
+  height: 50px;
+}
+
+.dicas-text {
+  font-size: 1.1rem;
+  color: #334155;
+  line-height: 1.5;
+}
+.educacao-title,
+.dicas-title {
+  font-size: 2.4rem;
+}
+
+.educacao-section-text,
+.dicas-text,
+.educacao-list li,
+.dicas-steps li,
+.dicas-benefits li {
+  font-size: 1.2rem;
+  line-height: 1.8;
+}

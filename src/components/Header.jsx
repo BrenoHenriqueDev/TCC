@@ -52,7 +52,7 @@ export default function Header() {
                 to="/educacao"
                 className={isCurrentPage("/educacao") ? current : general}
               >
-                Seção Educativa
+                Por que Descartar corretamente?
               </Link>
               <Link
                 to="/dicas"

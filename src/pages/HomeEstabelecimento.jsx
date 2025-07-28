@@ -110,41 +110,6 @@ const HomeEstabelecimento = () => {
             agendamento(s) pendente(s)
           </div>
         </div>
-
-        {/* 4. Estatísticas */}
-        <div
-          className="home-estabelecimento-card"
-          onMouseEnter={(e) => handleCardHover(e, true)}
-          onMouseLeave={(e) => handleCardHover(e, false)}
-        >
-          <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-purple">
-            📊 Estatísticas
-          </h2>
-          <p className="home-estabelecimento-card-text">
-            Acompanhe seu impacto ambiental.
-          </p>
-          <div className="home-estabelecimento-card-info">
-            {agendamentos.filter((a) => a.status === "concluído").length}{" "}
-            coleta(s) realizada(s)
-          </div>
-        </div>
-
-        {/* 5. Configurações do perfil */}
-        <div
-          className="home-estabelecimento-card"
-          onMouseEnter={(e) => handleCardHover(e, true)}
-          onMouseLeave={(e) => handleCardHover(e, false)}
-        >
-          <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-red">
-            ⚙️ Configurações
-          </h2>
-          <p className="home-estabelecimento-card-text">
-            Gerencie suas informações e preferências.
-          </p>
-          <div className="home-estabelecimento-card-info">
-            Perfil e configurações
-          </div>
-        </div>
       </div>
     </div>
   );

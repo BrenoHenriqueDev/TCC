@@ -2,6 +2,7 @@ import Carousel from "../components/Carousel";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/HookLogin";
 import "../css/Home.css";
+import Sujo from "../Imagens/sujo.jpg";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -113,7 +114,12 @@ export default function Home() {
           </div>
           {/* Imagem ilustrativa placeholder */}
           <div className="home-impact-image-area">
-            <div className="home-impact-image-placeholder">Imagem</div>
+            <div className="home-impact-image-placeholder">
+              <img
+                src={Sujo}
+                alt="Impacto ambiental do descarte incorreto de medicamentos"
+              />
+            </div>
           </div>
         </section>
       </div>

@@ -14,7 +14,7 @@
   margin-top: 2.5rem;
   background: #1e293b;
   border-radius: 1rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
   padding: 2rem;
   display: flex;
   flex-direction: column;
@@ -238,13 +238,19 @@
   justify-content: center;
 }
 .home-impact-image-placeholder {
-  width: 10rem;
-  height: 10rem;
-  background: #475569;
+  width: 100%;
+  max-width: 22rem; /* Aumenta bem a imagem */
+  height: auto;
+  background: transparent; /* remove o fundo cinza */
   border-radius: 0.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #cbd5e1;
-  font-size: 1.25rem;
-} 
+}
+
+.home-impact-image-placeholder img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  object-fit: cover;
+}
