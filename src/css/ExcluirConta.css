@@ -1,0 +1,75 @@
+/* Fundo escuro atrás do modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999; /* garantir que fique sobre o conteúdo */
+  }
+  
+  /* Caixa do modal */
+  .modal {
+    background-color: #fff;
+    padding: 24px 32px;
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  /* Animação de entrada */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+  
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Botões dentro do modal */
+  .modal-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+  
+  /* Botão "Sim" */
+  .btn.btn-danger {
+    background-color: #e53935;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn.btn-danger:hover {
+    background-color: #c62828;
+  }
+  
+  /* Botão "Não" */
+  .btn.btn-secondary {
+    background-color: #bdbdbd;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .btn.btn-secondary:hover {
+    background-color: #9e9e9e;
+  }
+  

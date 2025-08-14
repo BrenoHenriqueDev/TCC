@@ -11,12 +11,16 @@ import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
 import "../css/Perfil.css";
 import ModalAlterarSenha from "./AlterarSenha";
 import ModalEditarInfo from "../components/EditarInfo";
+import ModalExcluirConta from "../components/ExcluirConta";
 
 function Perfil() {
   const [usuario, setUsuario] = useState(null);
-  const [modalAberto, setModalAberto] = useState(false);
+  const [modalAberto, setModalAberto] = useState(null);
   const [agendamentos, setAgendamentos] = useState([]);
-  const [pontosCadastrados, setPontosCadastrados] = useState([]);
+  const handleDelete = () => {
+    console.log("Conta excluída.");
+    setModalAberto(null);
+  };
 
   useEffect(() => {
     // Busca o usuário logado no localStorage
@@ -199,7 +203,8 @@ function Perfil() {
             >
               Alterar Senha
             </button>
-            <button className="perfil-config-btn perfil-config-btn-danger">
+            <button className="perfil-config-btn perfil-config-btn-danger"
+            onClick={() => setModalAberto("excluirConta")}>
               Excluir Conta
             </button>
           </div>
@@ -217,6 +222,14 @@ function Perfil() {
             usuario={usuario}
             onClose={() => setModalAberto(false)}
             onSave={(dadosAtualizados) => setUsuario(dadosAtualizados)}
+          />
+        )}
+
+          {modalAberto === "excluirConta" && (
+          <ModalExcluirConta
+            isOpen={true}
+            onConfirm={handleDelete}
+            onClose={() => setModalAberto(null)}
           />
         )}
       </div>
