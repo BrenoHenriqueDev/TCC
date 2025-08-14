@@ -7,7 +7,7 @@ const ExcluirConta = ({ isOpen, onConfirm, onCancel }) => {
   return (
     <div className="modal-overlay">
       <div className="modal">
-        <p>Tem certeza que quer fazer isso?</p>
+        <p>Tem certeza que quer Excluir o seu Usuário?</p>
         <div className="modal-buttons">
           <button onClick={onConfirm} className="btn btn-danger">Sim</button>
           <button onClick={onCancel} className="btn btn-secondary">Não</button>

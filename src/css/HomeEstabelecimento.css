@@ -3,6 +3,8 @@
   min-height: 100vh;
   padding: 2rem;
   color: #fff;
+  padding-top: 150px;
+  padding-bottom: -100px;
 }
 
 .home-estabelecimento-header {
@@ -28,6 +30,7 @@
   margin-bottom: 3rem;
   max-width: 1200px;
   margin: 0 auto 3rem auto;
+  
 }
 
 .home-estabelecimento-card {

@@ -61,7 +61,7 @@
   
   /* Botão "Não" */
   .btn.btn-secondary {
-    background-color: #bdbdbd;
+    background-color: #4ef856;
     color: #333;
     border: none;
     padding: 10px 20px;
@@ -70,6 +70,6 @@
   }
   
   .btn.btn-secondary:hover {
-    background-color: #9e9e9e;
+    background-color: #3fc045;
   }
   

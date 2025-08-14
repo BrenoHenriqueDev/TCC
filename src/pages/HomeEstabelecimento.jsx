@@ -94,7 +94,7 @@ const HomeEstabelecimento = () => {
 
         {/* 3. Agendamentos */}
         <div
-          className="home-estabelecimento-card"
+          className="home-estabelecimento-card d-flex"
           onMouseEnter={(e) => handleCardHover(e, true)}
           onMouseLeave={(e) => handleCardHover(e, false)}
           onClick={() => navigate("/visualizar-agendamentos")}
