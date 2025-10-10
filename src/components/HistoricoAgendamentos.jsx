@@ -1,11 +1,11 @@
-import React from "react";
-import { FaHistory } from "react-icons/fa";
-import "../css/HistoricoAgendamentos.css";
+import React from 'react';
+import { FaHistory } from 'react-icons/fa';
+import '../css/HistoricoAgendamentos.css';
 
 const statusColors = {
-  Pendente: "historico-status historico-status-pendente",
-  Concluído: "historico-status historico-status-concluido",
-  Cancelado: "historico-status historico-status-cancelado",
+  Pendente: 'historico-status historico-status-pendente',
+  Concluído: 'historico-status historico-status-concluido',
+  Cancelado: 'historico-status historico-status-cancelado',
 };
 
 const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
@@ -38,14 +38,12 @@ const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
             <tr key={a.id} className="historico-table-row">
               <td className="historico-td historico-td-bold">{a.data}</td>
               <td className="historico-td">{a.horario}</td>
-              <td className="historico-td">{a.local}</td>
+              <td className="historico-td">{a.nomePonto || a.local}</td>
               <td className="historico-td">
                 {a.tipos && a.tipos.length > 0 ? (
                   <span>
-                    {a.tipos.join(", ")}
-                    {a.tipos.includes("Outros") && a.outros
-                      ? ` - ${a.outros}`
-                      : ""}
+                    {a.tipos.join(', ')}
+                    {a.tipos.includes('Outros') && a.outros ? ` - ${a.outros}` : ''}
                   </span>
                 ) : (
                   <span className="historico-td-empty">-</span>
@@ -69,12 +67,12 @@ const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
                 )}
               </td>
               <td className="historico-td">
-                <span className={statusColors[a.status] || "historico-status"}>
+                <span className={statusColors[a.status] || 'historico-status'}>
                   {a.status}
                 </span>
               </td>
               <td className="historico-td">
-                {a.status === "Pendente" && (
+                {a.status === 'Pendente' && (
                   <button
                     onClick={() => onCancelar(a.id)}
                     className="historico-btn-cancelar"

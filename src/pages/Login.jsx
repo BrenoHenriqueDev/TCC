@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/HookLogin";
 import "../css/Login.css";
+import UsuarioService from "../services/UsuarioService";
 
-function Login() {
+  function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
@@ -13,70 +14,65 @@ function Login() {
   });
   const [erro, setErro] = useState("");
 
-  // Carregar e-mail e senha salvos quando a página carrega
+  // Na montagem, buscar dados do usuário lembrado no backend
   useEffect(() => {
-    const emailSalvo = localStorage.getItem("emailLembrado");
-    const senhaSalva = localStorage.getItem("senhaLembrada");
-    const lembrarSalvo = localStorage.getItem("lembrarUsuario");
-    
-    if (emailSalvo && senhaSalva && lembrarSalvo === "true") {
-      setFormData(prev => ({
-        ...prev,
-        email: emailSalvo,
-        senha: senhaSalva,
-        lembrar: true
-      }));
-    }
+    const carregarUsuarioLembrado = async () => {
+      try {
+        const usuario = await UsuarioService.signin();
+        if (usuario && usuario.lembrar) {
+          setFormData(prev => ({
+            ...prev,
+            email: usuario.email,
+            senha: usuario.senha,
+          }));
+        }
+      } catch (error) {
+        console.error("Erro ao buscar usuário lembrado", error);
+      }
+    };
+
+    carregarUsuarioLembrado();
   }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
     setErro("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErro("");
-    // Busca o usuário em ambos os tipos
-    const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
-    const estabelecimentos = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    const usuario = usuarios.find((u) => u.email === formData.email);
-    const estabelecimento = estabelecimentos.find((e) => e.email === formData.email);
-    let encontrado = null;
-    let tipo = null;
-    if (usuario && usuario.senha === formData.senha) {
-      encontrado = usuario;
-      tipo = "usuario";
-    } else if (estabelecimento && estabelecimento.senha === formData.senha) {
-      encontrado = estabelecimento;
-      tipo = "estabelecimento";
-    }
-    if (encontrado) {
-      // Salvar ou remover e-mail e senha baseado na opção "lembrar-me"
-      if (formData.lembrar) {
-        localStorage.setItem("emailLembrado", formData.email);
-        localStorage.setItem("senhaLembrada", formData.senha);
-        localStorage.setItem("lembrarUsuario", "true");
-      } else {
-        localStorage.removeItem("emailLembrado");
-        localStorage.removeItem("senhaLembrada");
-        localStorage.removeItem("lembrarUsuario");
-      }
 
-      // Salva o usuário logado
-      localStorage.setItem("usuarioLogado", JSON.stringify({ email: encontrado.email, tipo }));
-      login(tipo); // Atualiza o estado de autenticação
-      alert("Login realizado com sucesso!");
-      if (tipo === "estabelecimento") {
-        navigate("/painel-estabelecimento");
+    try {
+      const usuario = await UsuarioService.signin(formData.email, formData.senha);
+
+      if (usuario) {
+        // Aqui você pode avisar o backend para salvar ou remover a preferência "lembrar"
+        if (formData.lembrar) {
+          await http.mainInstance.post(API_URL + "usuario/salvar", { email: formData.email });
+        } else {
+          await http.mainInstance.post(API_URL + "usuario/salvar", { email: formData.email });
+        }
+
+        // Salvar dados mínimos no localStorage (sem senha)
+        localStorage.setItem("usuarioLogado", JSON.stringify({ email: usuario.email, tipo: usuario.tipo }));
+
+        login(usuario.tipo);
+        alert("Login realizado com sucesso!");
+
+        if (usuario.tipo === "estabelecimento") {
+          navigate("/painel-estabelecimento");
+        } else {
+          navigate("/");
+        }
       } else {
-        navigate("/");
+        setErro("E-mail ou senha incorretos.");
       }
-    } else {
+    } catch (error) {
       setErro("E-mail ou senha incorretos.");
     }
   };

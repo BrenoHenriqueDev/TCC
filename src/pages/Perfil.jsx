@@ -17,33 +17,8 @@ function Perfil() {
   const [usuario, setUsuario] = useState(null);
   const [modalAberto, setModalAberto] = useState(null);
   const [agendamentos, setAgendamentos] = useState([]);
-  const handleDelete = () => {
-    if (!usuario) return;
-  
-    const chave = usuario.tipo === "usuario" ? "usuarios" : "estabelecimentos";
-    const lista = JSON.parse(localStorage.getItem(chave)) || [];
-  
-    // Remove o usuário atual da lista
-    const novaLista = lista.filter((u) => u.email !== usuario.email);
-    localStorage.setItem(chave, JSON.stringify(novaLista));
-  
-    // Remove agendamentos ou pontos cadastrados
-    if (usuario.tipo === "usuario") {
-      localStorage.removeItem(`agendamentos_${usuario.email}`);
-    } else {
-      localStorage.removeItem(`pontos_${usuario.email}`);
-    }
-  
-    // Remove o login atual
-    localStorage.removeItem("usuarioLogado");
-  
-    // Fecha o modal
-    setModalAberto(null);
-  
-    // Redireciona (exemplo para uma página de login)
-    window.location.href = "/login"; // Ajuste a rota conforme seu app
-  };
-  
+  const [pontosCadastrados, setPontosCadastrados] = useState([]);
+
 
   useEffect(() => {
     // Busca o usuário logado no localStorage
@@ -94,6 +69,33 @@ function Perfil() {
       </div>
     );
   }
+
+  const handleDelete = () => {
+    if (!usuario) return;
+  
+    const chave = usuario.tipo === "usuario" ? "usuarios" : "estabelecimentos";
+    const lista = JSON.parse(localStorage.getItem(chave)) || [];
+  
+    // Remove o usuário atual da lista
+    const novaLista = lista.filter((u) => u.email !== usuario.email);
+    localStorage.setItem(chave, JSON.stringify(novaLista));
+  
+    // Remove agendamentos ou pontos cadastrados
+    if (usuario.tipo === "usuario") {
+      localStorage.removeItem(`agendamentos_${usuario.email}`);
+    } else {
+      localStorage.removeItem(`pontos_${usuario.email}`);
+    }
+  
+    // Remove o login atual
+    localStorage.removeItem("usuarioLogado");
+  
+    // Fecha o modal
+    setModalAberto(null);
+  
+    // Redireciona (exemplo para uma página de login)
+    window.location.href = "/login"; // Ajuste a rota conforme seu app
+  };
 
   return (
     <div className="perfil-container">

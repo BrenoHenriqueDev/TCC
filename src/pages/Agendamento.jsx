@@ -1,6 +1,7 @@
 import { useState } from "react";
 import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
 import "../css/Agendamento.css";
+import ColetaService from "../services/ColetaService";
 
 function buscarPontosColeta() {
   // Busca todos os pontos de todos os estabelecimentos

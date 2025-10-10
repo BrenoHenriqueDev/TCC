@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/HookLogin";
 import "../css/CadastroUnificado.css";
+import UsuarioService from '../services/UsuarioService.js';
 
 function CadastroUnificado() {
-  const [tipoCadastro, setTipoCadastro] = useState("usuario"); // "usuario" ou "estabelecimento"
+  const [tipoCadastro, setTipoCadastro] = useState("usuario", "estabelecimento"); // "usuario" ou "estabelecimento"
   const [form, setForm] = useState({
     nome: "",
     nomeEstabelecimento: "",
@@ -29,7 +30,7 @@ function CadastroUnificado() {
         setForm((prev) => ({ ...prev, endereco: enderecoCompleto }));
       }
     } catch (error) {
-      // Não faz nada se der erro
+      alert("CEP não encontrado");
     }
   };
 
@@ -78,46 +79,32 @@ function CadastroUnificado() {
     return novosErros;
   };
 
-  // Salva o cadastro no localStorage
-  const salvarCadastro = () => {
-    const chave = tipoCadastro === "usuario" ? "usuarios" : "estabelecimentos";
-    const lista = JSON.parse(localStorage.getItem(chave)) || [];
-    const novoCadastro = { ...form };
-    lista.push(novoCadastro);
-    localStorage.setItem(chave, JSON.stringify(lista));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const validacao = validar();
-    setErros(validacao);
-    if (Object.keys(validacao).length === 0) {
-      salvarCadastro();
-      // Salva o e-mail e tipo do usuário logado
-      localStorage.setItem("usuarioLogado", JSON.stringify({ email: form.email, tipo: tipoCadastro }));
-      const mensagem =
-        tipoCadastro === "usuario"
-          ? "Cadastro de usuário realizado com sucesso!"
-          : "Cadastro de estabelecimento realizado com sucesso!";
-      alert(mensagem);
-      setForm({
-        nome: "",
-        nomeEstabelecimento: "",
-        cnpj: "",
-        endereco: "",
-        cep: "",
-        email: "",
-        senha: "",
-        confirmarSenha: "",
-      });
-      login();
-      if (tipoCadastro === "estabelecimento") {
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  const validacao = validar();
+  setErros(validacao);
+  if (Object.keys(validacao).length === 0) {
+    try {
+      if (tipoCadastro === "usuario") {
+        // Chama o endpoint do backend para cadastro
+        await UsuarioService.signup(form.nome, form.email, form.senha, form.confirmarSenha);
+        alert("Cadastro de usuário realizado com sucesso!");
+        login();
+        navigate("/"); // redireciona para home (ou outra página)
+      } else if (tipoCadastro === "estabelecimento") {
+        alert("Cadastro de estabelecimento realizado com sucesso!");
+        login();
         navigate("/painel-estabelecimento");
-      } else {
-        navigate("/");
       }
+      limparFormulario();
+    } catch (error) {
+      // Trate erros da API aqui (ex: email duplicado, erro de servidor, etc)
+      alert("Erro ao realizar cadastro. Tente novamente.");
+      console.error(error);
     }
-  };
+  }
+};
+
 
   const limparFormulario = () => {
     setForm({
