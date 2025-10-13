@@ -56,11 +56,13 @@ const reativar = (id) => {
   return http.multipartInstance.put(API_URL + `reativar/${id}`);
 };
 
-const alterarSenha = (id, data) => {
+const alterarSenha = async (id, senhaAtual, novaSenha) => {
   const formData = new FormData();
-  formData.append("senha", data.senha);
-
-  return http.mainInstance.put(API_URL + `alterarSenha/${id}`, formData);
+  formData.append('senhaAtual', senhaAtual);
+  formData.append('novaSenha', novaSenha);
+  
+  console.log('UsuarioService - alterarSenha:', { id, senhaAtual, novaSenha });
+  return http.multipartInstance.put(API_URL + `alterarSenha/${id}`, formData);
 };
 
 const findByNome = (nome) => {

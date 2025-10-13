@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import React, { useEffect, useState } from "react";
 import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
+import PontosColeta from "../components/PontosColeta";
 import "../css/Perfil.css";
 import ModalAlterarSenha from "./AlterarSenha";
 import ModalEditarInfo from "../components/EditarInfo";
@@ -41,21 +42,6 @@ function Perfil() {
 
     fetchUsuario();
   }, []);
-
-  // Função para cancelar agendamento
-  // const handleCancelar = (id) => {
-  //   const novos = agendamentos.map((a) =>
-  //     a.id === id ? { ...a, status: "Cancelado" } : a
-  //   );
-  //   setAgendamentos(novos);
-  //   // Atualiza no localStorage
-  //   if (usuario && usuario.email) {
-  //     localStorage.setItem(
-  //       `agendamentos_${usuario.email}`,
-  //       JSON.stringify(novos)
-  //     );
-  //   }
-  // };
 
   const handleDelete = async () => {
     // Torne a função assíncrona
@@ -178,44 +164,42 @@ function Perfil() {
             {usuario.nivelAcesso === "USER" ? (
               <HistoricoAgendamentos />
             ) : (
-              <div className="perfil-pontos-cadastrados">
-                <h2 className="perfil-pontos-title">
-                  📍 Pontos de Coleta Cadastrados
-                </h2>
-                <p className="perfil-pontos-empty">
-                  Gerencie seus pontos no painel da farmácia.
-                </p>
-              </div>
+              <PontosColeta />
             )}
+          </div>
+        </div>
+
+        {/* Configurações */}
+        <div className="perfil-config-box">
+          <h2 className="perfil-config-title">
+            <FaCog className="perfil-config-icon" />
+            Configurações
+          </h2>
+          <div className="perfil-config-list">
+            <button
+              className="perfil-config-btn"
+              onClick={() => setModalAberto("alterarSenha")}
+            >
+              Alterar Senha
+            </button>
+            <button
+              className="perfil-config-btn perfil-config-btn-danger"
+              onClick={() => setModalAberto("excluirConta")}
+            >
+              Excluir Conta
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Configurações */}
-      <div className="perfil-config-box">
-        <h2 className="perfil-config-title">
-          <FaCog className="perfil-config-icon" />
-          Configurações
-        </h2>
-        <div className="perfil-config-list">
-          <button
-            className="perfil-config-btn"
-            onClick={() => setModalAberto("alterarSenha")}
-          >
-            Alterar Senha
-          </button>
-          <button
-            className="perfil-config-btn perfil-config-btn-danger"
-            onClick={() => setModalAberto("excluirConta")}
-          >
-            Excluir Conta
-          </button>
-        </div>
-      </div>
       {modalAberto === "alterarSenha" && (
         <ModalAlterarSenha
           aberto={true}
-          onClose={() => setModalAberto(false)}
+          onClose={() => setModalAberto(null)}
+          onSucesso={() => {
+            console.log("Senha alterada com sucesso!");
+            setModalAberto(null);
+          }}
         />
       )}
 

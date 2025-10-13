@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../css/AlterarSenha.css";
+import UsuarioService from "../services/UsuarioService";
 
 const ModalAlterarSenha = ({ aberto, onClose, onSucesso }) => {
   const [senhaAtual, setSenhaAtual] = useState("");
@@ -10,47 +11,50 @@ const ModalAlterarSenha = ({ aberto, onClose, onSucesso }) => {
 
   if (!aberto) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErro("");
     setSucesso("");
-    // Busca usuário logado
-    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!logado) {
+    
+    const logado = UsuarioService.getCurrentUser();
+    if (!logado || !logado.id) {
       setErro("Usuário não logado.");
       return;
     }
-    const chave = logado.tipo === "usuario" ? "usuarios" : "estabelecimentos";
-    const lista = JSON.parse(localStorage.getItem(chave)) || [];
-    const idx = lista.findIndex((item) => item.email === logado.email);
-    if (idx === -1) {
-      setErro("Usuário não encontrado.");
-      return;
-    }
-    if (lista[idx].senha !== senhaAtual) {
-      setErro("Senha atual incorreta.");
-      return;
-    }
+    
     if (novaSenha.length < 6) {
       setErro("A nova senha deve ter pelo menos 6 caracteres.");
       return;
     }
+    
     if (novaSenha !== confirmarNovaSenha) {
       setErro("A confirmação da nova senha não confere.");
       return;
     }
-    // Atualiza a senha
-    lista[idx].senha = novaSenha;
-    localStorage.setItem(chave, JSON.stringify(lista));
-    setSucesso("Senha alterada com sucesso!");
-    setSenhaAtual("");
-    setNovaSenha("");
-    setConfirmarNovaSenha("");
-    if (onSucesso) onSucesso();
-    setTimeout(() => {
-      setSucesso("");
-      onClose();
-    }, 1500);
+    
+    try {
+      console.log('Dados enviados:', { id: logado.id, senhaAtual, novaSenha });
+      await UsuarioService.alterarSenha(logado.id, senhaAtual, novaSenha);
+      setSucesso("Senha alterada com sucesso!");
+      setSenhaAtual("");
+      setNovaSenha("");
+      setConfirmarNovaSenha("");
+      if (onSucesso) onSucesso();
+      setTimeout(() => {
+        setSucesso("");
+        onClose();
+      }, 1500);
+    } catch (error) {
+      console.error('Erro completo:', error);
+      console.error('Response:', error.response);
+      console.error('Response data:', error.response?.data);
+      if (error.response?.status === 400) {
+        const mensagemErro = error.response?.data?.message || error.response?.data || "Senha atual incorreta.";
+        setErro(mensagemErro);
+      } else {
+        setErro("Erro ao alterar senha. Tente novamente.");
+      }
+    }
   };
 
   return (

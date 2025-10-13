@@ -16,6 +16,10 @@ const ColetaService = {
     return axios.get(`${API_URL}/estabelecimento/${estabelecimentoId}`);
   },
 
+  listarPorUsuario: (usuarioId) => {
+    return axios.get(`${API_URL}/usuario/${usuarioId}`);
+  },
+
   buscarPorId: (id) => {
     return axios.get(`${API_URL}/${id}`);
   },

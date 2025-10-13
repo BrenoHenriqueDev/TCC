@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import '../css/HistoricoAgendamentos.css';
 import UsuarioService from '../services/UsuarioService';
+import ColetaService from '../services/ColetaService';
 
 const statusColors = {
   Pendente: 'historico-status historico-status-pendente',
@@ -17,14 +18,27 @@ const HistoricoAgendamentos = () => {
     const carregarAgendamentos = async () => {
       try {
         const usuario = UsuarioService.getCurrentUser();
+        console.log('Usuario logado para agendamentos:', usuario);
         if (usuario && usuario.id) {
-          // Aqui você pode implementar uma chamada para o backend
-          // Por enquanto, vamos usar dados mockados ou localStorage
-          const agendamentosSalvos = JSON.parse(localStorage.getItem(`agendamentos_${usuario.id}`)) || [];
-          setAgendamentos(agendamentosSalvos);
+          try {
+            // Tenta buscar por usuário específico
+            const response = await ColetaService.listarPorUsuario(usuario.id);
+            console.log('Resposta ColetaService por usuário:', response);
+            setAgendamentos(response.data);
+          } catch (userError) {
+            console.log('Endpoint por usuário não existe, usando listarTodas e filtrando');
+            // Se não existir endpoint específico, usa listarTodas e filtra
+            const response = await ColetaService.listarTodas();
+            console.log('Resposta ColetaService todas:', response);
+            const coletasUsuario = response.data.filter(coleta => 
+              coleta.usuarioId === usuario.id || coleta.usuario?.id === usuario.id
+            );
+            setAgendamentos(coletasUsuario);
+          }
         }
       } catch (error) {
         console.error('Erro ao carregar agendamentos:', error);
+        console.error('Detalhes do erro:', error.response);
       } finally {
         setLoading(false);
       }
@@ -33,15 +47,19 @@ const HistoricoAgendamentos = () => {
     carregarAgendamentos();
   }, []);
 
-  const onCancelar = (id) => {
-    const novosAgendamentos = agendamentos.map(a => 
-      a.id === id ? { ...a, status: 'Cancelado' } : a
-    );
-    setAgendamentos(novosAgendamentos);
-    
-    const usuario = UsuarioService.getCurrentUser();
-    if (usuario && usuario.id) {
-      localStorage.setItem(`agendamentos_${usuario.id}`, JSON.stringify(novosAgendamentos));
+  const onCancelar = async (id) => {
+    try {
+      const coletaAtualizada = agendamentos.find(a => a.id === id);
+      if (coletaAtualizada) {
+        await ColetaService.atualizarColeta(id, { ...coletaAtualizada, status: 'Cancelado' });
+        const novosAgendamentos = agendamentos.map(a => 
+          a.id === id ? { ...a, status: 'Cancelado' } : a
+        );
+        setAgendamentos(novosAgendamentos);
+      }
+    } catch (error) {
+      console.error('Erro ao cancelar agendamento:', error);
+      alert('Erro ao cancelar agendamento. Tente novamente.');
     }
   };
 
@@ -84,11 +102,13 @@ const HistoricoAgendamentos = () => {
           )}
           {agendamentos.map((a) => (
             <tr key={a.id} className="historico-table-row">
-              <td className="historico-td historico-td-bold">{a.data}</td>
-              <td className="historico-td">{a.horario}</td>
-              <td className="historico-td">{a.nomePonto || a.local}</td>
+              <td className="historico-td historico-td-bold">{a.dataColeta || a.data}</td>
+              <td className="historico-td">{a.horarioColeta || a.horario}</td>
+              <td className="historico-td">{a.estabelecimento?.nome || a.nomePonto || a.local}</td>
               <td className="historico-td">
-                {a.tipos && a.tipos.length > 0 ? (
+                {a.tiposMedicamentos && a.tiposMedicamentos.length > 0 ? (
+                  <span>{a.tiposMedicamentos.join(', ')}</span>
+                ) : a.tipos && a.tipos.length > 0 ? (
                   <span>
                     {a.tipos.join(', ')}
                     {a.tipos.includes('Outros') && a.outros ? ` - ${a.outros}` : ''}
@@ -98,7 +118,13 @@ const HistoricoAgendamentos = () => {
                 )}
               </td>
               <td className="historico-td">
-                {a.retirada ? (
+                {a.enderecoColeta ? (
+                  <span className="historico-retirada-info">
+                    <span className="historico-retirada-sim">Sim</span>
+                    <br />
+                    {a.enderecoColeta}
+                  </span>
+                ) : a.retirada ? (
                   <span className="historico-retirada-info">
                     <span className="historico-retirada-sim">Sim</span>
                     <br />
@@ -115,12 +141,12 @@ const HistoricoAgendamentos = () => {
                 )}
               </td>
               <td className="historico-td">
-                <span className={statusColors[a.status] || 'historico-status'}>
-                  {a.status}
+                <span className={statusColors[a.statusColeta || a.status] || 'historico-status'}>
+                  {a.statusColeta || a.status}
                 </span>
               </td>
               <td className="historico-td">
-                {a.status === 'Pendente' && (
+                {(a.statusColeta === 'Pendente' || a.status === 'Pendente') && (
                   <button
                     onClick={() => onCancelar(a.id)}
                     className="historico-btn-cancelar"

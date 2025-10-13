@@ -243,66 +243,59 @@
   text-align: center;
   font-style: italic;
   padding: 2rem 0;
+  margin: 0;
 }
 
-.perfil-pontos-list {
+.perfil-pontos-lista {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
 }
 
 .perfil-ponto-item {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s ease;
 }
 
 .perfil-ponto-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
 }
 
-.perfil-ponto-nome {
+.perfil-ponto-info h4 {
   color: #fff;
   font-size: 1.1rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem 0;
 }
 
-.perfil-ponto-endereco {
+.perfil-ponto-info p {
   color: #e2e8f0;
   font-size: 0.9rem;
-  margin-bottom: 0.25rem;
-}
-
-.perfil-ponto-telefone {
-  color: #94a3b8;
-  font-size: 0.85rem;
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.5rem 0;
 }
 
 .perfil-ponto-status {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.perfil-ponto-status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
+  display: inline-block;
 }
 
-.perfil-ponto-status-badge.ativo {
+.perfil-ponto-status.ativo {
   background: rgba(34, 197, 94, 0.2);
   color: #34d399;
   border: 1px solid rgba(34, 197, 94, 0.3);
 }
 
-.perfil-ponto-status-badge.inativo {
+.perfil-ponto-status.inativo {
   background: rgba(239, 68, 68, 0.2);
   color: #f87171;
   border: 1px solid rgba(239, 68, 68, 0.3);
