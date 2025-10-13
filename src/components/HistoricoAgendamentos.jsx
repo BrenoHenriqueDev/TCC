@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaHistory } from 'react-icons/fa';
 import '../css/HistoricoAgendamentos.css';
+import UsuarioService from '../services/UsuarioService';
 
 const statusColors = {
   Pendente: 'historico-status historico-status-pendente',
@@ -8,7 +9,54 @@ const statusColors = {
   Cancelado: 'historico-status historico-status-cancelado',
 };
 
-const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
+const HistoricoAgendamentos = () => {
+  const [agendamentos, setAgendamentos] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const carregarAgendamentos = async () => {
+      try {
+        const usuario = UsuarioService.getCurrentUser();
+        if (usuario && usuario.id) {
+          // Aqui você pode implementar uma chamada para o backend
+          // Por enquanto, vamos usar dados mockados ou localStorage
+          const agendamentosSalvos = JSON.parse(localStorage.getItem(`agendamentos_${usuario.id}`)) || [];
+          setAgendamentos(agendamentosSalvos);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar agendamentos:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    carregarAgendamentos();
+  }, []);
+
+  const onCancelar = (id) => {
+    const novosAgendamentos = agendamentos.map(a => 
+      a.id === id ? { ...a, status: 'Cancelado' } : a
+    );
+    setAgendamentos(novosAgendamentos);
+    
+    const usuario = UsuarioService.getCurrentUser();
+    if (usuario && usuario.id) {
+      localStorage.setItem(`agendamentos_${usuario.id}`, JSON.stringify(novosAgendamentos));
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="historico-container">
+        <h2 className="historico-title">
+          <FaHistory className="historico-title-icon" /> Histórico de Agendamentos
+        </h2>
+        <p>Carregando...</p>
+      </div>
+    );
+  }
+
+  return (
   <div className="historico-container">
     <h2 className="historico-title">
       <FaHistory className="historico-title-icon" /> Histórico de Agendamentos
@@ -87,6 +135,7 @@ const HistoricoAgendamentos = ({ agendamentos, onCancelar }) => (
       </table>
     </div>
   </div>
-);
+  );
+};
 
 export default HistoricoAgendamentos;

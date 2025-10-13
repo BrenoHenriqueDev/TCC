@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import EstabelecimentoService from "../services/EstabelecimentoService";
+import UsuarioService from "../services/UsuarioService";
 import "../css/CadastrarPontoColeta.css";
 
 const CadastrarPontoColeta = () => {
@@ -7,15 +9,14 @@ const CadastrarPontoColeta = () => {
   const [form, setForm] = useState({
     nome: "",
     endereco: "",
+    numero: "",
     cep: "",
     bairro: "",
     cidade: "",
     estado: "",
     telefone: "",
     tiposMedicamentos: [],
-    FazRetirada: true,
-    aceitaAgendamento: false,
-    retiraEmCasa: false,
+    tipoServico: "RECEBIMENTO",
     horarioFuncionamento: {
       segunda: { inicio: "", fim: "", aberto: true },
       terca: { inicio: "", fim: "", aberto: true },
@@ -31,62 +32,21 @@ const CadastrarPontoColeta = () => {
 
   useEffect(() => {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!logado || logado.tipo !== "estabelecimento") {
+    if (!logado || logado.nivelAcesso !== "FARMACIA") {
       navigate("/painel-estabelecimento");
     }
   }, [navigate]);
 
   // Tipos de medicamentos disponíveis
   const tiposDisponiveis = [
-    "Comprimidos e cápsulas",
-    "Xaropes",
-    "Pomadas / cremes",
-    "Injetáveis",
-    "Medicamentos controlados",
-    "Medicamentos vencidos",
-    "Embalagens vazias",
+    { value: "COMPRIMIDOS", label: "Comprimidos e cápsulas" },
+    { value: "XAROPES", label: "Xaropes" },
+    { value: "POMADAS", label: "Pomadas / cremes" },
+    { value: "INJETAVEIS", label: "Injetáveis" },
+    { value: "CONTROLADOS", label: "Medicamentos controlados" },
   ];
 
-  // Horários pré-definidos para facilitar a seleção
-  const horariosDisponiveis = [
-    "06:00",
-    "06:30",
-    "07:00",
-    "07:30",
-    "08:00",
-    "08:30",
-    "09:00",
-    "09:30",
-    "10:00",
-    "10:30",
-    "11:00",
-    "11:30",
-    "12:00",
-    "12:30",
-    "13:00",
-    "13:30",
-    "14:00",
-    "14:30",
-    "15:00",
-    "15:30",
-    "16:00",
-    "16:30",
-    "17:00",
-    "17:30",
-    "18:00",
-    "18:30",
-    "19:00",
-    "19:30",
-    "20:00",
-    "20:30",
-    "21:00",
-    "21:30",
-    "22:00",
-    "22:30",
-    "23:00",
-    "23:30",
-    "00:00",
-  ];
+
 
   // Buscar endereço pelo CEP
   const buscarEnderecoPorCep = async (cep) => {
@@ -143,12 +103,7 @@ const CadastrarPontoColeta = () => {
           },
         },
       }));
-    } else if (name === "tiposMedicamentos") {
-      const tipos = Array.from(
-        e.target.selectedOptions,
-        (option) => option.value
-      );
-      setForm((prev) => ({ ...prev, tiposMedicamentos: tipos }));
+
     } else {
       setForm((prev) => ({
         ...prev,
@@ -163,6 +118,7 @@ const CadastrarPontoColeta = () => {
     if (!form.nome.trim()) novosErros.nome = "Nome do ponto é obrigatório.";
     if (!form.endereco.trim()) novosErros.endereco = "Endereço é obrigatório.";
     if (!form.cep.trim()) novosErros.cep = "CEP é obrigatório.";
+    if (!form.numero.trim()) novosErros.numero = "Número é obrigatório.";
     if (!form.telefone.trim()) novosErros.telefone = "Telefone é obrigatório.";
     if (form.tiposMedicamentos.length === 0)
       novosErros.tiposMedicamentos =
@@ -171,31 +127,38 @@ const CadastrarPontoColeta = () => {
     return novosErros;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const validacao = validar();
     setErros(validacao);
 
     if (Object.keys(validacao).length === 0) {
-      // Salvar no localStorage
-      const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-      const pontosSalvos =
-        JSON.parse(localStorage.getItem(`pontos_${logado.email}`)) || [];
-      const novoPonto = {
-        ...form,
-        id: Date.now(),
-        estabelecimentoEmail: logado.email,
-        dataCadastro: new Date().toISOString(),
-        ativo: true,
-      };
-      pontosSalvos.push(novoPonto);
-      localStorage.setItem(
-        `pontos_${logado.email}`,
-        JSON.stringify(pontosSalvos)
-      );
+      try {
+        const usuario = UsuarioService.getCurrentUser();
 
-      alert("Ponto de coleta cadastrado com sucesso!");
-      navigate("/painel-estabelecimento");
+        if (!usuario || !usuario.id) {
+          alert("Usuário não encontrado. Faça login novamente.");
+          return;
+        }
+
+        const estabelecimento = {
+          nome: form.nome,
+          info: form.observacoes || "Ponto de coleta de medicamentos",
+          cep: form.cep,
+          numero: form.numero,
+          complemento: form.endereco,
+          telefone: form.telefone,
+          tipo: "FARMACIA",
+          coleta: form.tipoServico // RECEBIMENTO, RETIRA ou AMBOS
+        };
+
+        await EstabelecimentoService.cadastrar(usuario.id, estabelecimento);
+        alert("Estabelecimento cadastrado com sucesso!");
+        navigate("/painel-estabelecimento");
+      } catch (error) {
+        console.error("Erro:", error);
+        alert("Erro ao cadastrar ponto de coleta.");
+      }
     }
   };
 
@@ -285,6 +248,22 @@ const CadastrarPontoColeta = () => {
 
             <div className="cadastrar-ponto-grid">
               <div>
+                <label className="cadastrar-ponto-label">Número *</label>
+                <input
+                  type="text"
+                  name="numero"
+                  value={form.numero}
+                  onChange={handleChange}
+                  className={`cadastrar-ponto-input ${
+                    erros.numero ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="123"
+                />
+                {erros.numero && (
+                  <span className="cadastrar-ponto-error">{erros.numero}</span>
+                )}
+              </div>
+              <div>
                 <label className="cadastrar-ponto-label">Bairro</label>
                 <input
                   type="text"
@@ -295,55 +274,77 @@ const CadastrarPontoColeta = () => {
                   placeholder="Bairro"
                 />
               </div>
-              <div>
-                <label className="cadastrar-ponto-label">Telefone *</label>
-                <input
-                  type="text"
-                  name="telefone"
-                  value={form.telefone}
-                  onChange={handleChange}
-                  className={`cadastrar-ponto-input ${
-                    erros.telefone ? "cadastrar-ponto-input-error" : ""
-                  }`}
-                  placeholder="(11) 99999-9999"
-                />
-                {erros.telefone && (
-                  <span className="cadastrar-ponto-error">
-                    {erros.telefone}
-                  </span>
-                )}
-              </div>
+            </div>
+            
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">Telefone *</label>
+              <input
+                type="text"
+                name="telefone"
+                value={form.telefone}
+                onChange={handleChange}
+                className={`cadastrar-ponto-input ${
+                  erros.telefone ? "cadastrar-ponto-input-error" : ""
+                }`}
+                placeholder="(11) 99999-9999"
+              />
+              {erros.telefone && (
+                <span className="cadastrar-ponto-error">
+                  {erros.telefone}
+                </span>
+              )}
             </div>
           </div>
 
-          {/* Tipos de medicamentos */}
+          {/* Tipo de medicamento */}
           <div className="cadastrar-ponto-section">
             <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-green">
               Tipos de Medicamentos Aceitos *
             </h3>
-            <select
-              name="tiposMedicamentos"
-              multiple
-              value={form.tiposMedicamentos}
-              onChange={handleChange}
-              className={`cadastrar-ponto-select ${
-                erros.tiposMedicamentos ? "cadastrar-ponto-input-error" : ""
-              }`}
-            >
-              {tiposDisponiveis.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </select>
-            <p className="cadastrar-ponto-help-text">
-              Pressione Ctrl (ou Cmd) para selecionar múltiplos tipos
-            </p>
-            {erros.tiposMedicamentos && (
-              <span className="cadastrar-ponto-error">
-                {erros.tiposMedicamentos}
-              </span>
-            )}
+            <div className="cadastrar-ponto-field">
+              <div className="cadastrar-ponto-checkbox-grid">
+                {tiposDisponiveis.map((tipo) => (
+                  <label
+                    key={tipo.value}
+                    className="cadastrar-ponto-checkbox-item"
+                  >
+                    <input
+                      type="checkbox"
+                      value={tipo.value}
+                      checked={form.tiposMedicamentos.includes(tipo.value)}
+                      onChange={(e) => {
+                        const { value, checked } = e.target;
+                        if (checked) {
+                          setForm((prev) => ({
+                            ...prev,
+                            tiposMedicamentos: [
+                              ...prev.tiposMedicamentos,
+                              value,
+                            ],
+                          }));
+                        } else {
+                          setForm((prev) => ({
+                            ...prev,
+                            tiposMedicamentos: prev.tiposMedicamentos.filter(
+                              (t) => t !== value
+                            ),
+                          }));
+                        }
+                      }}
+                      className="cadastrar-ponto-checkbox"
+                    />
+                    <span className="cadastrar-ponto-checkbox-text">
+                      {tipo.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              {erros.tiposMedicamentos && (
+                <span className="cadastrar-ponto-error">
+                  {erros.tiposMedicamentos}
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Horário de funcionamento */}
@@ -352,46 +353,44 @@ const CadastrarPontoColeta = () => {
               Horário de Funcionamento
             </h3>
             {Object.entries(form.horarioFuncionamento).map(([dia, horario]) => (
-              <div key={dia} className="cadastrar-ponto-horario-grid">
-                <span className="cadastrar-ponto-dia">{dia}</span>
-                <select
-                  name={`horario_${dia}_inicio`}
-                  value={horario.inicio}
-                  onChange={handleChange}
-                  disabled={!horario.aberto}
-                  className="cadastrar-ponto-time-select"
-                >
-                  <option value="">Início</option>
-                  {horariosDisponiveis.map((hora) => (
-                    <option key={hora} value={hora}>
-                      {hora}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name={`horario_${dia}_fim`}
-                  value={horario.fim}
-                  onChange={handleChange}
-                  disabled={!horario.aberto}
-                  className="cadastrar-ponto-time-select"
-                >
-                  <option value="">Fim</option>
-                  {horariosDisponiveis.map((hora) => (
-                    <option key={hora} value={hora}>
-                      {hora}
-                    </option>
-                  ))}
-                </select>
-                <label className="cadastrar-ponto-checkbox-label">
-                  <input
-                    type="checkbox"
-                    name={`horario_${dia}_aberto`}
-                    checked={horario.aberto}
-                    onChange={handleChange}
-                    className="cadastrar-ponto-checkbox"
-                  />
-                  Aberto
-                </label>
+              <div key={dia} className="cadastrar-ponto-horario-card">
+                <div className="cadastrar-ponto-horario-header">
+                  <span className="cadastrar-ponto-dia">{dia}</span>
+                  <label className="cadastrar-ponto-toggle">
+                    <input
+                      type="checkbox"
+                      name={`horario_${dia}_aberto`}
+                      checked={horario.aberto}
+                      onChange={handleChange}
+                      className="cadastrar-ponto-toggle-input"
+                    />
+                    <span className="cadastrar-ponto-toggle-slider"></span>
+                  </label>
+                </div>
+                {horario.aberto && (
+                  <div className="cadastrar-ponto-horario-inputs">
+                    <div className="cadastrar-ponto-time-group">
+                      <label>Abertura</label>
+                      <input
+                        type="time"
+                        name={`horario_${dia}_inicio`}
+                        value={horario.inicio}
+                        onChange={handleChange}
+                        className="cadastrar-ponto-time-input"
+                      />
+                    </div>
+                    <div className="cadastrar-ponto-time-group">
+                      <label>Fechamento</label>
+                      <input
+                        type="time"
+                        name={`horario_${dia}_fim`}
+                        value={horario.fim}
+                        onChange={handleChange}
+                        className="cadastrar-ponto-time-input"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -402,38 +401,22 @@ const CadastrarPontoColeta = () => {
               Configurações Adicionais
             </h3>
 
-            {/* Checkboxes de agendamento e retirada */}
+            {/* Tipo de serviço */}
             <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">
-                Aceita agendamento?
-              </label>
-              <input
-                type="checkbox"
-                name="aceitaAgendamento"
-                checked={form.aceitaAgendamento || false}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    aceitaAgendamento: e.target.checked,
-                  }))
-                }
-                className="cadastrar-ponto-checkbox"
-              />
-            </div>
-            <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">Retira em casa?</label>
-              <input
-                type="checkbox"
-                name="retiraEmCasa"
-                checked={form.retiraEmCasa || false}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    retiraEmCasa: e.target.checked,
-                  }))
-                }
-                className="cadastrar-ponto-checkbox"
-              />
+              <label className="cadastrar-ponto-label">Tipo de Serviço</label>
+              <select
+                name="tipoServico"
+                value={form.tipoServico}
+                onChange={handleChange}
+                className="cadastrar-ponto-input"
+              >
+                <option value="RECEBIMENTO">Apenas Recebimento</option>
+                <option value="RETIRA">Apenas Retirada em Casa</option>
+                <option value="AMBOS">Recebimento e Retirada</option>
+              </select>
+              <p className="cadastrar-ponto-help-text">
+                Escolha como o estabelecimento irá atender os clientes
+              </p>
             </div>
 
             <div>

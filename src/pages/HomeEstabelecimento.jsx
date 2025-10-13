@@ -7,13 +7,11 @@ const HomeEstabelecimento = () => {
   const [pontosDeColeta, setPontosDeColeta] = useState([]);
   const [agendamentos, setAgendamentos] = useState([]);
 
-  // Buscar dados do estabelecimento logado
-  let nome = "Estabelecimento";
+  // Buscar dados da farmácia logada
+  let nome = "Farmácia";
   const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-  if (logado && logado.tipo === "estabelecimento") {
-    const lista = JSON.parse(localStorage.getItem("estabelecimentos")) || [];
-    const est = lista.find((e) => e.email === logado.email);
-    if (est && est.nomeEstabelecimento) nome = est.nomeEstabelecimento;
+  if (logado && logado.nivelAcesso === "FARMACIA") {
+    nome = logado.nome || "Farmácia";
   }
 
   // Carregar dados do localStorage
@@ -48,7 +46,7 @@ const HomeEstabelecimento = () => {
     <div className="home-estabelecimento-container">
       {/* Cabeçalho */}
       <div className="home-estabelecimento-header">
-        <h1 className="home-estabelecimento-title">Bem-vindo(a), {nome}! 👋</h1>
+        <h1 className="home-estabelecimento-title">Bem-vindo(a), {nome}! 💊</h1>
         <p className="home-estabelecimento-subtitle">
           Gerencie seus pontos de coleta e acompanhe os agendamentos
         </p>
@@ -92,7 +90,7 @@ const HomeEstabelecimento = () => {
           </div>
         </div>
 
-        {/* 3. Agendamentos */}
+        {/* 3. Histórico */}
         <div
           className="home-estabelecimento-card d-flex"
           onMouseEnter={(e) => handleCardHover(e, true)}
@@ -100,14 +98,13 @@ const HomeEstabelecimento = () => {
           onClick={() => navigate("/visualizar-agendamentos")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-yellow">
-            📅 Agendamentos
+            📅 Histórico de Coletas
           </h2>
           <p className="home-estabelecimento-card-text">
-            Visualize e gerencie os agendamentos de coleta.
+            Visualize o histórico de coletas realizadas.
           </p>
           <div className="home-estabelecimento-card-info">
-            {agendamentos.filter((a) => a.status === "Pendente").length}{" "}
-            agendamento(s) pendente(s)
+            {agendamentos.length} coleta(s) registrada(s)
           </div>
         </div>
       </div>

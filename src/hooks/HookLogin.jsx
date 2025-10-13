@@ -4,18 +4,18 @@ const AuthContext = createContext({});
 
 export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userType, setUserType] = useState(null); // 'normal' ou 'estabelecimento'
+  const [userType, setUserType] = useState(null); // 'USER', 'FARMACIA', 'ADMIN'
 
   // Verificar se há usuário logado no localStorage ao inicializar
   useEffect(() => {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
     if (logado && logado.email) {
       setIsAuthenticated(true);
-      setUserType(logado.tipo);
+      setUserType(logado.nivelAcesso || 'USER');
     }
   }, []);
 
-  const login = (type = "normal") => {
+  const login = (type = "USER") => {
     setIsAuthenticated(true);
     setUserType(type);
   };

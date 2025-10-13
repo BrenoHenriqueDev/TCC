@@ -5,7 +5,7 @@ import "../css/CadastroUnificado.css";
 import UsuarioService from '../services/UsuarioService.js';
 
 function CadastroUnificado() {
-  const [tipoCadastro, setTipoCadastro] = useState("usuario", "estabelecimento"); // "usuario" ou "estabelecimento"
+  const [tipoCadastro] = useState("usuario"); // apenas "usuario"
   const [form, setForm] = useState({
     nome: "",
     nomeEstabelecimento: "",
@@ -29,7 +29,7 @@ function CadastroUnificado() {
         const enderecoCompleto = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''} - ${data.uf || ''}`;
         setForm((prev) => ({ ...prev, endereco: enderecoCompleto }));
       }
-    } catch (error) {
+    } catch  {
       alert("CEP não encontrado");
     }
   };
@@ -57,16 +57,7 @@ function CadastroUnificado() {
 
   const validar = () => {
     const novosErros = {};
-    if (tipoCadastro === "usuario") {
-      if (!form.nome.trim()) novosErros.nome = "Nome é obrigatório.";
-    } else if (tipoCadastro === "estabelecimento") {
-      if (!form.nomeEstabelecimento.trim())
-        novosErros.nomeEstabelecimento = "Nome do estabelecimento é obrigatório.";
-      if (!form.cnpj.trim()) novosErros.cnpj = "CNPJ é obrigatório.";
-      else if (form.cnpj.replace(/\D/g, '').length !== 14) novosErros.cnpj = "CNPJ deve ter 14 dígitos.";
-      if (!form.endereco.trim()) novosErros.endereco = "Endereço é obrigatório.";
-      if (!form.cep.trim()) novosErros.cep = "CEP é obrigatório.";
-    }
+    if (!form.nome.trim()) novosErros.nome = "Nome é obrigatório.";
     if (!form.email.trim()) novosErros.email = "E-mail é obrigatório.";
     else if (!emailValido(form.email)) novosErros.email = "E-mail inválido.";
     else if (emailJaCadastrado(form.email, tipoCadastro)) novosErros.email = "E-mail já cadastrado.";
@@ -85,20 +76,14 @@ function CadastroUnificado() {
   setErros(validacao);
   if (Object.keys(validacao).length === 0) {
     try {
-      if (tipoCadastro === "usuario") {
-        // Chama o endpoint do backend para cadastro
-        await UsuarioService.signup(form.nome, form.email, form.senha, form.confirmarSenha);
-        alert("Cadastro de usuário realizado com sucesso!");
-        login();
-        navigate("/"); // redireciona para home (ou outra página)
-      } else if (tipoCadastro === "estabelecimento") {
-        alert("Cadastro de estabelecimento realizado com sucesso!");
-        login();
-        navigate("/painel-estabelecimento");
-      }
+      const response = await UsuarioService.signup(form.nome, form.email, form.senha, { nivelAcesso: 'USER' });
+      const userData = response.data;
+      localStorage.setItem("usuarioLogado", JSON.stringify(userData));
+      alert("Cadastro realizado com sucesso!");
+      login(userData.nivelAcesso || 'USER');
+      navigate("/");
       limparFormulario();
     } catch (error) {
-      // Trate erros da API aqui (ex: email duplicado, erro de servidor, etc)
       alert("Erro ao realizar cadastro. Tente novamente.");
       console.error(error);
     }
@@ -125,30 +110,9 @@ function CadastroUnificado() {
       <div className="cadastro-unificado-box">
         <h1 className="cadastro-unificado-title">Cadastro</h1>
 
-        {/* Abas */}
-        <div className="cadastro-unificado-tabs">
-          <button
-            className={`cadastro-unificado-tab ${
-              tipoCadastro === "usuario" ? "active" : ""
-            }`}
-            onClick={() => {
-              setTipoCadastro("usuario");
-              limparFormulario();
-            }}
-          >
-            Cadastro de Usuário
-          </button>
-          <button
-            className={`cadastro-unificado-tab ${
-              tipoCadastro === "estabelecimento" ? "active" : ""
-            }`}
-            onClick={() => {
-              setTipoCadastro("estabelecimento");
-              limparFormulario();
-            }}
-          >
-            Cadastro de Estabelecimento
-          </button>
+        {/* Título único */}
+        <div className="cadastro-unificado-header">
+          <h2>Cadastro de Usuário</h2>
         </div>
 
         {/* Subtítulo */}
@@ -162,109 +126,24 @@ function CadastroUnificado() {
           onSubmit={handleSubmit}
           noValidate
         >
-          {tipoCadastro === "usuario" ? (
-            <div>
-              <label htmlFor="nome" className="cadastro-unificado-label">
-                Nome Completo
-              </label>
-              <input
-                type="text"
-                id="nome"
-                value={form.nome}
-                onChange={handleChange}
-                className={`cadastro-unificado-input${
-                  erros.nome ? " cadastro-unificado-input-error" : ""
-                }`}
-                placeholder="Digite seu nome completo"
-              />
-              {erros.nome && (
-                <p className="cadastro-unificado-error">{erros.nome}</p>
-              )}
-            </div>
-          ) : (
-            <>
-              <div>
-                <label
-                  htmlFor="nomeEstabelecimento"
-                  className="cadastro-unificado-label"
-                >
-                  Nome do Estabelecimento
-                </label>
-                <input
-                  type="text"
-                  id="nomeEstabelecimento"
-                  value={form.nomeEstabelecimento}
-                  onChange={handleChange}
-                  className={`cadastro-unificado-input${
-                    erros.nomeEstabelecimento
-                      ? " cadastro-unificado-input-error"
-                      : ""
-                  }`}
-                  placeholder="Digite o nome do estabelecimento"
-                />
-                {erros.nomeEstabelecimento && (
-                  <p className="cadastro-unificado-error">
-                    {erros.nomeEstabelecimento}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="cnpj" className="cadastro-unificado-label">
-                  CNPJ
-                </label>
-                <input
-                  type="text"
-                  id="cnpj"
-                  value={form.cnpj}
-                  onChange={handleChange}
-                  className={`cadastro-unificado-input${
-                    erros.cnpj ? " cadastro-unificado-input-error" : ""
-                  }`}
-                  placeholder="Digite o CNPJ"
-                />
-                {erros.cnpj && (
-                  <p className="cadastro-unificado-error">{erros.cnpj}</p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="cep" className="cadastro-unificado-label">
-                  CEP
-                </label>
-                <input
-                  type="text"
-                  id="cep"
-                  value={form.cep}
-                  onChange={handleChange}
-                  className={`cadastro-unificado-input${
-                    erros.cep ? " cadastro-unificado-input-error" : ""
-                  }`}
-                  placeholder="Digite o CEP"
-                  maxLength={9}
-                />
-                {erros.cep && (
-                  <p className="cadastro-unificado-error">{erros.cep}</p>
-                )}
-              </div>
-              <div>
-                <label htmlFor="endereco" className="cadastro-unificado-label">
-                  Endereço
-                </label>
-                <input
-                  type="text"
-                  id="endereco"
-                  value={form.endereco}
-                  onChange={handleChange}
-                  className={`cadastro-unificado-input${
-                    erros.endereco ? " cadastro-unificado-input-error" : ""
-                  }`}
-                  placeholder="Digite o endereço"
-                />
-                {erros.endereco && (
-                  <p className="cadastro-unificado-error">{erros.endereco}</p>
-                )}
-              </div>
-            </>
-          )}
+          <div>
+            <label htmlFor="nome" className="cadastro-unificado-label">
+              Nome Completo
+            </label>
+            <input
+              type="text"
+              id="nome"
+              value={form.nome}
+              onChange={handleChange}
+              className={`cadastro-unificado-input${
+                erros.nome ? " cadastro-unificado-input-error" : ""
+              }`}
+              placeholder="Digite seu nome completo"
+            />
+            {erros.nome && (
+              <p className="cadastro-unificado-error">{erros.nome}</p>
+            )}
+          </div>
 
           <div>
             <label htmlFor="email" className="cadastro-unificado-label">
@@ -327,9 +206,7 @@ function CadastroUnificado() {
           </div>
 
           <button type="submit" className="cadastro-unificado-btn">
-            {tipoCadastro === "usuario"
-              ? "Cadastrar Usuário"
-              : "Cadastrar Estabelecimento"}
+            Cadastrar
           </button>
         </form>
       </div>

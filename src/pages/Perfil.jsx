@@ -12,92 +12,96 @@ import "../css/Perfil.css";
 import ModalAlterarSenha from "./AlterarSenha";
 import ModalEditarInfo from "../components/EditarInfo";
 import ModalExcluirConta from "../components/ExcluirConta";
+import UsuarioService from "../services/UsuarioService";
 
 function Perfil() {
   const [usuario, setUsuario] = useState(null);
   const [modalAberto, setModalAberto] = useState(null);
-  const [agendamentos, setAgendamentos] = useState([]);
-  const [pontosCadastrados, setPontosCadastrados] = useState([]);
-
+  // const [agendamentos, setAgendamentos] = useState([]);
+  //const [pontosCadastrados, setPontosCadastrados] = useState([]);
 
   useEffect(() => {
-    // Busca o usuário logado no localStorage
-    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (logado && logado.email && logado.tipo) {
-      const chave = logado.tipo === "usuario" ? "usuarios" : "estabelecimentos";
-      const lista = JSON.parse(localStorage.getItem(chave)) || [];
-      const encontrado = lista.find((item) => item.email === logado.email);
-      setUsuario(encontrado ? { ...encontrado, tipo: logado.tipo } : null);
+    const fetchUsuario = async () => {
+      try {
+        // 1. Renomeie para evitar conflito com o estado 'usuario'
+        const usuarioLogado = UsuarioService.getCurrentUser();
 
-      // Buscar dados específicos baseado no tipo de usuário
-      if (logado.tipo === "usuario") {
-        // Buscar agendamentos para usuários
-        const ags =
-          JSON.parse(localStorage.getItem(`agendamentos_${logado.email}`)) ||
-          [];
-        setAgendamentos(ags);
-      } else {
-        // Buscar pontos cadastrados para estabelecimentos
-        const pontos =
-          JSON.parse(localStorage.getItem(`pontos_${logado.email}`)) || [];
-        setPontosCadastrados(pontos);
+        if (usuarioLogado && usuarioLogado.id) {
+          // 2. CORREÇÃO CRÍTICA: Use o 'await' para esperar a resposta da API
+          const dados = await UsuarioService.findById(usuarioLogado.id); // <-- AGORA COM 'await'
+
+          setUsuario(dados); // 'dados' agora é o objeto real do usuário
+        } else {
+          console.warn("Usuário não logado.");
+        }
+      } catch (error) {
+        console.error("Erro ao carregar usuário:", error);
       }
-    }
+    };
+
+    fetchUsuario();
   }, []);
 
   // Função para cancelar agendamento
-  const handleCancelar = (id) => {
-    const novos = agendamentos.map((a) =>
-      a.id === id ? { ...a, status: "Cancelado" } : a
-    );
-    setAgendamentos(novos);
-    // Atualiza no localStorage
-    if (usuario && usuario.email) {
-      localStorage.setItem(
-        `agendamentos_${usuario.email}`,
-        JSON.stringify(novos)
-      );
+  // const handleCancelar = (id) => {
+  //   const novos = agendamentos.map((a) =>
+  //     a.id === id ? { ...a, status: "Cancelado" } : a
+  //   );
+  //   setAgendamentos(novos);
+  //   // Atualiza no localStorage
+  //   if (usuario && usuario.email) {
+  //     localStorage.setItem(
+  //       `agendamentos_${usuario.email}`,
+  //       JSON.stringify(novos)
+  //     );
+  //   }
+  // };
+
+  const handleDelete = async () => {
+    // Torne a função assíncrona
+    if (!usuario || !usuario.id) {
+      console.error("ID do usuário não encontrado para exclusão na API.");
+      setModalAberto(null);
+      return;
+    }
+    try {
+      await UsuarioService.remove(usuario.id);
+
+      const chave =
+        usuario.tipo === "usuario" ? "usuarios" : "estabelecimentos";
+      const lista = JSON.parse(localStorage.getItem(chave)) || [];
+
+      // Remove o usuário atual da lista
+      const novaLista = lista.filter((u) => u.email !== usuario.email);
+      localStorage.setItem(chave, JSON.stringify(novaLista));
+
+      // Remove agendamentos ou pontos cadastrados
+      if (usuario.tipo === "usuario") {
+        localStorage.removeItem(`agendamentos_${usuario.email}`);
+      } else {
+        localStorage.removeItem(`pontos_${usuario.email}`);
+      }
+
+      // Remove o login atual
+      localStorage.removeItem("usuarioLogado");
+
+      // Fecha o modal
+      setModalAberto(null);
+
+      alert("Conta excluída com sucesso!");
+      window.location.href = "/login";
+    } catch (error) {
+      console.error("Erro ao excluir conta via API:", error);
+      alert("Falha ao excluir a conta. Tente novamente.");
+      setModalAberto(null); // Fecha o modal em caso de falha
     }
   };
 
-  if (!usuario) {
-    return (
-      <div className="perfil-container">
-        <div className="perfil-content">
-          <h2>Usuário não encontrado ou não logado.</h2>
-        </div>
-      </div>
-    );
-  }
-
-  const handleDelete = () => {
-    if (!usuario) return;
-  
-    const chave = usuario.tipo === "usuario" ? "usuarios" : "estabelecimentos";
-    const lista = JSON.parse(localStorage.getItem(chave)) || [];
-  
-    // Remove o usuário atual da lista
-    const novaLista = lista.filter((u) => u.email !== usuario.email);
-    localStorage.setItem(chave, JSON.stringify(novaLista));
-  
-    // Remove agendamentos ou pontos cadastrados
-    if (usuario.tipo === "usuario") {
-      localStorage.removeItem(`agendamentos_${usuario.email}`);
-    } else {
-      localStorage.removeItem(`pontos_${usuario.email}`);
-    }
-  
-    // Remove o login atual
-    localStorage.removeItem("usuarioLogado");
-  
-    // Fecha o modal
-    setModalAberto(null);
-  
-    // Redireciona (exemplo para uma página de login)
-    window.location.href = "/login"; // Ajuste a rota conforme seu app
-  };
-
-  return (
+  return !usuario ? (
+    <div className="loading-screen">
+      <h1>Carregando...</h1>
+    </div>
+  ) : (
     <div className="perfil-container">
       <div className="perfil-content">
         {/* Cabeçalho do Perfil */}
@@ -115,12 +119,11 @@ function Perfil() {
               <h1 className="perfil-header-title">
                 {usuario.tipo === "usuario"
                   ? usuario.nome
-                  : usuario.nomeEstabelecimento}
+                  : usuario.estabelecimento}
               </h1>
               {usuario.tipo === "usuario" ? null : (
-                <p className="perfil-header-role">CNPJ: {usuario.cnpj}</p>
+                <h1 className="perfil-header-role">{usuario.nome}</h1>
               )}
-              {/* Pode adicionar mais informações aqui */}
             </div>
           </div>
         </div>
@@ -170,96 +173,81 @@ function Perfil() {
             </button>
           </div>
 
-          {/* Histórico de Agendamentos ou Pontos Cadastrados */}
+          {/* Histórico de Agendamentos */}
           <div className="perfil-historico-box">
-            {usuario.tipo === "usuario" ? (
-              <HistoricoAgendamentos
-                agendamentos={agendamentos}
-                onCancelar={handleCancelar}
-              />
+            {usuario.nivelAcesso === "USER" ? (
+              <HistoricoAgendamentos />
             ) : (
               <div className="perfil-pontos-cadastrados">
                 <h2 className="perfil-pontos-title">
                   📍 Pontos de Coleta Cadastrados
                 </h2>
-                {pontosCadastrados.length === 0 ? (
-                  <p className="perfil-pontos-empty">
-                    Nenhum ponto de coleta cadastrado ainda.
-                  </p>
-                ) : (
-                  <div className="perfil-pontos-list">
-                    {pontosCadastrados.map((ponto) => (
-                      <div key={ponto.id} className="perfil-ponto-item">
-                        <h3 className="perfil-ponto-nome">{ponto.nome}</h3>
-                        <p className="perfil-ponto-endereco">
-                          {ponto.endereco}
-                        </p>
-                        <p className="perfil-ponto-telefone">
-                          {ponto.telefone}
-                        </p>
-                        <div className="perfil-ponto-status">
-                          <span
-                            className={`perfil-ponto-status-badge ${
-                              ponto.ativo ? "ativo" : "inativo"
-                            }`}
-                          >
-                            {ponto.ativo ? "Ativo" : "Inativo"}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <p className="perfil-pontos-empty">
+                  Gerencie seus pontos no painel da farmácia.
+                </p>
               </div>
             )}
           </div>
         </div>
-
-        {/* Configurações */}
-        <div className="perfil-config-box">
-          <h2 className="perfil-config-title">
-            <FaCog className="perfil-config-icon" />
-            Configurações
-          </h2>
-          <div className="perfil-config-list">
-            <button
-              className="perfil-config-btn"
-              onClick={() => setModalAberto("alterarSenha")}
-            >
-              Alterar Senha
-            </button>
-            <button className="perfil-config-btn perfil-config-btn-danger"
-            onClick={() => setModalAberto("excluirConta")}>
-              Excluir Conta
-            </button>
-          </div>
-        </div>
-        {modalAberto === "alterarSenha" && (
-          <ModalAlterarSenha
-            aberto={true}
-            onClose={() => setModalAberto(false)}
-          />
-        )}
-
-        {modalAberto === "editarInfo" && (
-          <ModalEditarInfo
-            aberto={true}
-            usuario={usuario}
-            onClose={() => setModalAberto(false)}
-            onSave={(dadosAtualizados) => setUsuario(dadosAtualizados)}
-          />
-        )}
-
-          {modalAberto === "excluirConta" && (
-          <ModalExcluirConta
-            isOpen={true}
-            onConfirm={handleDelete}
-            onCancel={() => setModalAberto(null)}
-          />
-        )}
       </div>
+
+      {/* Configurações */}
+      <div className="perfil-config-box">
+        <h2 className="perfil-config-title">
+          <FaCog className="perfil-config-icon" />
+          Configurações
+        </h2>
+        <div className="perfil-config-list">
+          <button
+            className="perfil-config-btn"
+            onClick={() => setModalAberto("alterarSenha")}
+          >
+            Alterar Senha
+          </button>
+          <button
+            className="perfil-config-btn perfil-config-btn-danger"
+            onClick={() => setModalAberto("excluirConta")}
+          >
+            Excluir Conta
+          </button>
+        </div>
+      </div>
+      {modalAberto === "alterarSenha" && (
+        <ModalAlterarSenha
+          aberto={true}
+          onClose={() => setModalAberto(false)}
+        />
+      )}
+
+      {modalAberto === "editarInfo" && (
+        <ModalEditarInfo
+          aberto={true}
+          usuario={usuario}
+          onClose={() => setModalAberto(false)}
+          onSave={async (dadosAtualizados) => {
+            try {
+              const response = await UsuarioService.update(
+                usuario.id,
+                dadosAtualizados
+              );
+              setUsuario(response.data);
+            } catch (error) {
+              console.error("Erro ao atualizar usuário:", error);
+            }
+          }}
+        />
+      )}
+
+      {modalAberto === "excluirConta" && (
+        <ModalExcluirConta
+          isOpen={true}
+          onConfirm={handleDelete}
+          onCancel={() => setModalAberto(null)}
+        />
+      )}
     </div>
   );
+  //   </div>
 }
 
 export default Perfil;

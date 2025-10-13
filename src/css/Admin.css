@@ -1,0 +1,173 @@
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.admin-container h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.admin-container h2 {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.usuarios-lista {
+  display: grid;
+  gap: 20px;
+}
+
+.usuario-card {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.usuario-info h3 {
+  margin: 0 0 5px 0;
+  color: #333;
+}
+
+.usuario-info p {
+  margin: 5px 0;
+  color: #666;
+}
+
+.nivel-acesso-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nivel-acesso-controls label {
+  font-weight: bold;
+  color: #333;
+}
+
+.nivel-acesso-controls select {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}
+
+.admin-loading {
+  text-align: center;
+  padding: 50px;
+  font-size: 18px;
+}
+
+.cnpj-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.cnpj-input-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.cnpj-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.cnpj-btn {
+  padding: 10px 20px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cnpj-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.cnpj-resultado {
+  padding: 15px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.cnpj-resultado.valido {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.cnpj-resultado.invalido {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.usuarios-section {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.filtro-container {
+  margin-bottom: 20px;
+}
+
+.filtro-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.nivel-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.nivel-badge.user {
+  background: #007bff;
+  color: white;
+}
+
+.nivel-badge.farmacia {
+  background: #28a745;
+  color: white;
+}
+
+.nivel-badge.admin {
+  background: #dc3545;
+  color: white;
+}
+
+.no-users {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-style: italic;
+}
+
+.nivel-select {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+}

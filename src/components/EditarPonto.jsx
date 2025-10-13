@@ -2,49 +2,48 @@ import React, { useEffect, useState } from "react";
 import "../css/EditarPonto.css";
 
 const EditarModal = ({ ponto, onClose, onSave }) => {
-  const [form, setForm] = useState(ponto);
+  const [form, setForm] = useState(ponto || {});
 
   useEffect(() => {
-    if (ponto) setForm(ponto);
+    if (ponto) {
+      setForm({
+        ...ponto,
+        horarioFuncionamento: ponto.horarioFuncionamento || {
+          segunda: { inicio: "", fim: "", aberto: true },
+          terca: { inicio: "", fim: "", aberto: true },
+          quarta: { inicio: "", fim: "", aberto: true },
+          quinta: { inicio: "", fim: "", aberto: true },
+          sexta: { inicio: "", fim: "", aberto: true },
+          sabado: { inicio: "", fim: "", aberto: false },
+          domingo: { inicio: "", fim: "", aberto: false },
+        },
+        tiposMedicamentos: ponto.tiposMedicamentos || [],
+        tipoServico: ponto.coleta || "RECEBIMENTO"
+      });
+    }
   }, [ponto]);
 
   const tiposDisponiveis = [
-    "Comprimidos e cápsulas",
-    "Xaropes",
-    "Pomadas / cremes",
-    "Injetáveis",
-    "Medicamentos controlados",
-    "Medicamentos vencidos",
-    "Embalagens vazias",
-  ];
-
-  const horariosDisponiveis = [
-    "06:00", "06:30", "07:00", "07:30", "08:00", "08:30", "09:00", "09:30",
-    "10:00", "10:30", "11:00", "11:30", "12:00", "12:30", "13:00", "13:30",
-    "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
-    "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30",
-    "22:00", "22:30", "23:00", "23:30", "00:00"
+    { value: "COMPRIMIDOS", label: "Comprimidos e cápsulas" },
+    { value: "XAROPES", label: "Xaropes" },
+    { value: "POMADAS", label: "Pomadas / cremes" },
+    { value: "INJETAVEIS", label: "Injetáveis" },
+    { value: "CONTROLADOS", label: "Medicamentos controlados" },
   ];
 
   const diasSemana = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"];
 
   const handleChange = (e) => {
-    const { name, value, type, checked, options } = e.target;
+    const { name, value, type, checked } = e.target;
 
-    if (name === "tiposMedicamentos") {
-      const selectedOptions = Array.from(options)
-        .filter((option) => option.selected)
-        .map((option) => option.value);
-      setForm((prev) => ({ ...prev, tiposMedicamentos: selectedOptions }));
-    } else if (name.startsWith("horario_")) {
-      // Exemplo de name: horario_segunda_inicio
+    if (name.startsWith("horario_")) {
       const [_, dia, campo] = name.split("_");
       setForm((prev) => ({
         ...prev,
         horarioFuncionamento: {
           ...prev.horarioFuncionamento,
           [dia]: {
-            ...prev.horarioFuncionamento[dia],
+            ...prev.horarioFuncionamento?.[dia] || {},
             [campo]: type === "checkbox" ? checked : value,
           },
         },
@@ -123,64 +122,92 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
 
           <label>
             Tipos de Medicamentos Aceitos:
-            <select
-              name="tiposMedicamentos"
-              multiple
-              value={form.tiposMedicamentos || []}
-              onChange={handleChange}
-              size={tiposDisponiveis.length}
-            >
+            <div className="editar-checkbox-grid">
               {tiposDisponiveis.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
+                <label key={tipo.value} className="editar-checkbox-item">
+                  <input
+                    type="checkbox"
+                    value={tipo.value}
+                    checked={(form.tiposMedicamentos || []).includes(tipo.value)}
+                    onChange={(e) => {
+                      const { value, checked } = e.target;
+                      const tipos = form.tiposMedicamentos || [];
+                      if (checked) {
+                        setForm(prev => ({
+                          ...prev,
+                          tiposMedicamentos: [...tipos, value]
+                        }));
+                      } else {
+                        setForm(prev => ({
+                          ...prev,
+                          tiposMedicamentos: tipos.filter(t => t !== value)
+                        }));
+                      }
+                    }}
+                  />
+                  <span>{tipo.label}</span>
+                </label>
               ))}
-            </select>
+            </div>
           </label>
 
           <fieldset className="horario-funcionamento">
             <legend>Horário de Funcionamento</legend>
             {diasSemana.map((dia) => (
-              <div key={dia} className="horario-dia">
-                <label>{dia.charAt(0).toUpperCase() + dia.slice(1)}:</label>
-                <select
-                  name={`horario_${dia}_inicio`}
-                  value={form.horarioFuncionamento?.[dia]?.inicio || ""}
-                  onChange={handleChange}
-                  disabled={!form.horarioFuncionamento?.[dia]?.aberto}
-                >
-                  <option value="">Início</option>
-                  {horariosDisponiveis.map((hora) => (
-                    <option key={hora} value={hora}>
-                      {hora}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  name={`horario_${dia}_fim`}
-                  value={form.horarioFuncionamento?.[dia]?.fim || ""}
-                  onChange={handleChange}
-                  disabled={!form.horarioFuncionamento?.[dia]?.aberto}
-                >
-                  <option value="">Fim</option>
-                  {horariosDisponiveis.map((hora) => (
-                    <option key={hora} value={hora}>
-                      {hora}
-                    </option>
-                  ))}
-                </select>
-                <label>
-                  <input
-                    type="checkbox"
-                    name={`horario_${dia}_aberto`}
-                    checked={form.horarioFuncionamento?.[dia]?.aberto || false}
-                    onChange={handleChange}
-                  />
-                  Aberto
-                </label>
+              <div key={dia} className="editar-horario-card">
+                <div className="editar-horario-header">
+                  <span className="editar-dia">{dia.charAt(0).toUpperCase() + dia.slice(1)}</span>
+                  <label className="editar-toggle">
+                    <input
+                      type="checkbox"
+                      name={`horario_${dia}_aberto`}
+                      checked={form.horarioFuncionamento?.[dia]?.aberto || false}
+                      onChange={handleChange}
+                      className="editar-toggle-input"
+                    />
+                    <span className="editar-toggle-slider"></span>
+                  </label>
+                </div>
+                {form.horarioFuncionamento?.[dia]?.aberto && (
+                  <div className="editar-horario-inputs">
+                    <div className="editar-time-group">
+                      <label>Abertura</label>
+                      <input
+                        type="time"
+                        name={`horario_${dia}_inicio`}
+                        value={form.horarioFuncionamento?.[dia]?.inicio || ""}
+                        onChange={handleChange}
+                        className="editar-time-input"
+                      />
+                    </div>
+                    <div className="editar-time-group">
+                      <label>Fechamento</label>
+                      <input
+                        type="time"
+                        name={`horario_${dia}_fim`}
+                        value={form.horarioFuncionamento?.[dia]?.fim || ""}
+                        onChange={handleChange}
+                        className="editar-time-input"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </fieldset>
+
+          <label>
+            Tipo de Serviço:
+            <select
+              name="tipoServico"
+              value={form.tipoServico || "RECEBIMENTO"}
+              onChange={handleChange}
+            >
+              <option value="RECEBIMENTO">Apenas Recebimento</option>
+              <option value="RETIRA">Apenas Retirada em Casa</option>
+              <option value="AMBOS">Recebimento e Retirada</option>
+            </select>
+          </label>
 
           <label>
             Observações:

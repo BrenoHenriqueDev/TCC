@@ -4,75 +4,86 @@ import { useAuth } from "../hooks/HookLogin";
 import "../css/Login.css";
 import UsuarioService from "../services/UsuarioService";
 
-  function Login() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [formData, setFormData] = useState({
-    email: "",
-    senha: "",
-    lembrar: false,
-  });
-  const [erro, setErro] = useState("");
+    function Login() {
+    const navigate = useNavigate();
+    const { login } = useAuth();
+    const [formData, setFormData] = useState({
+      email: "",
+      senha: "",
+      lembrar: false,
+    });
+    const [erro, setErro] = useState("");
 
-  // Na montagem, buscar dados do usuário lembrado no backend
-  useEffect(() => {
-    const carregarUsuarioLembrado = async () => {
-      try {
-        const usuario = await UsuarioService.signin();
-        if (usuario && usuario.lembrar) {
+    // Na montagem, buscar dados do usuário lembrado no backend
+useEffect(() => {
+  const carregarUsuarioLembrado = async () => {
+    try {
+      const usuarioLembrado = JSON.parse(localStorage.getItem("usuarioLembrado"));
+
+      if (usuarioLembrado && usuarioLembrado.email && usuarioLembrado.senha) {
+        const usuario = await UsuarioService.signin(
+          usuarioLembrado.email,
+          usuarioLembrado.senha
+        );
+
+        if (usuario) {
           setFormData(prev => ({
             ...prev,
-            email: usuario.email,
-            senha: usuario.senha,
+            email: usuarioLembrado.email,
+            senha: usuarioLembrado.senha,
+            lembrar: true,
           }));
         }
-      } catch (error) {
-        console.error("Erro ao buscar usuário lembrado", error);
       }
-    };
-
-    carregarUsuarioLembrado();
-  }, []);
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-    setErro("");
+    } catch (error) {
+      console.error("Erro ao buscar usuário lembrado", error);
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setErro("");
+  carregarUsuarioLembrado();
+}, []);
 
-    try {
-      const usuario = await UsuarioService.signin(formData.email, formData.senha);
+    const handleChange = (e) => {
+      const { name, value, type, checked } = e.target;
+      setFormData(prev => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
+      setErro("");
+    };
 
-      if (usuario) {
-        // Aqui você pode avisar o backend para salvar ou remover a preferência "lembrar"
-        if (formData.lembrar) {
-          await http.mainInstance.post(API_URL + "usuario/salvar", { email: formData.email });
-        } else {
-          await http.mainInstance.post(API_URL + "usuario/salvar", { email: formData.email });
-        }
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setErro("");
 
-        // Salvar dados mínimos no localStorage (sem senha)
-        localStorage.setItem("usuarioLogado", JSON.stringify({ email: usuario.email, tipo: usuario.tipo }));
+      try {
+        const usuario = await UsuarioService.signin(formData.email, formData.senha);
 
-        login(usuario.tipo);
+        if (usuario) {
+          // Aqui você pode avisar o backend para salvar ou remover a preferência "lembrar"
+          if (formData.lembrar) {
+  localStorage.setItem("usuarioLembrado", JSON.stringify({
+    email: formData.email,
+    senha: formData.senha,
+  }));
+} else {
+  localStorage.removeItem("usuarioLembrado");
+}
+
+        login(usuario.nivelAcesso || 'USER');
         alert("Login realizado com sucesso!");
 
-        if (usuario.tipo === "estabelecimento") {
+        if (usuario.nivelAcesso === "FARMACIA") {
           navigate("/painel-estabelecimento");
+        } else if (usuario.nivelAcesso === "ADMIN") {
+          navigate("/admin");
         } else {
           navigate("/");
         }
       } else {
         setErro("E-mail ou senha incorretos.");
       }
-    } catch (error) {
+    } catch {
       setErro("E-mail ou senha incorretos.");
     }
   };

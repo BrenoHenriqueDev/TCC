@@ -10,16 +10,19 @@ export default function Header() {
   const { isAuthenticated, logout, userType } = useAuth();
   const navigate = useNavigate();
 
-  // Verificar se é estabelecimento logado
+  // Verificar tipo de usuário logado
   const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-  const isEstabelecimento = logado && logado.tipo === "estabelecimento";
+  const isFarmacia = userType === "FARMACIA";
+  const isAdmin = userType === "ADMIN";
 
   const general = "header-link";
   const current = "header-link-current";
 
   const handleHomeClick = () => {
-    if (isEstabelecimento) {
+    if (isFarmacia) {
       navigate("/painel-estabelecimento");
+    } else if (isAdmin) {
+      navigate("/admin");
     } else {
       navigate("/");
     }
@@ -40,13 +43,13 @@ export default function Header() {
         <nav className="header-nav">
           <button 
             onClick={handleHomeClick}
-            className={isCurrentPage("/") || isCurrentPage("/painel-estabelecimento") ? current : general}
+            className={isCurrentPage("/") || isCurrentPage("/painel-estabelecimento") || isCurrentPage("/admin") ? current : general}
             style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'inherit', font: 'inherit' }}
           >
             Home
           </button>
           {/* Mostrar links educativos apenas para usuários não logados ou usuários comuns */}
-          {!isEstabelecimento && (
+          {!isFarmacia && !isAdmin && (
             <>
               <Link
                 to="/educacao"

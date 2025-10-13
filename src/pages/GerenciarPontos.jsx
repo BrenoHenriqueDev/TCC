@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import EstabelecimentoService from "../services/EstabelecimentoService";
+import UsuarioService from "../services/UsuarioService";
 import "../css/GerenciarPontos.css";
 import EditarModal from "../components/EditarPonto";
 
@@ -13,34 +15,60 @@ const GerenciarPontos = () => {
 
   useEffect(() => {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!logado || logado.tipo !== "estabelecimento") {
+    if (!logado || logado.nivelAcesso !== "FARMACIA") {
       navigate("/painel-estabelecimento");
       return;
     }
-    const pontosSalvos =
-      JSON.parse(localStorage.getItem(`pontos_${logado.email}`)) || [];
-    setPontos(pontosSalvos);
-    setCarregando(false);
+    carregarPontos();
   }, [navigate]);
 
-  // Atualiza o ponto editado
-  const handleSalvarEdicao = (pontoEditado) => {
-    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    const novosPontos = pontos.map((p) =>
-      p.id === pontoEditado.id ? pontoEditado : p
-    );
-    setPontos(novosPontos);
-    localStorage.setItem(`pontos_${logado.email}`, JSON.stringify(novosPontos));
-    setPontoSelecionado(null);
+  const carregarPontos = async () => {
+    try {
+      const usuario = UsuarioService.getCurrentUser();
+      if (usuario && usuario.id) {
+        const response = await EstabelecimentoService.listarPorUsuario(usuario.id);
+        setPontos(response.data || []);
+      }
+    } catch (error) {
+      console.error("Erro ao carregar pontos:", error);
+      setPontos([]);
+    } finally {
+      setCarregando(false);
+    }
   };
 
-  const handleAtivarDesativar = (id) => {
-    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    const novosPontos = pontos.map((p) =>
-      p.id === id ? { ...p, ativo: !p.ativo } : p
-    );
-    setPontos(novosPontos);
-    localStorage.setItem(`pontos_${logado.email}`, JSON.stringify(novosPontos));
+  // Atualiza o ponto editado
+  const handleSalvarEdicao = async (pontoEditado) => {
+    try {
+      const usuario = UsuarioService.getCurrentUser();
+      
+      // Mapear tipoServico para coleta
+      const dadosParaBackend = {
+        ...pontoEditado,
+        coleta: pontoEditado.tipoServico
+      };
+      
+      await EstabelecimentoService.atualizar(usuario.id, pontoEditado.id, dadosParaBackend);
+      carregarPontos();
+      setPontoSelecionado(null);
+      alert("Ponto atualizado com sucesso!");
+    } catch (error) {
+      console.error("Erro ao atualizar ponto:", error);
+      alert("Erro ao atualizar ponto");
+    }
+  };
+
+  const handleAtivarDesativar = async (id) => {
+    try {
+      // Como não temos endpoint específico, vamos simular localmente
+      const novosPontos = pontos.map((p) =>
+        p.id === id ? { ...p, statusEstabelecimento: p.statusEstabelecimento === 'ATIVO' ? 'INATIVO' : 'ATIVO' } : p
+      );
+      setPontos(novosPontos);
+      alert("Status alterado!");
+    } catch (error) {
+      console.error("Erro ao alterar status:", error);
+    }
   };
 
   if (carregando)
@@ -61,19 +89,19 @@ const GerenciarPontos = () => {
               }`}
             >
               <h2 className="gerenciar-ponto-nome">{ponto.nome}</h2>
-              <p className="gerenciar-ponto-endereco">{ponto.endereco}</p>
+              <p className="gerenciar-ponto-endereco">{ponto.complemento}, {ponto.numero}</p>
               <p className="gerenciar-ponto-info">
-                <strong>Bairro:</strong> {ponto.bairro} <br />
-                <strong>Cidade:</strong> {ponto.cidade} <br />
+                <strong>CEP:</strong> {ponto.cep} <br />
+                <strong>Tipo:</strong> {ponto.coleta} <br />
                 <strong>Telefone:</strong> {ponto.telefone}
               </p>
               <div className="gerenciar-ponto-status">
                 <span
                   className={`gerenciar-ponto-status-badge ${
-                    ponto.ativo ? "ativo" : "inativo"
+                    ponto.statusEstabelecimento === 'ATIVO' ? "ativo" : "inativo"
                   }`}
                 >
-                  {ponto.ativo ? "Ativo" : "Inativo"}
+                  {ponto.statusEstabelecimento || 'ATIVO'}
                 </span>
               </div>
               <div className="gerenciar-ponto-actions">
@@ -85,11 +113,11 @@ const GerenciarPontos = () => {
                 </button>
                 <button
                   className={`gerenciar-ponto-btn-ativar ${
-                    ponto.ativo ? "inativo" : "ativo"
+                    ponto.statusEstabelecimento === 'ATIVO' ? "inativo" : "ativo"
                   }`}
                   onClick={() => handleAtivarDesativar(ponto.id)}
                 >
-                  {ponto.ativo ? "Desativar" : "Ativar"}
+                  {ponto.statusEstabelecimento === 'ATIVO' ? "Desativar" : "Ativar"}
                 </button>
               </div>
             </div>

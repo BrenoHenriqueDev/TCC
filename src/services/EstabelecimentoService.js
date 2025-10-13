@@ -1,33 +1,29 @@
-import httpCommom from "../common/http-common";
+import http from "../common/http-common";
 
-const API_URL = "coletas/";
+const API_URL = "estabelecimento/";
 
-const agendarColeta = (coleta) => {
-    return http.mainInstance.post(API_URL + "agendar", coleta);
+// Funções para estabelecimentos
+const cadastrar = (usuarioId, estabelecimento) => {
+    return http.mainInstance.post(API_URL + `cadastrar/${usuarioId}`, estabelecimento);
 };
 
-const listarTodas = () => {
-    return http.mainInstance.get(API_URL);
+const listarPorUsuario = (usuarioId) => {
+    return http.mainInstance.get(API_URL + `listarUsuario/${usuarioId}`);
 };
 
-const buscarPorId = (id) => {
-    return http.mainInstance.get(API_URL + `${id}`);
+const listarTodos = (usuarioId) => {
+    return http.mainInstance.get(API_URL + `listar/${usuarioId}`);
 };
 
-const atualizarColeta = (id, coleta) => {
-    return http.mainInstance.put(API_URL + `${id}`, coleta);
+const atualizar = (usuarioId, estabId, estabelecimento) => {
+    return http.mainInstance.put(API_URL + `atualizar/${usuarioId}/${estabId}`, estabelecimento);
 };
 
-const deletarColeta = (id) => {
-    return http.mainInstance.delete(API_URL + `${id}`);
+const EstabelecimentoService = {
+    cadastrar,
+    listarPorUsuario,
+    listarTodos,
+    atualizar,
 };
 
-const ColetaService = {
-    agendarColeta,
-    listarTodas,
-    buscarPorId,
-    atualizarColeta,
-    deletarColeta,
-};
-
-export default ColetaService;
+export default EstabelecimentoService;

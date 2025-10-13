@@ -18,14 +18,14 @@ const slides = [
     image: Img2,
     alt: "Cidadão entregando remédios em farmácia",
     title: "Coleta Segura e Conveniente",
-    text: "No VenceMED, você agenda a coleta com um ponto de descarte responsável. Processo simples, rápido e totalmente gratuito.",
+    text: "No VenceMED, você encontra pontos de descarte responsável próximos a você. Use nosso aplicativo móvel para agendar coletas.",
     actions: true,
   },
   {
     image: Img3,
     alt: "Ponto de coleta feliz por ajudar",
     title: "Seja um Agente de Mudança",
-    text: "Ajude sua cidade a ser mais sustentável. Seja um ponto de coleta ou agende sua entrega agora!",
+    text: "Ajude sua cidade a ser mais sustentável. Cadastre-se como farmácia ou encontre pontos de coleta próximos!",
     actions: true,
   },
 ];
@@ -56,18 +56,7 @@ const Carousel = () => {
               <div className="carousel-text-section">
                 <h2 className="carousel-title">{slide.title}</h2>
                 <p className="carousel-description">{slide.text}</p>
-                {slide.actions && (
-                  <div className="carousel-actions">
-                    {isAuthenticated && (
-                      <button
-                        className="carousel-btn carousel-btn-primary"
-                        onClick={() => navigate("/agendamento")}
-                      >
-                        Agendar coleta
-                      </button>
-                    )}
-                  </div>
-                )}
+
               </div>
               <div className="carousel-image-section">
                 <img

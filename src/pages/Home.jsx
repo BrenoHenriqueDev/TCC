@@ -6,22 +6,20 @@ import Sujo from "../Imagens/sujo.jpg";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userType } = useAuth();
+
+  // Redirecionar farmácias para seu painel
+  if (userType === "FARMACIA") {
+    navigate("/painel-estabelecimento");
+    return null;
+  }
 
   // Busca usuário logado
   let mensagemBoasVindas = null;
   if (isAuthenticated) {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (logado && logado.email && logado.tipo) {
-      const chave = logado.tipo === "usuario" ? "usuarios" : "estabelecimentos";
-      const lista = JSON.parse(localStorage.getItem(chave)) || [];
-      const usuario = lista.find((item) => item.email === logado.email);
-      if (usuario) {
-        mensagemBoasVindas =
-          logado.tipo === "usuario"
-            ? `Olá, ${usuario.nome}! Bem-vindo(a) ao VenceMED.`
-            : `Olá, ${usuario.nomeEstabelecimento}! Obrigado por contribuir com a saúde e o meio ambiente.`;
-      }
+    if (logado && logado.nome) {
+      mensagemBoasVindas = `Olá, ${logado.nome}! Bem-vindo(a) ao VenceMED.`;
     }
   }
 
@@ -59,14 +57,7 @@ export default function Home() {
             "Descartar medicamentos com responsabilidade é um ato de cuidado com
             a vida e o meio ambiente".
           </p>
-          {isAuthenticated && (
-            <button
-              className="home-btn-agendar"
-              onClick={() => navigate("/agendamento")}
-            >
-              Agende uma coleta
-            </button>
-          )}
+
         </section>
 
         {/* Como Funciona */}
@@ -87,7 +78,7 @@ export default function Home() {
                 2
               </div>
               <p className="home-how-step-text">
-                Agende a coleta de seus medicamentos vencidos.
+                Use o aplicativo móvel para agendar a coleta.
               </p>
             </div>
             <div className="home-how-step">

@@ -75,6 +75,17 @@
   color: #fff;
 }
 
+.cadastrar-ponto-input[type="select"],
+select.cadastrar-ponto-input {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+select.cadastrar-ponto-input option {
+  background: #334155;
+  color: #fff;
+}
+
 .cadastrar-ponto-input-error {
   border: 1px solid #ef4444;
 }
@@ -107,8 +118,8 @@
   width: 100%;
   padding: 0.75rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
   color: #fff;
   min-height: 120px;
   box-sizing: border-box;
@@ -142,17 +153,102 @@
   text-transform: capitalize;
 }
 
+.cadastrar-ponto-horario-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.cadastrar-ponto-horario-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cadastrar-ponto-dia {
+  text-transform: capitalize;
+  font-weight: 600;
+  color: #fff;
+}
+
+.cadastrar-ponto-toggle {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.cadastrar-ponto-toggle-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.cadastrar-ponto-toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.cadastrar-ponto-toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.cadastrar-ponto-toggle-input:checked + .cadastrar-ponto-toggle-slider {
+  background-color: #60a5fa;
+}
+
+.cadastrar-ponto-toggle-input:checked + .cadastrar-ponto-toggle-slider:before {
+  transform: translateX(26px);
+}
+
+.cadastrar-ponto-horario-inputs {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cadastrar-ponto-time-group {
+  flex: 1;
+}
+
+.cadastrar-ponto-time-group label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: #e2e8f0;
+}
+
 .cadastrar-ponto-time-input {
+  width: 100%;
   padding: 0.5rem;
   border-radius: 4px;
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+  font-size: 0.9rem;
 }
 
-.cadastrar-ponto-time-input:disabled {
-  background: rgba(255, 255, 255, 0.05);
-  color: #94a3b8;
+.cadastrar-ponto-time-input:focus {
+  outline: none;
+  border-color: #60a5fa;
 }
 
 .cadastrar-ponto-time-select {
@@ -186,6 +282,39 @@
 
 .cadastrar-ponto-checkbox {
   margin-right: 0.5rem;
+}
+
+.cadastrar-ponto-checkbox-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cadastrar-ponto-checkbox-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cadastrar-ponto-checkbox-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #60a5fa;
+}
+
+.cadastrar-ponto-checkbox-item input[type="checkbox"]:checked + .cadastrar-ponto-checkbox-text {
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.cadastrar-ponto-checkbox-text {
+  color: #fff;
+  font-size: 0.9rem;
 }
 
 .cadastrar-ponto-textarea {

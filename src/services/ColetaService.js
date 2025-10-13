@@ -12,6 +12,10 @@ const ColetaService = {
     return axios.get(API_URL);
   },
 
+  listarPorEstabelecimento: (estabelecimentoId) => {
+    return axios.get(`${API_URL}/estabelecimento/${estabelecimentoId}`);
+  },
+
   buscarPorId: (id) => {
     return axios.get(`${API_URL}/${id}`);
   },

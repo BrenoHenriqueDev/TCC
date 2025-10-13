@@ -1,7 +1,8 @@
 import React from 'react';
 import "../css/ExcluirConta.css"
 
-const ExcluirConta = ({ isOpen, onConfirm, onCancel }) => {
+const ExcluirConta = ({ 
+  isOpen, onConfirm, onCancel }) => {
   if (!isOpen) return null;
 
   return (
