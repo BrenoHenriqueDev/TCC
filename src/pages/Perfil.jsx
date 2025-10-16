@@ -14,10 +14,20 @@ import ModalAlterarSenha from "./AlterarSenha";
 import ModalEditarInfo from "../components/EditarInfo";
 import ModalExcluirConta from "../components/ExcluirConta";
 import UsuarioService from "../services/UsuarioService";
+import MensagemService from "../services/MensagemService";
+import EstabelecimentoService from "../services/EstabelecimentoService";
 
 function Perfil() {
   const [usuario, setUsuario] = useState(null);
   const [modalAberto, setModalAberto] = useState(null);
+  const [farmaciaForm, setFarmaciaForm] = useState({
+    nomeFantasia: '',
+    cnpj: '',
+    endereco: '',
+    telefone: '',
+    justificativa: ''
+  });
+  const [loadingFarmacia, setLoadingFarmacia] = useState(false);
   // const [agendamentos, setAgendamentos] = useState([]);
   //const [pontosCadastrados, setPontosCadastrados] = useState([]);
 
@@ -42,6 +52,38 @@ function Perfil() {
 
     fetchUsuario();
   }, []);
+
+  const handleSolicitarFarmacia = async (e) => {
+    e.preventDefault();
+    setLoadingFarmacia(true);
+    
+    try {
+      const estabelecimentoData = {
+        nome: farmaciaForm.nomeFantasia,
+        cnpj: farmaciaForm.cnpj,
+        endereco: farmaciaForm.endereco,
+        telefone: farmaciaForm.telefone,
+        justificativa: farmaciaForm.justificativa,
+        status: 'PENDENTE'
+      };
+      
+      await EstabelecimentoService.cadastrar(usuario.id, estabelecimentoData);
+      alert('Solicitação enviada com sucesso! Aguarde a análise do administrador.');
+      setModalAberto(null);
+      setFarmaciaForm({
+        nomeFantasia: '',
+        cnpj: '',
+        endereco: '',
+        telefone: '',
+        justificativa: ''
+      });
+    } catch (error) {
+      console.error('Erro ao enviar solicitação:', error);
+      alert('Erro ao enviar solicitação. Tente novamente.');
+    } finally {
+      setLoadingFarmacia(false);
+    }
+  };
 
   const handleDelete = async () => {
     // Torne a função assíncrona
@@ -182,6 +224,14 @@ function Perfil() {
             >
               Alterar Senha
             </button>
+            {usuario.nivelAcesso === "USER" && (
+              <button
+                className="perfil-config-btn"
+                onClick={() => setModalAberto("solicitarFarmacia")}
+              >
+                Solicitar Permissão de Farmácia
+              </button>
+            )}
             <button
               className="perfil-config-btn perfil-config-btn-danger"
               onClick={() => setModalAberto("excluirConta")}
@@ -210,11 +260,11 @@ function Perfil() {
           onClose={() => setModalAberto(false)}
           onSave={async (dadosAtualizados) => {
             try {
-              const response = await UsuarioService.update(
-                usuario.id,
-                dadosAtualizados
-              );
-              setUsuario(response.data);
+              await UsuarioService.update(usuario.id, dadosAtualizados);
+              // Recarrega os dados atualizados da API
+              const dadosAtualizadosAPI = await UsuarioService.findById(usuario.id);
+              setUsuario(dadosAtualizadosAPI);
+              setModalAberto(null);
             } catch (error) {
               console.error("Erro ao atualizar usuário:", error);
             }
@@ -228,6 +278,68 @@ function Perfil() {
           onConfirm={handleDelete}
           onCancel={() => setModalAberto(null)}
         />
+      )}
+
+      {modalAberto === "solicitarFarmacia" && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{maxWidth: '600px'}}>
+            <h3>Solicitar Permissão de Farmácia</h3>
+            <form onSubmit={handleSolicitarFarmacia}>
+              <div className="form-group">
+                <label>Nome Fantasia *</label>
+                <input
+                  type="text"
+                  value={farmaciaForm.nomeFantasia}
+                  onChange={(e) => setFarmaciaForm({...farmaciaForm, nomeFantasia: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>CNPJ *</label>
+                <input
+                  type="text"
+                  value={farmaciaForm.cnpj}
+                  onChange={(e) => setFarmaciaForm({...farmaciaForm, cnpj: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Endereço *</label>
+                <input
+                  type="text"
+                  value={farmaciaForm.endereco}
+                  onChange={(e) => setFarmaciaForm({...farmaciaForm, endereco: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Telefone *</label>
+                <input
+                  type="tel"
+                  value={farmaciaForm.telefone}
+                  onChange={(e) => setFarmaciaForm({...farmaciaForm, telefone: e.target.value})}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label>Justificativa *</label>
+                <textarea
+                  rows="4"
+                  value={farmaciaForm.justificativa}
+                  onChange={(e) => setFarmaciaForm({...farmaciaForm, justificativa: e.target.value})}
+                  placeholder="Explique por que deseja se tornar uma farmácia parceira..."
+                  required
+                />
+              </div>
+              <div className="modal-buttons">
+                <button type="button" onClick={() => setModalAberto(null)}>Cancelar</button>
+                <button type="submit" disabled={loadingFarmacia}>
+                  {loadingFarmacia ? 'Enviando...' : 'Enviar Solicitação'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

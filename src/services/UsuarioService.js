@@ -44,10 +44,6 @@ const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("usuarioLogado"));
 };
 
-const update = (id, data) => {
-  return http.multipartInstance.put(API_URL + `update/${id}`, data);
-};
-
 const inativar = (id) => {
   return http.multipartInstance.put(API_URL + `inativar/${id}`);
 };
@@ -117,7 +113,6 @@ const UsuarioService = {
   signin,
   logout,
   getCurrentUser,
-  update,
   inativar,
   reativar,
   alterarSenha,

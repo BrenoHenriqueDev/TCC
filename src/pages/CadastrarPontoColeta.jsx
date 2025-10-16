@@ -8,6 +8,7 @@ const CadastrarPontoColeta = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     nome: "",
+    cnpj: "",
     endereco: "",
     numero: "",
     cep: "",
@@ -15,6 +16,8 @@ const CadastrarPontoColeta = () => {
     cidade: "",
     estado: "",
     telefone: "",
+    latitude: "",
+    longitude: "",
     tiposMedicamentos: [],
     tipoServico: "RECEBIMENTO",
     horarioFuncionamento: {
@@ -116,6 +119,7 @@ const CadastrarPontoColeta = () => {
     const novosErros = {};
 
     if (!form.nome.trim()) novosErros.nome = "Nome do ponto é obrigatório.";
+    if (!form.cnpj.trim()) novosErros.cnpj = "CNPJ é obrigatório.";
     if (!form.endereco.trim()) novosErros.endereco = "Endereço é obrigatório.";
     if (!form.cep.trim()) novosErros.cep = "CEP é obrigatório.";
     if (!form.numero.trim()) novosErros.numero = "Número é obrigatório.";
@@ -143,15 +147,19 @@ const CadastrarPontoColeta = () => {
 
         const estabelecimento = {
           nome: form.nome,
+          cnpj: form.cnpj,
           info: form.observacoes || "Ponto de coleta de medicamentos",
           cep: form.cep,
           numero: form.numero,
           complemento: form.endereco,
           telefone: form.telefone,
+          latitude: form.latitude ? parseFloat(form.latitude) : null,
+          longitude: form.longitude ? parseFloat(form.longitude) : null,
           tipo: "FARMACIA",
           coleta: form.tipoServico // RECEBIMENTO, RETIRA ou AMBOS
         };
 
+        console.log('Dados enviados:', estabelecimento);
         await EstabelecimentoService.cadastrar(usuario.id, estabelecimento);
         alert("Estabelecimento cadastrado com sucesso!");
         navigate("/painel-estabelecimento");
@@ -203,6 +211,23 @@ const CadastrarPontoColeta = () => {
               />
               {erros.nome && (
                 <span className="cadastrar-ponto-error">{erros.nome}</span>
+              )}
+            </div>
+
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">CNPJ *</label>
+              <input
+                type="text"
+                name="cnpj"
+                value={form.cnpj}
+                onChange={handleChange}
+                className={`cadastrar-ponto-input ${
+                  erros.cnpj ? "cadastrar-ponto-input-error" : ""
+                }`}
+                placeholder="00.000.000/0000-00"
+              />
+              {erros.cnpj && (
+                <span className="cadastrar-ponto-error">{erros.cnpj}</span>
               )}
             </div>
 
@@ -293,6 +318,33 @@ const CadastrarPontoColeta = () => {
                   {erros.telefone}
                 </span>
               )}
+            </div>
+
+            <div className="cadastrar-ponto-grid">
+              <div>
+                <label className="cadastrar-ponto-label">Latitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  name="latitude"
+                  value={form.latitude}
+                  onChange={handleChange}
+                  className="cadastrar-ponto-input"
+                  placeholder="Ex: -23.5505"
+                />
+              </div>
+              <div>
+                <label className="cadastrar-ponto-label">Longitude</label>
+                <input
+                  type="number"
+                  step="any"
+                  name="longitude"
+                  value={form.longitude}
+                  onChange={handleChange}
+                  className="cadastrar-ponto-input"
+                  placeholder="Ex: -46.6333"
+                />
+              </div>
             </div>
           </div>
 
