@@ -60,8 +60,11 @@ function Admin() {
 
   const carregarEstabelecimentos = async () => {
     try {
-      const dados = await EstabelecimentoService.listarTodosComCNPJ();
-      setEstabelecimentos(dados || []);
+      const usuarioLogado = UsuarioService.getCurrentUser();
+      if (usuarioLogado && usuarioLogado.id) {
+        const dados = await EstabelecimentoService.listarTodosComCNPJ(usuarioLogado.id);
+        setEstabelecimentos(dados || []);
+      }
     } catch (error) {
       console.error("Erro ao carregar estabelecimentos:", error);
     }
@@ -69,8 +72,11 @@ function Admin() {
 
   const carregarSolicitacoesPendentes = async () => {
     try {
-      const dados = await EstabelecimentoService.listarSolicitacoesPendentes();
-      setSolicitacoesPendentes(dados || []);
+      const usuarioLogado = UsuarioService.getCurrentUser();
+      if (usuarioLogado && usuarioLogado.id) {
+        const dados = await EstabelecimentoService.listarSolicitacoesPendentes(usuarioLogado.id);
+        setSolicitacoesPendentes(dados || []);
+      }
     } catch (error) {
       console.error("Erro ao carregar solicitações pendentes:", error);
     }
@@ -78,11 +84,14 @@ function Admin() {
 
   const aprovarSolicitacao = async (estabelecimentoId) => {
     try {
-      await EstabelecimentoService.aprovarSolicitacao(estabelecimentoId);
-      alert("Solicitação aprovada com sucesso!");
-      carregarSolicitacoesPendentes();
-      carregarEstabelecimentos();
-      carregarUsuarios();
+      const usuarioLogado = UsuarioService.getCurrentUser();
+      if (usuarioLogado && usuarioLogado.id) {
+        await EstabelecimentoService.aprovarSolicitacao(usuarioLogado.id, estabelecimentoId);
+        alert("Solicitação aprovada com sucesso!");
+        carregarSolicitacoesPendentes();
+        carregarEstabelecimentos();
+        carregarUsuarios();
+      }
     } catch (error) {
       console.error("Erro ao aprovar solicitação:", error);
       alert("Erro ao aprovar solicitação");
@@ -91,9 +100,12 @@ function Admin() {
 
   const rejeitarSolicitacao = async (estabelecimentoId) => {
     try {
-      await EstabelecimentoService.rejeitarSolicitacao(estabelecimentoId);
-      alert("Solicitação rejeitada com sucesso!");
-      carregarSolicitacoesPendentes();
+      const usuarioLogado = UsuarioService.getCurrentUser();
+      if (usuarioLogado && usuarioLogado.id) {
+        await EstabelecimentoService.rejeitarSolicitacao(usuarioLogado.id, estabelecimentoId);
+        alert("Solicitação rejeitada com sucesso!");
+        carregarSolicitacoesPendentes();
+      }
     } catch (error) {
       console.error("Erro ao rejeitar solicitação:", error);
       alert("Erro ao rejeitar solicitação");
@@ -102,11 +114,26 @@ function Admin() {
 
   const alterarStatusEstabelecimento = async (estabelecimentoId, novoStatus) => {
     try {
-      await EstabelecimentoService.alterarStatus(estabelecimentoId, novoStatus);
-      alert("Status alterado com sucesso!");
-      carregarEstabelecimentos();
-      if (novoStatus === 'PENDENTE') {
-        carregarSolicitacoesPendentes();
+      const usuarioLogado = UsuarioService.getCurrentUser();
+      if (usuarioLogado && usuarioLogado.id) {
+        await EstabelecimentoService.alterarStatus(usuarioLogado.id, estabelecimentoId, novoStatus);
+        alert("Status alterado com sucesso!");
+        
+        // Atualiza o estado local imediatamente
+        setEstabelecimentos(prev => 
+          prev.map(estab => 
+            estab.id === estabelecimentoId 
+              ? { ...estab, statusEstabelecimento: novoStatus }
+              : estab
+          )
+        );
+        
+        // Recarrega do servidor para garantir sincronização
+        await carregarEstabelecimentos();
+        
+        if (novoStatus === 'PENDENTE') {
+          carregarSolicitacoesPendentes();
+        }
       }
     } catch (error) {
       console.error("Erro ao alterar status:", error);
@@ -124,6 +151,19 @@ function Admin() {
     } catch (error) {
       console.error("Erro:", error);
       alert("Erro ao alterar nível");
+    }
+  };
+
+  const excluirUsuario = async (usuarioId, nomeUsuario) => {
+    if (window.confirm(`Tem certeza que deseja excluir o usuário "${nomeUsuario}"? Esta ação não pode ser desfeita.`)) {
+      try {
+        await UsuarioService.remove(usuarioId);
+        alert("Usuário excluído com sucesso!");
+        carregarUsuarios();
+      } catch (error) {
+        console.error("Erro ao excluir usuário:", error);
+        alert("Erro ao excluir usuário");
+      }
     }
   };
 
@@ -294,17 +334,21 @@ function Admin() {
                         <p><strong>Cadastrado por:</strong> {estab.usuario?.nome || 'N/A'}</p>
                         <p><strong>Email:</strong> {estab.usuario?.email || 'N/A'}</p>
                         <div className="estabelecimento-controls">
-                          <span className={`status-badge ${(estab.status || 'APROVADO').toLowerCase()}`}>
-                            {estab.status || 'APROVADO'}
+                          <span className={`status-badge ${(estab.statusEstabelecimento || 'ATIVO').toLowerCase()}`}>
+                            {estab.statusEstabelecimento || 'ATIVO'}
                           </span>
                           <select
-                            value={estab.status || 'APROVADO'}
-                            onChange={(e) => alterarStatusEstabelecimento(estab.id, e.target.value)}
+                            value={estab.statusEstabelecimento || 'ATIVO'}
+                            onChange={(e) => {
+                              if (e.target.value !== estab.statusEstabelecimento) {
+                                alterarStatusEstabelecimento(estab.id, e.target.value);
+                              }
+                            }}
                             className="status-select"
                           >
-                            <option value="APROVADO">APROVADO</option>
-                            <option value="SUSPENSO">SUSPENSO</option>
+                            <option value="ATIVO">ATIVO</option>
                             <option value="INATIVO">INATIVO</option>
+                            <option value="PENDENTE">PENDENTE</option>
                           </select>
                         </div>
                       </div>
@@ -399,6 +443,13 @@ function Admin() {
                       <option value="FARMACIA">FARMACIA</option>
                       <option value="ADMIN">ADMIN</option>
                     </select>
+                    <button
+                      onClick={() => excluirUsuario(usuario.id, usuario.nome)}
+                      className="excluir-btn"
+                      title="Excluir usuário"
+                    >
+                      Excluir
+                    </button>
                   </div>
                 </div>
               ))}

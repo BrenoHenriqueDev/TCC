@@ -89,9 +89,58 @@ const CadastrarPontoColeta = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let newValue = value;
 
-    if (name === "cep" && (value.length === 8 || value.length === 9)) {
-      buscarEnderecoPorCep(value);
+    // Regras específicas por campo
+    if (name === 'cnpj') {
+      // Apenas números, máximo 14 dígitos
+      newValue = value.replace(/\D/g, '').slice(0, 14);
+      // Formatação: 00.000.000/0000-00
+      if (newValue.length > 2) {
+        newValue = newValue.replace(/(\d{2})(\d)/, '$1.$2');
+      }
+      if (newValue.length > 6) {
+        newValue = newValue.replace(/(\d{2}\.\d{3})(\d)/, '$1.$2');
+      }
+      if (newValue.length > 10) {
+        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3})(\d)/, '$1/$2');
+      }
+      if (newValue.length > 15) {
+        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/, '$1-$2');
+      }
+    } else if (name === 'telefone') {
+      // Apenas números, máximo 11 dígitos
+      newValue = value.replace(/\D/g, '').slice(0, 11);
+      // Formatação: (00) 00000-0000
+      if (newValue.length > 2) {
+        newValue = newValue.replace(/(\d{2})(\d)/, '($1) $2');
+      }
+      if (newValue.length > 10) {
+        newValue = newValue.replace(/(\(\d{2}\) \d{5})(\d)/, '$1-$2');
+      }
+    } else if (name === 'nome') {
+      // Máximo 100 caracteres
+      newValue = value.slice(0, 100);
+    } else if (name === 'endereco') {
+      // Máximo 200 caracteres
+      newValue = value.slice(0, 200);
+    } else if (name === 'numero') {
+      // Máximo 10 caracteres
+      newValue = value.slice(0, 10);
+    } else if (name === 'observacoes') {
+      // Máximo 500 caracteres
+      newValue = value.slice(0, 500);
+    } else if (name === 'cep') {
+      // Apenas números, máximo 8 dígitos
+      newValue = value.replace(/\D/g, '').slice(0, 8);
+      // Formatação: 00000-000
+      if (newValue.length > 5) {
+        newValue = newValue.replace(/(\d{5})(\d)/, '$1-$2');
+      }
+    }
+
+    if (name === "cep" && (newValue.length === 8 || newValue.length === 9)) {
+      buscarEnderecoPorCep(newValue);
     }
 
     if (name.startsWith("horario_")) {
@@ -106,11 +155,10 @@ const CadastrarPontoColeta = () => {
           },
         },
       }));
-
     } else {
       setForm((prev) => ({
         ...prev,
-        [name]: type === "checkbox" ? checked : value,
+        [name]: type === "checkbox" ? checked : newValue,
       }));
     }
   };
@@ -208,6 +256,7 @@ const CadastrarPontoColeta = () => {
                   erros.nome ? "cadastrar-ponto-input-error" : ""
                 }`}
                 placeholder="Ex: Farmácia Central - Ponto de Coleta"
+                maxLength={100}
               />
               {erros.nome && (
                 <span className="cadastrar-ponto-error">{erros.nome}</span>
@@ -225,6 +274,7 @@ const CadastrarPontoColeta = () => {
                   erros.cnpj ? "cadastrar-ponto-input-error" : ""
                 }`}
                 placeholder="00.000.000/0000-00"
+                maxLength={18}
               />
               {erros.cnpj && (
                 <span className="cadastrar-ponto-error">{erros.cnpj}</span>
@@ -265,6 +315,7 @@ const CadastrarPontoColeta = () => {
                   erros.endereco ? "cadastrar-ponto-input-error" : ""
                 }`}
                 placeholder="Rua, número, complemento"
+                maxLength={200}
               />
               {erros.endereco && (
                 <span className="cadastrar-ponto-error">{erros.endereco}</span>
@@ -283,6 +334,7 @@ const CadastrarPontoColeta = () => {
                     erros.numero ? "cadastrar-ponto-input-error" : ""
                   }`}
                   placeholder="123"
+                  maxLength={10}
                 />
                 {erros.numero && (
                   <span className="cadastrar-ponto-error">{erros.numero}</span>
@@ -312,6 +364,7 @@ const CadastrarPontoColeta = () => {
                   erros.telefone ? "cadastrar-ponto-input-error" : ""
                 }`}
                 placeholder="(11) 99999-9999"
+                maxLength={15}
               />
               {erros.telefone && (
                 <span className="cadastrar-ponto-error">
@@ -480,6 +533,7 @@ const CadastrarPontoColeta = () => {
                 rows={4}
                 className="cadastrar-ponto-textarea"
                 placeholder="Informações adicionais sobre o ponto de coleta..."
+                maxLength={500}
               />
             </div>
           </div>

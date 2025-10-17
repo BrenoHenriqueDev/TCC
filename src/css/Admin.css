@@ -267,6 +267,28 @@
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+.excluir-btn {
+  background: linear-gradient(135deg, #e53e3e, #c53030);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: all 0.3s ease;
+}
+
+.excluir-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(229, 62, 62, 0.4);
+}
+
+.excluir-btn:active {
+  transform: translateY(1px);
+}
+
 .no-users {
   text-align: center;
   padding: 60px 20px;
@@ -459,6 +481,11 @@
 }
 
 .status-badge.aprovado {
+  background: linear-gradient(135deg, #38a169, #2f855a);
+  color: white;
+}
+
+.status-badge.ativo {
   background: linear-gradient(135deg, #38a169, #2f855a);
   color: white;
 }
