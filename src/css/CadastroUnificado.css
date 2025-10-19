@@ -5,18 +5,18 @@
   justify-content: center;
   align-items: center;
   padding: 1rem;
-  background: #334155;
+  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
   margin-top: 20px;
   margin-bottom: 20px;
 }
 
 /* Aplicar a cor de fundo ao body/html para eliminar espaços brancos */
 body {
-  background: #334155;
+  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
 }
 
 html {
-  background: #334155;
+  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
 }
 
 .cadastro-unificado-box {

@@ -66,21 +66,24 @@ const HistoricoAgendamentos = () => {
   if (loading) {
     return (
       <div className="historico-container">
-        <h2 className="historico-title">
-          <FaHistory className="historico-title-icon" /> Histórico de Agendamentos
-        </h2>
-        <p>Carregando...</p>
+        <div className="historico-card">
+          <h2 className="historico-title">
+            <FaHistory className="historico-title-icon" /> Histórico de Agendamentos
+          </h2>
+          <div className="historico-loading">Carregando...</div>
+        </div>
       </div>
     );
   }
 
   return (
-  <div className="historico-container">
-    <h2 className="historico-title">
-      <FaHistory className="historico-title-icon" /> Histórico de Agendamentos
-    </h2>
-    <div className="historico-table-wrapper">
-      <table className="historico-table">
+    <div className="historico-container">
+      <div className="historico-card">
+        <h2 className="historico-title">
+          <FaHistory className="historico-title-icon" /> Histórico de Agendamentos
+        </h2>
+        <div className="historico-table-wrapper">
+          <table className="historico-table">
         <thead>
           <tr className="historico-table-header-row">
             <th className="historico-th">Data</th>
@@ -157,10 +160,11 @@ const HistoricoAgendamentos = () => {
               </td>
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
   );
 };
 

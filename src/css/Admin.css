@@ -1,6 +1,6 @@
 .admin-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
   padding: 30px 20px;
 }
 
@@ -68,7 +68,7 @@
 .section-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #3A6EB7, #2A5A9A);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -109,7 +109,7 @@
 
 .cnpj-btn {
   padding: 14px 24px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #3A6EB7, #2A5A9A);
   color: white;
   border: none;
   border-radius: 10px;

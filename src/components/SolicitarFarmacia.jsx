@@ -1,6 +1,7 @@
 import { useState } from "react";
 import EstabelecimentoService from "../services/EstabelecimentoService";
 import UsuarioService from "../services/UsuarioService";
+import "../css/SolicitarFarmacia.css";
 
 const SolicitarFarmacia = () => {
   const [formData, setFormData] = useState({
@@ -156,176 +157,178 @@ const SolicitarFarmacia = () => {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Solicitar Permissão para Farmácia</h2>
+    <div className="solicitar-farmacia-container">
+      <div className="solicitar-farmacia-card">
+        <h2 className="solicitar-farmacia-title">Solicitar Permissão para Farmácia</h2>
 
-      {message && (
-        <div className={`alert ${message.includes("sucesso") ? "alert-success" : "alert-danger"}`}>
-          {message}
-        </div>
-      )}
+        {message && (
+          <div className={`solicitar-farmacia-alert ${message.includes("sucesso") ? "success" : "error"}`}>
+            {message}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Nome da Farmácia *</label>
-          <input
-            type="text"
-            className="form-control"
-            name="nome"
-            value={formData.nome}
-            onChange={handleChange}
-            placeholder="Ex: Farmácia Central"
-            maxLength={20}
-            required
-          />
-          <small className="text-muted">{formData.nome.length}/20 caracteres</small>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div className="solicitar-farmacia-form-group">
+            <label className="solicitar-farmacia-label">Nome da Farmácia *</label>
+            <input
+              type="text"
+              className="solicitar-farmacia-input"
+              name="nome"
+              value={formData.nome}
+              onChange={handleChange}
+              placeholder="Ex: Farmácia Central"
+              maxLength={20}
+              required
+            />
+            <small className="solicitar-farmacia-small">{formData.nome.length}/20 caracteres</small>
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">CNPJ *</label>
-          <input
-            type="text"
-            className="form-control"
-            name="cnpj"
-            value={formData.cnpj}
-            onChange={handleChange}
-            placeholder="00.000.000/0000-00"
-            maxLength={18}
-            required
-          />
-          <small className="text-muted">Apenas números (14 dígitos)</small>
-        </div>
+          <div className="solicitar-farmacia-form-group">
+            <label className="solicitar-farmacia-label">CNPJ *</label>
+            <input
+              type="text"
+              className="solicitar-farmacia-input"
+              name="cnpj"
+              value={formData.cnpj}
+              onChange={handleChange}
+              placeholder="00.000.000/0000-00"
+              maxLength={18}
+              required
+            />
+            <small className="solicitar-farmacia-small">Apenas números (14 dígitos)</small>
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">CEP *</label>
-          <input
-            type="text"
-            className="form-control"
-            name="cep"
-            value={formData.cep}
-            onChange={handleChange}
-            placeholder="00000-000"
-            maxLength={9}
-            required
-          />
-          <small className="text-muted">Apenas números (8 dígitos)</small>
-        </div>
+          <div className="solicitar-farmacia-form-group">
+            <label className="solicitar-farmacia-label">CEP *</label>
+            <input
+              type="text"
+              className="solicitar-farmacia-input"
+              name="cep"
+              value={formData.cep}
+              onChange={handleChange}
+              placeholder="00000-000"
+              maxLength={9}
+              required
+            />
+            <small className="solicitar-farmacia-small">Apenas números (8 dígitos)</small>
+          </div>
 
-        <div className="row">
-          <div className="col-md-8">
-            <div className="mb-3">
-              <label className="form-label">Endereço *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="endereco"
-                value={formData.endereco}
-                onChange={handleChange}
-                placeholder="Rua, Avenida..."
-                maxLength={30}
-                required
-              />
-              <small className="text-muted">{formData.endereco.length}/30 caracteres</small>
+          <div className="solicitar-farmacia-row">
+            <div className="solicitar-farmacia-col-8">
+              <div className="solicitar-farmacia-form-group">
+                <label className="solicitar-farmacia-label">Endereço *</label>
+                <input
+                  type="text"
+                  className="solicitar-farmacia-input"
+                  name="endereco"
+                  value={formData.endereco}
+                  onChange={handleChange}
+                  placeholder="Rua, Avenida..."
+                  maxLength={30}
+                  required
+                />
+                <small className="solicitar-farmacia-small">{formData.endereco.length}/30 caracteres</small>
+              </div>
+            </div>
+            <div className="solicitar-farmacia-col-4">
+              <div className="solicitar-farmacia-form-group">
+                <label className="solicitar-farmacia-label">Número *</label>
+                <input
+                  type="text"
+                  className="solicitar-farmacia-input"
+                  name="numero"
+                  value={formData.numero}
+                  onChange={handleChange}
+                  placeholder="123"
+                  maxLength={3}
+                  required
+                />
+              </div>
             </div>
           </div>
-          <div className="col-md-4">
-            <div className="mb-3">
-              <label className="form-label">Número *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="numero"
-                value={formData.numero}
-                onChange={handleChange}
-                placeholder="123"
-                maxLength={3}
-                required
-              />
+
+          <div className="solicitar-farmacia-row">
+            <div className="solicitar-farmacia-col-4">
+              <div className="solicitar-farmacia-form-group">
+                <label className="solicitar-farmacia-label">Bairro *</label>
+                <input
+                  type="text"
+                  className="solicitar-farmacia-input"
+                  name="bairro"
+                  value={formData.bairro}
+                  onChange={handleChange}
+                  placeholder="Centro"
+                  maxLength={20}
+                  required
+                />
+              </div>
+            </div>
+            <div className="solicitar-farmacia-col-4">
+              <div className="solicitar-farmacia-form-group">
+                <label className="solicitar-farmacia-label">Cidade *</label>
+                <input
+                  type="text"
+                  className="solicitar-farmacia-input"
+                  name="cidade"
+                  value={formData.cidade}
+                  onChange={handleChange}
+                  placeholder="São Paulo"
+                  maxLength={20}
+                  required
+                />
+              </div>
+            </div>
+            <div className="solicitar-farmacia-col-2">
+              <div className="solicitar-farmacia-form-group">
+                <label className="solicitar-farmacia-label">Estado *</label>
+                <input
+                  type="text"
+                  className="solicitar-farmacia-input"
+                  name="estado"
+                  value={formData.estado}
+                  onChange={handleChange}
+                  placeholder="SP"
+                  maxLength={2}
+                  required
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="row">
-          <div className="col-md-4">
-            <div className="mb-3">
-              <label className="form-label">Bairro *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="bairro"
-                value={formData.bairro}
-                onChange={handleChange}
-                placeholder="Centro"
-                maxLength={20}
-                required
-              />
-            </div>
+          <div className="solicitar-farmacia-form-group">
+            <label className="solicitar-farmacia-label">Telefone *</label>
+            <input
+              type="tel"
+              className="solicitar-farmacia-input"
+              name="telefone"
+              value={formData.telefone}
+              onChange={handleChange}
+              placeholder="(11) 99999-9999"
+              maxLength={15}
+              required
+            />
+            <small className="solicitar-farmacia-small">Apenas números (10 ou 11 dígitos)</small>
           </div>
-          <div className="col-md-6">
-            <div className="mb-3">
-              <label className="form-label">Cidade *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="cidade"
-                value={formData.cidade}
-                onChange={handleChange}
-                placeholder="São Paulo"
-                maxLength={20}
-                required
-              />
-            </div>
+
+          <div className="solicitar-farmacia-form-group">
+            <label className="solicitar-farmacia-label">Observações</label>
+            <textarea
+              className="solicitar-farmacia-textarea"
+              name="observacoes"
+              rows="4"
+              value={formData.observacoes}
+              onChange={handleChange}
+              placeholder="Informações adicionais sobre a farmácia..."
+              maxLength={50}
+            />
+            <small className="solicitar-farmacia-small">{formData.observacoes.length}/50 caracteres</small>
           </div>
-          <div className="col-md-2">
-            <div className="mb-3">
-              <label className="form-label">Estado *</label>
-              <input
-                type="text"
-                className="form-control"
-                name="estado"
-                value={formData.estado}
-                onChange={handleChange}
-                placeholder="SP"
-                maxLength={2}
-                required
-              />
-            </div>
-          </div>
-        </div>
 
-        <div className="mb-3">
-          <label className="form-label">Telefone *</label>
-          <input
-            type="tel"
-            className="form-control"
-            name="telefone"
-            value={formData.telefone}
-            onChange={handleChange}
-            placeholder="(11) 99999-9999"
-            maxLength={15}
-            required
-          />
-          <small className="text-muted">Apenas números (10 ou 11 dígitos)</small>
-        </div>
-
-        <div className="mb-3">
-          <label className="form-label">Observações</label>
-          <textarea
-            className="form-control"
-            name="observacoes"
-            rows="4"
-            value={formData.observacoes}
-            onChange={handleChange}
-            placeholder="Informações adicionais sobre a farmácia..."
-            maxLength={50}
-          />
-          <small className="text-muted">{formData.observacoes.length}/50 caracteres</small>
-        </div>
-
-        <button type="submit" className="btn btn-primary" disabled={loading}>
-          {loading ? "Enviando..." : "Enviar Solicitação"}
-        </button>
-      </form>
+          <button type="submit" className="solicitar-farmacia-btn" disabled={loading}>
+            {loading ? "Enviando..." : "Enviar Solicitação"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

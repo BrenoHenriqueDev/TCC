@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import ColetaService from '../services/ColetaService';
 import EstabelecimentoService from '../services/EstabelecimentoService';
 import UsuarioService from '../services/UsuarioService';
+import '../css/VisualizarAgendamentos.css';
 
 const VisualizarAgendamentos = () => {
   const [agendamentos, setAgendamentos] = useState([]);
   const [carregando, setCarregando] = useState(true);
+  const [atualizando, setAtualizando] = useState(null);
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 6;
 
   useEffect(() => {
     carregarAgendamentos();
@@ -39,57 +43,184 @@ const VisualizarAgendamentos = () => {
     }
   };
 
-  if (carregando) {
-    return <div style={{ padding: '20px', textAlign: 'center' }}>Carregando agendamentos...</div>;
-  }
+  const atualizarStatusAgendamento = async (agendamentoId, novoStatus) => {
+    setAtualizando(agendamentoId);
+    try {
+      const agendamento = agendamentos.find(a => a.id === agendamentoId);
+      if (agendamento) {
+        await ColetaService.atualizarColeta(agendamentoId, {
+          ...agendamento,
+          statusColeta: novoStatus
+        });
+        
+        setAgendamentos(prev => 
+          prev.map(a => 
+            a.id === agendamentoId 
+              ? { ...a, statusColeta: novoStatus }
+              : a
+          )
+        );
+        
+        alert(`Agendamento ${novoStatus.toLowerCase()} com sucesso!`);
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
+      alert('Erro ao atualizar status do agendamento.');
+    } finally {
+      setAtualizando(null);
+    }
+  };
 
-  if (!agendamentos || agendamentos.length === 0) {
+  if (carregando) {
     return (
-      <div style={{ padding: '20px' }}>
-        <h1>Meus Agendamentos</h1>
-        <p>Nenhum agendamento encontrado para seus estabelecimentos.</p>
+      <div className="visualizar-agendamentos-container">
+        <div className="visualizar-agendamentos-card">
+          <div className="visualizar-agendamentos-loading">Carregando agendamentos...</div>
+        </div>
       </div>
     );
   }
 
-  return (
-    <div style={{ padding: '20px' }}>
-      <h1>Meus Agendamentos</h1>
-      <div style={{ display: 'grid', gap: '15px', marginTop: '20px' }}>
-        {agendamentos.map((agendamento) => (
-          <div key={agendamento.id} style={{
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '15px',
-            backgroundColor: '#f9f9f9'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-              <h3 style={{ margin: 0, color: '#333' }}>Agendamento #{agendamento.id}</h3>
-              <span style={{
-                padding: '4px 8px',
-                borderRadius: '4px',
-                fontSize: '12px',
-                backgroundColor: agendamento.status === 'PENDENTE' ? '#fff3cd' : '#d4edda',
-                color: agendamento.status === 'PENDENTE' ? '#856404' : '#155724'
-              }}>
-                {agendamento.status}
-              </span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '15px' }}>
-              <div><strong>Data da Coleta:</strong> {agendamento.dataColeta}</div>
-              <div><strong>Tipo de Coleta:</strong> {agendamento.tipoColeta}</div>
-              <div><strong>Status:</strong> {agendamento.statusColeta}</div>
-              <div><strong>Tipo de Medicamento:</strong> {agendamento.tipoMedicamento}</div>
-              <div><strong>CEP:</strong> {agendamento.cep}</div>
-              <div><strong>Endereço:</strong> {agendamento.info}</div>
-              <div><strong>Número:</strong> {agendamento.numero}</div>
-              <div><strong>Complemento:</strong> {agendamento.complemento || '-'}</div>
-              <div><strong>Telefone:</strong> {agendamento.telefone}</div>
-              <div><strong>Usuário:</strong> {agendamento.usuario?.nome || agendamento.usuario?.email || 'N/A'}</div>
-              <div><strong>Estabelecimento:</strong> {agendamento.estabelecimento?.nome || 'N/A'}</div>
-            </div>
+  if (!agendamentos || agendamentos.length === 0) {
+    return (
+      <div className="visualizar-agendamentos-container">
+        <div className="visualizar-agendamentos-card">
+          <h1 className="visualizar-agendamentos-title">Meus Agendamentos</h1>
+          <div className="visualizar-agendamentos-empty">
+            Nenhum agendamento encontrado para seus estabelecimentos.
           </div>
-        ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Cálculos da paginação
+  const totalPaginas = Math.ceil(agendamentos.length / itensPorPagina);
+  const indiceInicio = (paginaAtual - 1) * itensPorPagina;
+  const indiceFim = indiceInicio + itensPorPagina;
+  const agendamentosPaginados = agendamentos.slice(indiceInicio, indiceFim);
+
+  const irParaPagina = (pagina) => {
+    setPaginaAtual(pagina);
+  };
+
+  return (
+    <div className="visualizar-agendamentos-container">
+      <div className="visualizar-agendamentos-card">
+        <h1 className="visualizar-agendamentos-title">Meus Agendamentos</h1>
+        <div className="agendamentos-grid">
+          {agendamentosPaginados.map((agendamento) => (
+            <div key={agendamento.id} className="agendamento-card">
+              <div className="agendamento-header">
+                <div className="agendamento-id">Agendamento solicitado por {agendamento.usuario?.nome || agendamento.usuario?.email || 'Usuário desconhecido'}</div>
+                <span className={`agendamento-status ${
+                  agendamento.statusColeta === 'PENDENTE' ? 'status-pendente' :
+                  agendamento.statusColeta === 'CONCLUIDO' ? 'status-concluido' :
+                  agendamento.statusColeta === 'CANCELADO' ? 'status-cancelado' : 'status-pendente'
+                }`}>
+                  {agendamento.statusColeta || 'PENDENTE'}
+                </span>
+              </div>
+              
+              <div className="agendamento-info">
+                <div className="info-item">
+                  <span className="info-label">Data da Coleta</span>
+                  <span className="info-value">{agendamento.dataColeta || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Tipo de Coleta</span>
+                  <span className="info-value">{agendamento.tipoColeta || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Tipo de Medicamento</span>
+                  <span className="info-value">{agendamento.tipoMedicamento || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">CEP</span>
+                  <span className="info-value">{agendamento.cep || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Endereço</span>
+                  <span className="info-value">{agendamento.info || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Número</span>
+                  <span className="info-value">{agendamento.numero || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Complemento</span>
+                  <span className="info-value">{agendamento.complemento || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Telefone</span>
+                  <span className="info-value">{agendamento.telefone || '-'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Usuário</span>
+                  <span className="info-value">{agendamento.usuario?.nome || agendamento.usuario?.email || 'N/A'}</span>
+                </div>
+                <div className="info-item">
+                  <span className="info-label">Estabelecimento</span>
+                  <span className="info-value">{agendamento.estabelecimento?.nome || 'N/A'}</span>
+                </div>
+              </div>
+              
+              <div className="agendamento-actions">
+                <button
+                  className="action-btn btn-concluir"
+                  onClick={() => atualizarStatusAgendamento(agendamento.id, 'CONCLUIDO')}
+                  disabled={atualizando === agendamento.id || agendamento.statusColeta === 'CONCLUIDO'}
+                >
+                  {atualizando === agendamento.id ? 'Atualizando...' : 'Concluir'}
+                </button>
+                <button
+                  className="action-btn btn-ativo"
+                  onClick={() => atualizarStatusAgendamento(agendamento.id, 'ATIVO')}
+                  disabled={atualizando === agendamento.id || agendamento.statusColeta === 'ATIVO'}
+                >
+                  {atualizando === agendamento.id ? 'Atualizando...' : 'Ativo'}
+                </button>
+                <button
+                  className="action-btn btn-cancelar"
+                  onClick={() => atualizarStatusAgendamento(agendamento.id, 'CANCELADO')}
+                  disabled={atualizando === agendamento.id || agendamento.statusColeta === 'CANCELADO'}
+                >
+                  {atualizando === agendamento.id ? 'Atualizando...' : 'Cancelar'}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+        
+        {totalPaginas > 1 && (
+          <div className="paginacao">
+            <button 
+              className="paginacao-btn" 
+              onClick={() => irParaPagina(paginaAtual - 1)}
+              disabled={paginaAtual === 1}
+            >
+              Anterior
+            </button>
+            
+            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(pagina => (
+              <button
+                key={pagina}
+                className={`paginacao-btn ${paginaAtual === pagina ? 'ativo' : ''}`}
+                onClick={() => irParaPagina(pagina)}
+              >
+                {pagina}
+              </button>
+            ))}
+            
+            <button 
+              className="paginacao-btn" 
+              onClick={() => irParaPagina(paginaAtual + 1)}
+              disabled={paginaAtual === totalPaginas}
+            >
+              Próximo
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

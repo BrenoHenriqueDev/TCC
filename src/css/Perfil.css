@@ -1,7 +1,7 @@
 /* Container principal do perfil */
 .perfil-container {
   min-height: 100vh;
-  background: #334155;
+  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
   padding: 2rem 1rem;
 }
 

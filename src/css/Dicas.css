@@ -2,7 +2,7 @@
 .dicas-container {
   width: 100%;
   min-height: 100vh;
-  background: #334155;
+  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
   display: flex;
   flex-direction: column;
   align-items: center;

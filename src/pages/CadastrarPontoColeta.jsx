@@ -51,6 +51,22 @@ const CadastrarPontoColeta = () => {
 
 
 
+  // Buscar coordenadas por endereço
+  const buscarCoordenadas = async (endereco, cidade, estado) => {
+    try {
+      const enderecoCompleto = `${endereco}, ${cidade}, ${estado}, Brasil`;
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(enderecoCompleto)}`
+      );
+      const data = await response.json();
+      return data && data.length > 0 
+        ? { latitude: data[0].lat, longitude: data[0].lon }
+        : { latitude: "", longitude: "" };
+    } catch {
+      return { latitude: "", longitude: "" };
+    }
+  };
+
   // Buscar endereço pelo CEP
   const buscarEnderecoPorCep = async (cep) => {
     try {
@@ -58,12 +74,15 @@ const CadastrarPontoColeta = () => {
       if (!response.ok) throw new Error("Erro na requisição do CEP");
       const data = await response.json();
       if (!data.erro) {
+        const coordenadas = await buscarCoordenadas(data.logradouro, data.localidade, data.uf);
         setForm((prev) => ({
           ...prev,
           endereco: data.logradouro || "",
           bairro: data.bairro || "",
           cidade: data.localidade || "",
           estado: data.uf || "",
+          latitude: coordenadas.latitude,
+          longitude: coordenadas.longitude,
         }));
       } else {
         setForm((prev) => ({
