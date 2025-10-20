@@ -60,14 +60,21 @@ const GerenciarPontos = () => {
 
   const handleAtivarDesativar = async (id) => {
     try {
-      // Como não temos endpoint específico, vamos simular localmente
-      const novosPontos = pontos.map((p) =>
-        p.id === id ? { ...p, statusEstabelecimento: p.statusEstabelecimento === 'ATIVO' ? 'INATIVO' : 'ATIVO' } : p
-      );
-      setPontos(novosPontos);
-      alert("Status alterado!");
+      const usuario = UsuarioService.getCurrentUser();
+      const ponto = pontos.find(p => p.id === id);
+      
+      console.log('Ponto encontrado:', ponto);
+      console.log('Status atual:', ponto?.statusEstabelecimento);
+      
+      const novoStatus = ponto.statusEstabelecimento === 'ATIVO' ? 'INATIVO' : 'ATIVO';
+      console.log('Novo status:', novoStatus);
+      
+      await EstabelecimentoService.alterarStatus(usuario.id, id, novoStatus);
+      await carregarPontos(); // Recarrega a lista atualizada
+      alert("Status alterado com sucesso!");
     } catch (error) {
-      console.error("Erro ao alterar status:", error);
+      console.error("Erro completo:", error);
+      alert("Erro ao alterar status: " + error.message);
     }
   };
 
@@ -115,7 +122,11 @@ const GerenciarPontos = () => {
                   className={`gerenciar-ponto-btn-ativar ${
                     ponto.statusEstabelecimento === 'ATIVO' ? "inativo" : "ativo"
                   }`}
-                  onClick={() => handleAtivarDesativar(ponto.id)}
+                  onClick={() => {
+                    console.log('Botão clicado! ID:', ponto.id);
+                    handleAtivarDesativar(ponto.id);
+                  }}
+                  style={{ pointerEvents: 'auto' }}
                 >
                   {ponto.statusEstabelecimento === 'ATIVO' ? "Desativar" : "Ativar"}
                 </button>

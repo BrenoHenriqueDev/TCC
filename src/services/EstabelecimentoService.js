@@ -44,22 +44,27 @@ const rejeitarSolicitacao = async (adminId, estabelecimentoId) => {
 };
 
 const alterarStatus = async (usuarioId, estabelecimentoId, novoStatus) => {
-    // Primeiro busca o estabelecimento completo
-    const estabelecimentos = await listarTodosComCNPJ(usuarioId);
+    console.log('Alterando status:', { usuarioId, estabelecimentoId, novoStatus });
+    
+    // Busca o estabelecimento atual
+    const response = await http.mainInstance.get(API_URL + `/listarUsuario/${usuarioId}`);
+    const estabelecimentos = response.data || [];
     const estabelecimento = estabelecimentos.find(e => e.id === estabelecimentoId);
     
     if (!estabelecimento) {
         throw new Error('Estabelecimento não encontrado');
     }
     
-    // Atualiza apenas o status mantendo os outros dados
+    // Atualiza o status
     const estabelecimentoAtualizado = {
         ...estabelecimento,
         statusEstabelecimento: novoStatus
     };
     
-    const response = await http.mainInstance.put(API_URL + `/atualizar/${usuarioId}/${estabelecimentoId}`, estabelecimentoAtualizado);
-    return response.data;
+    console.log('Dados para atualizar:', estabelecimentoAtualizado);
+    
+    const updateResponse = await http.mainInstance.put(API_URL + `/atualizar/${usuarioId}/${estabelecimentoId}`, estabelecimentoAtualizado);
+    return updateResponse.data;
 };
 
 const EstabelecimentoService = {

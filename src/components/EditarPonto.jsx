@@ -4,19 +4,34 @@ import "../css/EditarPonto.css";
 const EditarModal = ({ ponto, onClose, onSave }) => {
   const [form, setForm] = useState(ponto || {});
 
+  const formatarCnpj = (cnpj) => {
+    if (!cnpj) return "";
+    const numeros = cnpj.replace(/\D/g, "");
+    return numeros.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
+  };
+
+  const formatarTelefone = (telefone) => {
+    if (!telefone) return "";
+    const numeros = telefone.replace(/\D/g, "");
+    if (numeros.length === 11) {
+      return numeros.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+    }
+    return numeros.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  };
+
+  const formatarCep = (cep) => {
+    if (!cep) return "";
+    const numeros = cep.replace(/\D/g, "");
+    return numeros.replace(/(\d{5})(\d{3})/, "$1-$2");
+  };
+
   useEffect(() => {
     if (ponto) {
       setForm({
         ...ponto,
-        horarioFuncionamento: ponto.horarioFuncionamento || {
-          segunda: { inicio: "", fim: "", aberto: true },
-          terca: { inicio: "", fim: "", aberto: true },
-          quarta: { inicio: "", fim: "", aberto: true },
-          quinta: { inicio: "", fim: "", aberto: true },
-          sexta: { inicio: "", fim: "", aberto: true },
-          sabado: { inicio: "", fim: "", aberto: false },
-          domingo: { inicio: "", fim: "", aberto: false },
-        },
+        cnpj: formatarCnpj(ponto.cnpj),
+        telefone: formatarTelefone(ponto.telefone),
+        cep: formatarCep(ponto.cep),
         tiposMedicamentos: ponto.tiposMedicamentos || [],
         tipoServico: ponto.coleta || "RECEBIMENTO"
       });
@@ -31,34 +46,56 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
     { value: "CONTROLADOS", label: "Medicamentos controlados" },
   ];
 
-  const diasSemana = ["segunda", "terca", "quarta", "quinta", "sexta", "sabado", "domingo"];
+
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    let newValue = value;
 
-    if (name.startsWith("horario_")) {
-      const [_, dia, campo] = name.split("_");
-      setForm((prev) => ({
-        ...prev,
-        horarioFuncionamento: {
-          ...prev.horarioFuncionamento,
-          [dia]: {
-            ...prev.horarioFuncionamento?.[dia] || {},
-            [campo]: type === "checkbox" ? checked : value,
-          },
-        },
-      }));
-    } else {
-      setForm((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      }));
+    if (name === "cnpj") {
+      newValue = value.replace(/\D/g, "").slice(0, 14);
+      if (newValue.length > 2) {
+        newValue = newValue.replace(/(\d{2})(\d)/, "$1.$2");
+      }
+      if (newValue.length > 6) {
+        newValue = newValue.replace(/(\d{2}\.\d{3})(\d)/, "$1.$2");
+      }
+      if (newValue.length > 10) {
+        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3})(\d)/, "$1/$2");
+      }
+      if (newValue.length > 15) {
+        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/, "$1-$2");
+      }
+    } else if (name === "telefone") {
+      newValue = value.replace(/\D/g, "").slice(0, 11);
+      if (newValue.length > 2) {
+        newValue = newValue.replace(/(\d{2})(\d)/, "($1) $2");
+      }
+      if (newValue.length > 10) {
+        newValue = newValue.replace(/(\(\d{2}\) \d{5})(\d)/, "$1-$2");
+      }
+    } else if (name === "cep") {
+      newValue = value.replace(/\D/g, "").slice(0, 8);
+      if (newValue.length > 5) {
+        newValue = newValue.replace(/(\d{5})(\d)/, "$1-$2");
+      }
     }
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : newValue,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSave(form);
+    const formData = {
+      ...form,
+      cnpj: form.cnpj?.replace(/\D/g, "") || "",
+      telefone: form.telefone?.replace(/\D/g, "") || "",
+      cep: form.cep?.replace(/\D/g, "") || ""
+    };
+    onSave(formData);
     onClose();
   };
 
@@ -111,12 +148,38 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
           </label>
 
           <label>
+            CNPJ:
+            <input
+              type="text"
+              name="cnpj"
+              value={form.cnpj || ""}
+              onChange={handleChange}
+              placeholder="00.000.000/0000-00"
+              maxLength={18}
+            />
+          </label>
+
+          <label>
+            CEP:
+            <input
+              type="text"
+              name="cep"
+              value={form.cep || ""}
+              onChange={handleChange}
+              placeholder="00000-000"
+              maxLength={9}
+            />
+          </label>
+
+          <label>
             Telefone:
             <input
               type="text"
               name="telefone"
               value={form.telefone || ""}
               onChange={handleChange}
+              placeholder="(11) 99999-9999"
+              maxLength={15}
             />
           </label>
 
@@ -151,50 +214,7 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
             </div>
           </label>
 
-          <fieldset className="horario-funcionamento">
-            <legend>Horário de Funcionamento</legend>
-            {diasSemana.map((dia) => (
-              <div key={dia} className="editar-horario-card">
-                <div className="editar-horario-header">
-                  <span className="editar-dia">{dia.charAt(0).toUpperCase() + dia.slice(1)}</span>
-                  <label className="editar-toggle">
-                    <input
-                      type="checkbox"
-                      name={`horario_${dia}_aberto`}
-                      checked={form.horarioFuncionamento?.[dia]?.aberto || false}
-                      onChange={handleChange}
-                      className="editar-toggle-input"
-                    />
-                    <span className="editar-toggle-slider"></span>
-                  </label>
-                </div>
-                {form.horarioFuncionamento?.[dia]?.aberto && (
-                  <div className="editar-horario-inputs">
-                    <div className="editar-time-group">
-                      <label>Abertura</label>
-                      <input
-                        type="time"
-                        name={`horario_${dia}_inicio`}
-                        value={form.horarioFuncionamento?.[dia]?.inicio || ""}
-                        onChange={handleChange}
-                        className="editar-time-input"
-                      />
-                    </div>
-                    <div className="editar-time-group">
-                      <label>Fechamento</label>
-                      <input
-                        type="time"
-                        name={`horario_${dia}_fim`}
-                        value={form.horarioFuncionamento?.[dia]?.fim || ""}
-                        onChange={handleChange}
-                        className="editar-time-input"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </fieldset>
+
 
           <label>
             Tipo de Serviço:
@@ -216,6 +236,7 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
               value={form.observacoes || ""}
               onChange={handleChange}
               rows={3}
+              placeholder="Ex: Aberto das 09:00 às 22:00. Informações adicionais sobre o ponto de coleta..."
             />
           </label>
 

@@ -18,18 +18,14 @@ const HistoricoAgendamentos = () => {
     const carregarAgendamentos = async () => {
       try {
         const usuario = UsuarioService.getCurrentUser();
-        console.log('Usuario logado para agendamentos:', usuario);
         if (usuario && usuario.id) {
           try {
             // Tenta buscar por usuário específico
             const response = await ColetaService.listarPorUsuario(usuario.id);
-            console.log('Resposta ColetaService por usuário:', response);
             setAgendamentos(response.data);
           } catch (userError) {
-            console.log('Endpoint por usuário não existe, usando listarTodas e filtrando');
             // Se não existir endpoint específico, usa listarTodas e filtra
             const response = await ColetaService.listarTodas();
-            console.log('Resposta ColetaService todas:', response);
             const coletasUsuario = response.data.filter(coleta => 
               coleta.usuarioId === usuario.id || coleta.usuario?.id === usuario.id
             );

@@ -1,10 +1,15 @@
 .cadastrar-ponto-container {
-  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
+  background: #2A5A9A;
   min-height: 100vh;
   padding: 2rem;
   max-width: 800px;
   margin: 0 auto;
   color: #fff;
+}
+
+.app-main-content {
+  background: #2A5A9A !important;
+  min-height: 100vh;
 }
 
 .cadastrar-ponto-header {
@@ -31,13 +36,23 @@
 }
 
 .cadastrar-ponto-form {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   padding: 2rem;
-  border-radius: 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .cadastrar-ponto-section {
   margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .cadastrar-ponto-section-title {
@@ -141,6 +156,13 @@ select.cadastrar-ponto-input option {
   margin-top: 0.5rem;
 }
 
+.cadastrar-ponto-help {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin-top: 0.25rem;
+  display: block;
+}
+
 .cadastrar-ponto-horario-grid {
   display: grid;
   grid-template-columns: 120px 1fr 1fr 80px;
@@ -155,6 +177,8 @@ select.cadastrar-ponto-input option {
 
 .cadastrar-ponto-horario-card {
   background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   padding: 1rem;
@@ -296,15 +320,21 @@ select.cadastrar-ponto-input option {
   align-items: center;
   padding: 0.75rem;
   background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .cadastrar-ponto-checkbox-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border-color: #60a5fa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
 }
 
 .cadastrar-ponto-checkbox-item input[type="checkbox"]:checked + .cadastrar-ponto-checkbox-text {

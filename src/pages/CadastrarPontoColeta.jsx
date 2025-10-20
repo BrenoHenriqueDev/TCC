@@ -20,18 +20,10 @@ const CadastrarPontoColeta = () => {
     longitude: "",
     tiposMedicamentos: [],
     tipoServico: "RECEBIMENTO",
-    horarioFuncionamento: {
-      segunda: { inicio: "", fim: "", aberto: true },
-      terca: { inicio: "", fim: "", aberto: true },
-      quarta: { inicio: "", fim: "", aberto: true },
-      quinta: { inicio: "", fim: "", aberto: true },
-      sexta: { inicio: "", fim: "", aberto: true },
-      sabado: { inicio: "", fim: "", aberto: false },
-      domingo: { inicio: "", fim: "", aberto: false },
-    },
     observacoes: "",
   });
   const [erros, setErros] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
@@ -110,96 +102,90 @@ const CadastrarPontoColeta = () => {
     const { name, value, type, checked } = e.target;
     let newValue = value;
 
-    // Regras específicas por campo
-    if (name === 'cnpj') {
-      // Apenas números, máximo 14 dígitos
-      newValue = value.replace(/\D/g, '').slice(0, 14);
-      // Formatação: 00.000.000/0000-00
+    if (name === "cnpj") {
+      newValue = value.replace(/\D/g, "").slice(0, 14);
       if (newValue.length > 2) {
-        newValue = newValue.replace(/(\d{2})(\d)/, '$1.$2');
+        newValue = newValue.replace(/(\d{2})(\d)/, "$1.$2");
       }
       if (newValue.length > 6) {
-        newValue = newValue.replace(/(\d{2}\.\d{3})(\d)/, '$1.$2');
+        newValue = newValue.replace(/(\d{2}\.\d{3})(\d)/, "$1.$2");
       }
       if (newValue.length > 10) {
-        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3})(\d)/, '$1/$2');
+        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3})(\d)/, "$1/$2");
       }
       if (newValue.length > 15) {
-        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/, '$1-$2');
+        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/, "$1-$2");
       }
-    } else if (name === 'telefone') {
-      // Apenas números, máximo 11 dígitos
-      newValue = value.replace(/\D/g, '').slice(0, 11);
-      // Formatação: (00) 00000-0000
+    } else if (name === "telefone") {
+      newValue = value.replace(/\D/g, "").slice(0, 11);
       if (newValue.length > 2) {
-        newValue = newValue.replace(/(\d{2})(\d)/, '($1) $2');
+        newValue = newValue.replace(/(\d{2})(\d)/, "($1) $2");
       }
       if (newValue.length > 10) {
-        newValue = newValue.replace(/(\(\d{2}\) \d{5})(\d)/, '$1-$2');
+        newValue = newValue.replace(/(\(\d{2}\) \d{5})(\d)/, "$1-$2");
       }
-    } else if (name === 'nome') {
-      // Máximo 100 caracteres
+    } else if (name === "nome") {
       newValue = value.slice(0, 100);
-    } else if (name === 'endereco') {
-      // Máximo 200 caracteres
+    } else if (name === "endereco") {
       newValue = value.slice(0, 200);
-    } else if (name === 'numero') {
-      // Máximo 10 caracteres
+    } else if (name === "numero") {
       newValue = value.slice(0, 10);
-    } else if (name === 'observacoes') {
-      // Máximo 500 caracteres
+    } else if (name === "observacoes") {
       newValue = value.slice(0, 500);
-    } else if (name === 'cep') {
-      // Apenas números, máximo 8 dígitos
-      newValue = value.replace(/\D/g, '').slice(0, 8);
-      // Formatação: 00000-000
+    } else if (name === "cep") {
+      newValue = value.replace(/\D/g, "").slice(0, 8);
       if (newValue.length > 5) {
-        newValue = newValue.replace(/(\d{5})(\d)/, '$1-$2');
+        newValue = newValue.replace(/(\d{5})(\d)/, "$1-$2");
+      }
+      if (newValue.replace(/\D/g, "").length === 8) {
+        buscarEnderecoPorCep(newValue);
       }
     }
 
-    if (name === "cep" && (newValue.length === 8 || newValue.length === 9)) {
+    if (name === "cep" && newValue.replace(/\D/g, "").length === 8) {
       buscarEnderecoPorCep(newValue);
     }
 
-    if (name.startsWith("horario_")) {
-      const [dia, campo] = name.split("_").slice(1);
-      setForm((prev) => ({
-        ...prev,
-        horarioFuncionamento: {
-          ...prev.horarioFuncionamento,
-          [dia]: {
-            ...prev.horarioFuncionamento[dia],
-            [campo]: type === "checkbox" ? checked : value,
-          },
-        },
-      }));
-    } else {
-      setForm((prev) => ({
-        ...prev,
-        [name]: type === "checkbox" ? checked : newValue,
-      }));
-    }
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : newValue,
+    }));
   };
 
   const validar = () => {
     const novosErros = {};
 
-    if (!form.nome.trim()) novosErros.nome = "Nome do ponto é obrigatório.";
-    if (!form.cnpj.trim()) novosErros.cnpj = "CNPJ é obrigatório.";
-    if (!form.endereco.trim()) novosErros.endereco = "Endereço é obrigatório.";
-    if (!form.cep.trim()) novosErros.cep = "CEP é obrigatório.";
-    if (!form.numero.trim()) novosErros.numero = "Número é obrigatório.";
-    if (!form.telefone.trim()) novosErros.telefone = "Telefone é obrigatório.";
-    if (form.tiposMedicamentos.length === 0)
-      novosErros.tiposMedicamentos =
-        "Selecione pelo menos um tipo de medicamento.";
+    if (!form.nome.trim()) novosErros.nome = "Nome é obrigatório";
+    if (form.nome.trim().length < 3) novosErros.nome = "Nome deve ter pelo menos 3 caracteres";
+    
+    if (!form.cnpj.trim()) novosErros.cnpj = "CNPJ é obrigatório";
+    if (form.cnpj.replace(/\D/g, "").length !== 14) novosErros.cnpj = "CNPJ deve ter 14 dígitos";
+    
+    if (!form.cep.trim()) novosErros.cep = "CEP é obrigatório";
+    if (form.cep.replace(/\D/g, "").length !== 8) novosErros.cep = "CEP deve ter 8 dígitos";
+    
+    if (!form.endereco.trim()) novosErros.endereco = "Endereço é obrigatório";
+    if (!form.numero.trim()) novosErros.numero = "Número é obrigatório";
+    if (!form.bairro.trim()) novosErros.bairro = "Bairro é obrigatório";
+    if (!form.cidade.trim()) novosErros.cidade = "Cidade é obrigatória";
+    if (!form.estado.trim()) novosErros.estado = "Estado é obrigatório";
+    
+    if (!form.telefone.trim()) novosErros.telefone = "Telefone é obrigatório";
+    const telefoneNumeros = form.telefone.replace(/\D/g, "");
+    if (telefoneNumeros.length < 10 || telefoneNumeros.length > 11) {
+      novosErros.telefone = "Telefone deve ter 10 ou 11 dígitos";
+    }
+    
+    if (form.tiposMedicamentos.length === 0) {
+      novosErros.tiposMedicamentos = "Selecione pelo menos um tipo de medicamento";
+    }
 
     return novosErros;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const validacao = validar();
     setErros(validacao);
 
@@ -213,28 +199,29 @@ const CadastrarPontoColeta = () => {
         }
 
         const estabelecimento = {
-          nome: form.nome,
-          cnpj: form.cnpj,
-          info: form.observacoes || "Ponto de coleta de medicamentos",
-          cep: form.cep,
-          numero: form.numero,
-          complemento: form.endereco,
-          telefone: form.telefone,
+          nome: form.nome.trim(),
+          cnpj: form.cnpj.replace(/\D/g, ""),
+          info: form.observacoes.trim() || "Ponto de coleta de medicamentos",
+          cep: form.cep.replace(/\D/g, ""),
+          numero: form.numero.trim(),
+          complemento: `${form.endereco.trim()}, ${form.bairro.trim()}`,
+          telefone: form.telefone.replace(/\D/g, ""),
           latitude: form.latitude ? parseFloat(form.latitude) : null,
           longitude: form.longitude ? parseFloat(form.longitude) : null,
           tipo: "FARMACIA",
-          coleta: form.tipoServico // RECEBIMENTO, RETIRA ou AMBOS
+          coleta: form.tipoServico
         };
 
-        console.log('Dados enviados:', estabelecimento);
         await EstabelecimentoService.cadastrar(usuario.id, estabelecimento);
-        alert("Estabelecimento cadastrado com sucesso!");
+        alert("Ponto de coleta cadastrado com sucesso!");
         navigate("/painel-estabelecimento");
       } catch (error) {
         console.error("Erro:", error);
-        alert("Erro ao cadastrar ponto de coleta.");
+        const errorMsg = error.response?.data?.message || "Erro ao cadastrar ponto de coleta";
+        alert(errorMsg);
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -256,93 +243,98 @@ const CadastrarPontoColeta = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="cadastrar-ponto-form">
-          {/* Informações básicas */}
+          {/* Informações Básicas */}
           <div className="cadastrar-ponto-section">
             <h3 className="cadastrar-ponto-section-title">
-              Informações Básicas
+              📋 Informações Básicas
             </h3>
 
-            <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">
-                Nome do Ponto de Coleta *
-              </label>
-              <input
-                type="text"
-                name="nome"
-                value={form.nome}
-                onChange={handleChange}
-                className={`cadastrar-ponto-input ${
-                  erros.nome ? "cadastrar-ponto-input-error" : ""
-                }`}
-                placeholder="Ex: Farmácia Central - Ponto de Coleta"
-                maxLength={100}
-              />
-              {erros.nome && (
-                <span className="cadastrar-ponto-error">{erros.nome}</span>
-              )}
+            <div className="cadastrar-ponto-grid">
+              <div className="cadastrar-ponto-field">
+                <label className="cadastrar-ponto-label">
+                  Nome do Ponto de Coleta *
+                </label>
+                <input
+                  type="text"
+                  name="nome"
+                  value={form.nome}
+                  onChange={handleChange}
+                  className={`cadastrar-ponto-input ${
+                    erros.nome ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="Ex: Farmácia Central - Ponto de Coleta"
+                  maxLength={100}
+                />
+                {erros.nome && (
+                  <span className="cadastrar-ponto-error">{erros.nome}</span>
+                )}
+              </div>
+
+              <div className="cadastrar-ponto-field">
+                <label className="cadastrar-ponto-label">CNPJ *</label>
+                <input
+                  type="text"
+                  name="cnpj"
+                  value={form.cnpj}
+                  onChange={handleChange}
+                  className={`cadastrar-ponto-input ${
+                    erros.cnpj ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="00.000.000/0000-00"
+                  maxLength={18}
+                />
+                {erros.cnpj && (
+                  <span className="cadastrar-ponto-error">{erros.cnpj}</span>
+                )}
+              </div>
             </div>
 
             <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">CNPJ *</label>
+              <label className="cadastrar-ponto-label">Telefone *</label>
               <input
                 type="text"
-                name="cnpj"
-                value={form.cnpj}
+                name="telefone"
+                value={form.telefone}
                 onChange={handleChange}
                 className={`cadastrar-ponto-input ${
-                  erros.cnpj ? "cadastrar-ponto-input-error" : ""
+                  erros.telefone ? "cadastrar-ponto-input-error" : ""
                 }`}
-                placeholder="00.000.000/0000-00"
-                maxLength={18}
+                placeholder="(11) 99999-9999"
+                maxLength={15}
               />
-              {erros.cnpj && (
-                <span className="cadastrar-ponto-error">{erros.cnpj}</span>
+              {erros.telefone && (
+                <span className="cadastrar-ponto-error">{erros.telefone}</span>
               )}
             </div>
+          </div>
 
-            <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">CEP *</label>
-              <input
-                type="text"
-                name="cep"
-                value={form.cep}
-                onChange={handleChange}
-                onBlur={() => {
-                  if (form.cep.length === 8 || form.cep.length === 9) {
-                    buscarEnderecoPorCep(form.cep);
-                  }
-                }}
-                maxLength={9}
-                className={`cadastrar-ponto-input ${
-                  erros.cep ? "cadastrar-ponto-input-error" : ""
-                }`}
-                placeholder="Digite o CEP"
-              />
-              {erros.cep && (
-                <span className="cadastrar-ponto-error">{erros.cep}</span>
-              )}
-            </div>
-
-            <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">Endereço *</label>
-              <input
-                type="text"
-                name="endereco"
-                value={form.endereco}
-                onChange={handleChange}
-                className={`cadastrar-ponto-input ${
-                  erros.endereco ? "cadastrar-ponto-input-error" : ""
-                }`}
-                placeholder="Rua, número, complemento"
-                maxLength={200}
-              />
-              {erros.endereco && (
-                <span className="cadastrar-ponto-error">{erros.endereco}</span>
-              )}
-            </div>
+          {/* Endereço */}
+          <div className="cadastrar-ponto-section">
+            <h3 className="cadastrar-ponto-section-title">
+              📍 Endereço
+            </h3>
 
             <div className="cadastrar-ponto-grid">
-              <div>
+              <div className="cadastrar-ponto-field">
+                <label className="cadastrar-ponto-label">CEP *</label>
+                <input
+                  type="text"
+                  name="cep"
+                  value={form.cep}
+                  onChange={handleChange}
+                  className={`cadastrar-ponto-input ${
+                    erros.cep ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="00000-000"
+                  maxLength={9}
+                />
+                {erros.cep && (
+                  <span className="cadastrar-ponto-error">{erros.cep}</span>
+                )}
+                <small className="cadastrar-ponto-help">O endereço será preenchido automaticamente</small>
+              </div>
+
+              <div className="cadastrar-ponto-field">
                 <label className="cadastrar-ponto-label">Número *</label>
                 <input
                   type="text"
@@ -359,73 +351,91 @@ const CadastrarPontoColeta = () => {
                   <span className="cadastrar-ponto-error">{erros.numero}</span>
                 )}
               </div>
-              <div>
-                <label className="cadastrar-ponto-label">Bairro</label>
+            </div>
+
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">Endereço *</label>
+              <input
+                type="text"
+                name="endereco"
+                value={form.endereco}
+                onChange={handleChange}
+                className={`cadastrar-ponto-input ${
+                  erros.endereco ? "cadastrar-ponto-input-error" : ""
+                }`}
+                placeholder="Rua, Avenida..."
+                maxLength={200}
+              />
+              {erros.endereco && (
+                <span className="cadastrar-ponto-error">{erros.endereco}</span>
+              )}
+            </div>
+
+            <div className="cadastrar-ponto-grid">
+              <div className="cadastrar-ponto-field">
+                <label className="cadastrar-ponto-label">Bairro *</label>
                 <input
                   type="text"
                   name="bairro"
                   value={form.bairro}
                   onChange={handleChange}
-                  className="cadastrar-ponto-input"
-                  placeholder="Bairro"
+                  className={`cadastrar-ponto-input ${
+                    erros.bairro ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="Centro"
                 />
+                {erros.bairro && (
+                  <span className="cadastrar-ponto-error">{erros.bairro}</span>
+                )}
               </div>
-            </div>
-            
-            <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">Telefone *</label>
-              <input
-                type="text"
-                name="telefone"
-                value={form.telefone}
-                onChange={handleChange}
-                className={`cadastrar-ponto-input ${
-                  erros.telefone ? "cadastrar-ponto-input-error" : ""
-                }`}
-                placeholder="(11) 99999-9999"
-                maxLength={15}
-              />
-              {erros.telefone && (
-                <span className="cadastrar-ponto-error">
-                  {erros.telefone}
-                </span>
-              )}
-            </div>
 
-            <div className="cadastrar-ponto-grid">
-              <div>
-                <label className="cadastrar-ponto-label">Latitude</label>
+              <div className="cadastrar-ponto-field">
+                <label className="cadastrar-ponto-label">Cidade *</label>
                 <input
-                  type="number"
-                  step="any"
-                  name="latitude"
-                  value={form.latitude}
+                  type="text"
+                  name="cidade"
+                  value={form.cidade}
                   onChange={handleChange}
-                  className="cadastrar-ponto-input"
-                  placeholder="Ex: -23.5505"
+                  className={`cadastrar-ponto-input ${
+                    erros.cidade ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="São Paulo"
                 />
+                {erros.cidade && (
+                  <span className="cadastrar-ponto-error">{erros.cidade}</span>
+                )}
               </div>
-              <div>
-                <label className="cadastrar-ponto-label">Longitude</label>
+
+              <div className="cadastrar-ponto-field">
+                <label className="cadastrar-ponto-label">Estado *</label>
                 <input
-                  type="number"
-                  step="any"
-                  name="longitude"
-                  value={form.longitude}
+                  type="text"
+                  name="estado"
+                  value={form.estado}
                   onChange={handleChange}
-                  className="cadastrar-ponto-input"
-                  placeholder="Ex: -46.6333"
+                  className={`cadastrar-ponto-input ${
+                    erros.estado ? "cadastrar-ponto-input-error" : ""
+                  }`}
+                  placeholder="SP"
+                  maxLength={2}
                 />
+                {erros.estado && (
+                  <span className="cadastrar-ponto-error">{erros.estado}</span>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Tipo de medicamento */}
+          {/* Medicamentos e Serviços */}
           <div className="cadastrar-ponto-section">
-            <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-green">
-              Tipos de Medicamentos Aceitos *
+            <h3 className="cadastrar-ponto-section-title">
+              💊 Medicamentos e Serviços
             </h3>
+
             <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">
+                Tipos de Medicamentos Aceitos *
+              </label>
               <div className="cadastrar-ponto-checkbox-grid">
                 {tiposDisponiveis.map((tipo) => (
                   <label
@@ -469,63 +479,7 @@ const CadastrarPontoColeta = () => {
                 </span>
               )}
             </div>
-          </div>
 
-          {/* Horário de funcionamento */}
-          <div className="cadastrar-ponto-section">
-            <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-yellow">
-              Horário de Funcionamento
-            </h3>
-            {Object.entries(form.horarioFuncionamento).map(([dia, horario]) => (
-              <div key={dia} className="cadastrar-ponto-horario-card">
-                <div className="cadastrar-ponto-horario-header">
-                  <span className="cadastrar-ponto-dia">{dia}</span>
-                  <label className="cadastrar-ponto-toggle">
-                    <input
-                      type="checkbox"
-                      name={`horario_${dia}_aberto`}
-                      checked={horario.aberto}
-                      onChange={handleChange}
-                      className="cadastrar-ponto-toggle-input"
-                    />
-                    <span className="cadastrar-ponto-toggle-slider"></span>
-                  </label>
-                </div>
-                {horario.aberto && (
-                  <div className="cadastrar-ponto-horario-inputs">
-                    <div className="cadastrar-ponto-time-group">
-                      <label>Abertura</label>
-                      <input
-                        type="time"
-                        name={`horario_${dia}_inicio`}
-                        value={horario.inicio}
-                        onChange={handleChange}
-                        className="cadastrar-ponto-time-input"
-                      />
-                    </div>
-                    <div className="cadastrar-ponto-time-group">
-                      <label>Fechamento</label>
-                      <input
-                        type="time"
-                        name={`horario_${dia}_fim`}
-                        value={horario.fim}
-                        onChange={handleChange}
-                        className="cadastrar-ponto-time-input"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Configurações adicionais */}
-          <div className="cadastrar-ponto-section">
-            <h3 className="cadastrar-ponto-section-title cadastrar-ponto-section-title-purple">
-              Configurações Adicionais
-            </h3>
-
-            {/* Tipo de serviço */}
             <div className="cadastrar-ponto-field">
               <label className="cadastrar-ponto-label">Tipo de Serviço</label>
               <select
@@ -534,16 +488,25 @@ const CadastrarPontoColeta = () => {
                 onChange={handleChange}
                 className="cadastrar-ponto-input"
               >
-                <option value="RECEBIMENTO">Apenas Recebimento</option>
-                <option value="RETIRA">Apenas Retirada em Casa</option>
-                <option value="AMBOS">Recebimento e Retirada</option>
+                <option value="RECEBIMENTO">📥 Apenas Recebimento</option>
+                <option value="RETIRA">🚚 Apenas Retirada em Casa</option>
+                <option value="AMBOS">🔄 Recebimento e Retirada</option>
               </select>
-              <p className="cadastrar-ponto-help-text">
-                Escolha como o estabelecimento irá atender os clientes
-              </p>
+              <small className="cadastrar-ponto-help">
+                Como o estabelecimento irá atender os clientes
+              </small>
             </div>
+          </div>
 
-            <div>
+
+
+          {/* Informações Adicionais */}
+          <div className="cadastrar-ponto-section">
+            <h3 className="cadastrar-ponto-section-title">
+              📝 Informações Adicionais
+            </h3>
+
+            <div className="cadastrar-ponto-field">
               <label className="cadastrar-ponto-label">Observações</label>
               <textarea
                 name="observacoes"
@@ -551,9 +514,12 @@ const CadastrarPontoColeta = () => {
                 onChange={handleChange}
                 rows={4}
                 className="cadastrar-ponto-textarea"
-                placeholder="Informações adicionais sobre o ponto de coleta..."
+                placeholder="Ex: Aberto das 09:00 às 22:00. Informações sobre horários especiais, localização, etc..."
                 maxLength={500}
               />
+              <small className="cadastrar-ponto-help">
+                {form.observacoes.length}/500 caracteres
+              </small>
             </div>
           </div>
 
@@ -563,11 +529,16 @@ const CadastrarPontoColeta = () => {
               type="button"
               onClick={() => navigate("/painel-estabelecimento")}
               className="cadastrar-ponto-btn-cancelar"
+              disabled={loading}
             >
-              Cancelar
+              ❌ Cancelar
             </button>
-            <button type="submit" className="cadastrar-ponto-btn-submit">
-              Cadastrar Ponto de Coleta
+            <button 
+              type="submit" 
+              className="cadastrar-ponto-btn-submit"
+              disabled={loading}
+            >
+              {loading ? "⏳ Cadastrando..." : "✅ Cadastrar Ponto de Coleta"}
             </button>
           </div>
         </form>
