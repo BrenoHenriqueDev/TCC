@@ -115,29 +115,34 @@ function Admin() {
   const alterarStatusEstabelecimento = async (estabelecimentoId, novoStatus) => {
     try {
       const usuarioLogado = UsuarioService.getCurrentUser();
-      if (usuarioLogado && usuarioLogado.id) {
-        await EstabelecimentoService.alterarStatus(usuarioLogado.id, estabelecimentoId, novoStatus);
-        alert("Status alterado com sucesso!");
-        
-        // Atualiza o estado local imediatamente
-        setEstabelecimentos(prev => 
-          prev.map(estab => 
-            estab.id === estabelecimentoId 
-              ? { ...estab, statusEstabelecimento: novoStatus }
-              : estab
-          )
-        );
-        
-        // Recarrega do servidor para garantir sincronização
-        await carregarEstabelecimentos();
-        
-        if (novoStatus === 'PENDENTE') {
-          carregarSolicitacoesPendentes();
-        }
+      console.log('Alterando status:', { estabelecimentoId, novoStatus, usuarioLogado });
+      
+      if (!usuarioLogado || !usuarioLogado.id) {
+        alert("Erro: Usuário não encontrado. Faça login novamente.");
+        return;
+      }
+      
+      await EstabelecimentoService.alterarStatus(usuarioLogado.id, estabelecimentoId, novoStatus);
+      alert("Status alterado com sucesso!");
+      
+      // Atualiza o estado local imediatamente
+      setEstabelecimentos(prev => 
+        prev.map(estab => 
+          estab.id === estabelecimentoId 
+            ? { ...estab, statusEstabelecimento: novoStatus }
+            : estab
+        )
+      );
+      
+      // Recarrega do servidor para garantir sincronização
+      await carregarEstabelecimentos();
+      
+      if (novoStatus === 'PENDENTE') {
+        carregarSolicitacoesPendentes();
       }
     } catch (error) {
       console.error("Erro ao alterar status:", error);
-      alert("Erro ao alterar status");
+      alert(`Erro ao alterar status: ${error.message || error}`);
     }
   };
 
@@ -167,6 +172,11 @@ function Admin() {
     }
   };
 
+  const formatarCNPJ = (valor) => {
+    const cnpj = valor.replace(/\D/g, '');
+    return cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5');
+  };
+
   const validarCNPJFarmacia = async () => {
     if (!cnpjValidacao) {
       alert("Digite um CNPJ");
@@ -176,7 +186,7 @@ function Admin() {
     setValidandoCNPJ(true);
     
     try {
-      const resultado = await UsuarioService.validarCNPJ(cnpjValidacao);
+      const resultado = await UsuarioService.validarCNPJ(cnpjValidacao.replace(/\D/g, ''));
       setResultadoCNPJ(resultado);
     } catch (error) {
       setResultadoCNPJ({ valido: false, erro: error.message });
@@ -297,10 +307,16 @@ function Admin() {
         <div className="cnpj-input-group">
           <input
             type="text"
-            placeholder="Digite o CNPJ"
+            placeholder="00.000.000/0000-00"
             value={cnpjValidacao}
-            onChange={(e) => setCnpjValidacao(e.target.value)}
+            onChange={(e) => {
+              const valor = e.target.value.replace(/\D/g, '');
+              if (valor.length <= 14) {
+                setCnpjValidacao(formatarCNPJ(valor));
+              }
+            }}
             className="cnpj-input"
+            maxLength="18"
           />
           <button 
             onClick={validarCNPJFarmacia}
@@ -337,19 +353,35 @@ function Admin() {
                           <span className={`status-badge ${(estab.statusEstabelecimento || 'ATIVO').toLowerCase()}`}>
                             {estab.statusEstabelecimento || 'ATIVO'}
                           </span>
-                          <select
-                            value={estab.statusEstabelecimento || 'ATIVO'}
-                            onChange={(e) => {
-                              if (e.target.value !== estab.statusEstabelecimento) {
-                                alterarStatusEstabelecimento(estab.id, e.target.value);
-                              }
-                            }}
-                            className="status-select"
-                          >
-                            <option value="ATIVO">ATIVO</option>
-                            <option value="INATIVO">INATIVO</option>
-                            <option value="PENDENTE">PENDENTE</option>
-                          </select>
+                          <div className="status-change-controls">
+                            <select
+                              id={`status-select-${estab.id}`}
+                              defaultValue={estab.statusEstabelecimento || 'ATIVO'}
+                              className="status-select"
+                            >
+                              <option value="ATIVO">ATIVO</option>
+                              <option value="INATIVO">INATIVO</option>
+                              <option value="PENDENTE">PENDENTE</option>
+                            </select>
+                            <button
+                              onClick={() => {
+                                const select = document.getElementById(`status-select-${estab.id}`);
+                                const novoStatus = select.value;
+                                const statusAtual = estab.statusEstabelecimento || 'ATIVO';
+                                
+                                if (novoStatus !== statusAtual) {
+                                  if (window.confirm(`Alterar status de ${statusAtual} para ${novoStatus}?`)) {
+                                    alterarStatusEstabelecimento(estab.id, novoStatus);
+                                  }
+                                } else {
+                                  alert('Status já é ' + statusAtual);
+                                }
+                              }}
+                              className="btn-alterar-status"
+                            >
+                              Alterar
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}

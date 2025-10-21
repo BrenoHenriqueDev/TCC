@@ -105,6 +105,8 @@ const validarCNPJ = async (cnpj) => {
   };
 };
 
+
+
 const UsuarioService = {
   findAll,
   findAllByAdmin,

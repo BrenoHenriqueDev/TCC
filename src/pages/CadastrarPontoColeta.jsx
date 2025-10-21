@@ -21,7 +21,9 @@ const CadastrarPontoColeta = () => {
     tiposMedicamentos: [],
     tipoServico: "RECEBIMENTO",
     observacoes: "",
+    imagem: "",
   });
+  const [imagemPreview, setImagemPreview] = useState(null);
   const [erros, setErros] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -152,6 +154,36 @@ const CadastrarPontoColeta = () => {
     }));
   };
 
+  const handleImagemChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validar tamanho (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Imagem muito grande. Máximo 5MB.");
+        return;
+      }
+      
+      // Validar tipo
+      if (!file.type.startsWith('image/')) {
+        alert("Apenas imagens são permitidas.");
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target.result;
+        setForm(prev => ({ ...prev, imagem: base64 }));
+        setImagemPreview(base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removerImagem = () => {
+    setForm(prev => ({ ...prev, imagem: "" }));
+    setImagemPreview(null);
+  };
+
   const validar = () => {
     const novosErros = {};
 
@@ -210,7 +242,8 @@ const CadastrarPontoColeta = () => {
           latitude: form.latitude ? parseFloat(form.latitude) : null,
           longitude: form.longitude ? parseFloat(form.longitude) : null,
           tipo: "FARMACIA",
-          coleta: form.tipoServico
+          coleta: form.tipoServico,
+          imagem: form.imagem || null
         };
 
         await EstabelecimentoService.cadastrar(usuario.id, estabelecimento);
@@ -236,7 +269,7 @@ const CadastrarPontoColeta = () => {
             ← Voltar ao Painel
           </button>
           <h1 className="cadastrar-ponto-title">
-            📍 Cadastrar Ponto de Coleta
+             Cadastrar Ponto de Coleta
           </h1>
           <p className="cadastrar-ponto-subtitle">
             Preencha as informações do novo ponto de coleta
@@ -247,13 +280,13 @@ const CadastrarPontoColeta = () => {
           {/* Informações Básicas */}
           <div className="cadastrar-ponto-section">
             <h3 className="cadastrar-ponto-section-title">
-              📋 Informações Básicas
+              Informações Básicas
             </h3>
 
             <div className="cadastrar-ponto-grid">
               <div className="cadastrar-ponto-field">
                 <label className="cadastrar-ponto-label">
-                  Nome do Ponto de Coleta *
+                  Nome do Ponto de Coleta 
                 </label>
                 <input
                   type="text"
@@ -272,7 +305,7 @@ const CadastrarPontoColeta = () => {
               </div>
 
               <div className="cadastrar-ponto-field">
-                <label className="cadastrar-ponto-label">CNPJ *</label>
+                <label className="cadastrar-ponto-label">CNPJ </label>
                 <input
                   type="text"
                   name="cnpj"
@@ -291,7 +324,7 @@ const CadastrarPontoColeta = () => {
             </div>
 
             <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">Telefone *</label>
+              <label className="cadastrar-ponto-label">Telefone </label>
               <input
                 type="text"
                 name="telefone"
@@ -312,12 +345,12 @@ const CadastrarPontoColeta = () => {
           {/* Endereço */}
           <div className="cadastrar-ponto-section">
             <h3 className="cadastrar-ponto-section-title">
-              📍 Endereço
+              Endereço
             </h3>
 
             <div className="cadastrar-ponto-grid">
               <div className="cadastrar-ponto-field">
-                <label className="cadastrar-ponto-label">CEP *</label>
+                <label className="cadastrar-ponto-label">CEP </label>
                 <input
                   type="text"
                   name="cep"
@@ -332,11 +365,10 @@ const CadastrarPontoColeta = () => {
                 {erros.cep && (
                   <span className="cadastrar-ponto-error">{erros.cep}</span>
                 )}
-                <small className="cadastrar-ponto-help">O endereço será preenchido automaticamente</small>
               </div>
 
               <div className="cadastrar-ponto-field">
-                <label className="cadastrar-ponto-label">Número *</label>
+                <label className="cadastrar-ponto-label">Número </label>
                 <input
                   type="text"
                   name="numero"
@@ -355,7 +387,7 @@ const CadastrarPontoColeta = () => {
             </div>
 
             <div className="cadastrar-ponto-field">
-              <label className="cadastrar-ponto-label">Endereço *</label>
+              <label className="cadastrar-ponto-label">Endereço </label>
               <input
                 type="text"
                 name="endereco"
@@ -374,7 +406,7 @@ const CadastrarPontoColeta = () => {
 
             <div className="cadastrar-ponto-grid">
               <div className="cadastrar-ponto-field">
-                <label className="cadastrar-ponto-label">Bairro *</label>
+                <label className="cadastrar-ponto-label">Bairro </label>
                 <input
                   type="text"
                   name="bairro"
@@ -391,7 +423,7 @@ const CadastrarPontoColeta = () => {
               </div>
 
               <div className="cadastrar-ponto-field">
-                <label className="cadastrar-ponto-label">Cidade *</label>
+                <label className="cadastrar-ponto-label">Cidade </label>
                 <input
                   type="text"
                   name="cidade"
@@ -408,7 +440,7 @@ const CadastrarPontoColeta = () => {
               </div>
 
               <div className="cadastrar-ponto-field">
-                <label className="cadastrar-ponto-label">Estado *</label>
+                <label className="cadastrar-ponto-label">Estado </label>
                 <input
                   type="text"
                   name="estado"
@@ -430,12 +462,12 @@ const CadastrarPontoColeta = () => {
           {/* Medicamentos e Serviços */}
           <div className="cadastrar-ponto-section">
             <h3 className="cadastrar-ponto-section-title">
-              💊 Medicamentos e Serviços
+              Medicamentos e Serviços
             </h3>
 
             <div className="cadastrar-ponto-field">
               <label className="cadastrar-ponto-label">
-                Tipos de Medicamentos Aceitos *
+                Tipos de Medicamentos Aceitos 
               </label>
               <div className="cadastrar-ponto-checkbox-grid">
                 {tiposDisponiveis.map((tipo) => (
@@ -489,13 +521,10 @@ const CadastrarPontoColeta = () => {
                 onChange={handleChange}
                 className="cadastrar-ponto-input"
               >
-                <option value="RECEBIMENTO">📥 Apenas Recebimento</option>
-                <option value="RETIRA">🚚 Apenas Retirada em Casa</option>
-                <option value="AMBOS">🔄 Recebimento e Retirada</option>
-              </select>
-              <small className="cadastrar-ponto-help">
-                Como o estabelecimento irá atender os clientes
-              </small>
+                <option value="RECEBIMENTO"> Apenas Recebimento</option>
+                <option value="RETIRA">Apenas Retirada em Casa</option>
+                <option value="AMBOS"> Recebimento e Retirada</option>
+              </select> 
             </div>
           </div>
 
@@ -504,8 +533,40 @@ const CadastrarPontoColeta = () => {
           {/* Informações Adicionais */}
           <div className="cadastrar-ponto-section">
             <h3 className="cadastrar-ponto-section-title">
-              📝 Informações Adicionais
+               Informações Adicionais
             </h3>
+
+            <div className="cadastrar-ponto-field">
+              <label className="cadastrar-ponto-label">Imagem do Estabelecimento</label>
+              <div className="cadastrar-ponto-imagem-container">
+                {imagemPreview ? (
+                  <div className="cadastrar-ponto-imagem-preview">
+                    <img src={imagemPreview} alt="Preview" className="cadastrar-ponto-imagem" />
+                    <button 
+                      type="button" 
+                      onClick={removerImagem}
+                      className="cadastrar-ponto-remover-imagem"
+                    >
+                      × Remover
+                    </button>
+                  </div>
+                ) : (
+                  <div className="cadastrar-ponto-upload-area">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImagemChange}
+                      className="cadastrar-ponto-file-input"
+                      id="imagem-upload"
+                    />
+                    <label htmlFor="imagem-upload" className="cadastrar-ponto-upload-label">
+                      📷 Clique para adicionar imagem
+                      <small>Máximo 5MB - JPG, PNG, GIF</small>
+                    </label>
+                  </div>
+                )}
+              </div>
+            </div>
 
             <div className="cadastrar-ponto-field">
               <label className="cadastrar-ponto-label">Observações</label>
@@ -532,14 +593,14 @@ const CadastrarPontoColeta = () => {
               className="cadastrar-ponto-btn-cancelar"
               disabled={loading}
             >
-              ❌ Cancelar
+               Cancelar
             </button>
             <button 
               type="submit" 
               className="cadastrar-ponto-btn-submit"
               disabled={loading}
             >
-              {loading ? "⏳ Cadastrando..." : "✅ Cadastrar Ponto de Coleta"}
+              {loading ? " Cadastrando..." : " Cadastrar Ponto de Coleta"}
             </button>
           </div>
         </form>

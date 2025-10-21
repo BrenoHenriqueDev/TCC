@@ -16,24 +16,17 @@ import UsuarioService from "../services/UsuarioService";
 
     // Na montagem, buscar dados do usuário lembrado no backend
 useEffect(() => {
-  const carregarUsuarioLembrado = async () => {
+  const carregarUsuarioLembrado = () => {
     try {
       const usuarioLembrado = JSON.parse(localStorage.getItem("usuarioLembrado"));
 
       if (usuarioLembrado && usuarioLembrado.email && usuarioLembrado.senha) {
-        const usuario = await UsuarioService.signin(
-          usuarioLembrado.email,
-          usuarioLembrado.senha
-        );
-
-        if (usuario) {
-          setFormData(prev => ({
-            ...prev,
-            email: usuarioLembrado.email,
-            senha: usuarioLembrado.senha,
-            lembrar: true,
-          }));
-        }
+        setFormData(prev => ({
+          ...prev,
+          email: usuarioLembrado.email,
+          senha: usuarioLembrado.senha,
+          lembrar: true,
+        }));
       }
     } catch (error) {
       console.error("Erro ao buscar usuário lembrado", error);
@@ -144,11 +137,7 @@ useEffect(() => {
               </label>
             </div>
 
-            <div className="login-forgot">
-              <a href="/esqueci-senha" className="login-link">
-                Esqueceu a senha?
-              </a>
-            </div>
+
           </div>
 
           <button type="submit" className="login-btn">

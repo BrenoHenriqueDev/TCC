@@ -42,19 +42,18 @@ const GerenciarPontos = () => {
     try {
       const usuario = UsuarioService.getCurrentUser();
       
-      // Mapear tipoServico para coleta
-      const dadosParaBackend = {
-        ...pontoEditado,
-        coleta: pontoEditado.tipoServico
-      };
+      if (!usuario?.id) {
+        alert("Erro: Usuário não encontrado");
+        return;
+      }
       
-      await EstabelecimentoService.atualizar(usuario.id, pontoEditado.id, dadosParaBackend);
-      carregarPontos();
+      await EstabelecimentoService.atualizar(usuario.id, pontoEditado.id, pontoEditado);
+      await carregarPontos();
       setPontoSelecionado(null);
       alert("Ponto atualizado com sucesso!");
     } catch (error) {
       console.error("Erro ao atualizar ponto:", error);
-      alert("Erro ao atualizar ponto");
+      alert("Erro ao atualizar ponto: " + (error.message || error));
     }
   };
 
@@ -96,7 +95,7 @@ const GerenciarPontos = () => {
               }`}
             >
               <h2 className="gerenciar-ponto-nome">{ponto.nome}</h2>
-              <p className="gerenciar-ponto-endereco">{ponto.endereço || ponto.complemento}, {ponto.numero}</p>
+              <p className="gerenciar-ponto-endereco">{ponto.endereco || ponto.endereço || ''}</p>
               <p className="gerenciar-ponto-info">
                 <strong>CEP:</strong> {ponto.cep} <br />
                 <strong>Tipo:</strong> {ponto.coleta} <br />

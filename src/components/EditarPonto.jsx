@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import "../css/EditarPonto.css";
 
 const EditarModal = ({ ponto, onClose, onSave }) => {
@@ -29,13 +30,22 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
     if (ponto) {
       setForm({
         ...ponto,
-        cnpj: formatarCnpj(ponto.cnpj),
-        telefone: formatarTelefone(ponto.telefone),
-        cep: formatarCep(ponto.cep),
+        cnpj: formatarCnpj(ponto.cnpj || ""),
+        telefone: formatarTelefone(ponto.telefone || ""),
+        cep: formatarCep(ponto.cep || ""),
+        endereco: ponto.endereco || ponto.endereço || "",
         tiposMedicamentos: ponto.tiposMedicamentos || [],
-        tipoServico: ponto.coleta || "RECEBIMENTO"
+        tipoServico: ponto.coleta || ponto.tipoServico || "RECEBIMENTO"
       });
     }
+    
+    // Desabilita scroll do body quando modal abre
+    document.body.style.overflow = 'hidden';
+    
+    // Reabilita scroll quando modal fecha
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
   }, [ponto]);
 
   const tiposDisponiveis = [
@@ -48,37 +58,56 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
 
 
 
+  const buscarCep = async (cep) => {
+    console.log('Buscando CEP:', cep);
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+      const data = await response.json();
+      
+      console.log('Dados do CEP:', data);
+      
+      if (!data.erro && data.logradouro) {
+        setForm(prev => ({
+          ...prev,
+          endereco: data.logradouro,
+          bairro: data.bairro,
+          cidade: data.localidade
+        }));
+        console.log('CEP encontrado e dados preenchidos');
+      } else {
+        console.log('CEP não encontrado ou inválido');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar CEP:', error);
+    }
+  };
+
+  const handleCepChange = (e) => {
+    const value = e.target.value;
+    const numeros = value.replace(/\D/g, "").slice(0, 8);
+    const cepFormatado = formatarCep(numeros);
+    
+    setForm(prev => ({ ...prev, cep: cepFormatado }));
+    
+    console.log('CEP digitado:', numeros, 'Comprimento:', numeros.length);
+    
+    // Busca automaticamente quando CEP tiver 8 dígitos
+    if (numeros.length === 8) {
+      console.log('CEP completo, iniciando busca...');
+      buscarCep(numeros);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     let newValue = value;
 
     if (name === "cnpj") {
-      newValue = value.replace(/\D/g, "").slice(0, 14);
-      if (newValue.length > 2) {
-        newValue = newValue.replace(/(\d{2})(\d)/, "$1.$2");
-      }
-      if (newValue.length > 6) {
-        newValue = newValue.replace(/(\d{2}\.\d{3})(\d)/, "$1.$2");
-      }
-      if (newValue.length > 10) {
-        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3})(\d)/, "$1/$2");
-      }
-      if (newValue.length > 15) {
-        newValue = newValue.replace(/(\d{2}\.\d{3}\.\d{3}\/\d{4})(\d)/, "$1-$2");
-      }
+      const numeros = value.replace(/\D/g, "").slice(0, 14);
+      newValue = formatarCnpj(numeros);
     } else if (name === "telefone") {
-      newValue = value.replace(/\D/g, "").slice(0, 11);
-      if (newValue.length > 2) {
-        newValue = newValue.replace(/(\d{2})(\d)/, "($1) $2");
-      }
-      if (newValue.length > 10) {
-        newValue = newValue.replace(/(\(\d{2}\) \d{5})(\d)/, "$1-$2");
-      }
-    } else if (name === "cep") {
-      newValue = value.replace(/\D/g, "").slice(0, 8);
-      if (newValue.length > 5) {
-        newValue = newValue.replace(/(\d{5})(\d)/, "$1-$2");
-      }
+      const numeros = value.replace(/\D/g, "").slice(0, 11);
+      newValue = formatarTelefone(numeros);
     }
 
     setForm((prev) => ({
@@ -89,66 +118,91 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Validação básica
+    if (!form.nome?.trim()) {
+      alert("Nome do ponto é obrigatório");
+      return;
+    }
+    
     const formData = {
       ...form,
       cnpj: form.cnpj?.replace(/\D/g, "") || "",
       telefone: form.telefone?.replace(/\D/g, "") || "",
-      cep: form.cep?.replace(/\D/g, "") || ""
+      cep: form.cep?.replace(/\D/g, "") || "",
+      coleta: form.tipoServico || "RECEBIMENTO"
     };
+    
     onSave(formData);
-    onClose();
   };
 
   if (!ponto) return null;
 
-  return (
+  const modalContent = (
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Editar Ponto de Coleta</h2>
 
         <form onSubmit={handleSubmit} className="editar-form">
-          <label>
-            Nome do ponto:
+          <div className="editar-field">
+            <label className="editar-label">Nome do ponto:</label>
             <input
               type="text"
               name="nome"
               value={form.nome || ""}
               onChange={handleChange}
+              className="editar-input"
             />
-          </label>
+          </div>
 
-          <label>
-            Endereço:
+          <div className="editar-field">
+            <label className="editar-label">CEP:</label>
+            <input
+              type="text"
+              name="cep"
+              value={form.cep || ""}
+              onChange={handleCepChange}
+              placeholder="00000-000"
+              maxLength={9}
+              className="editar-input"
+            />
+          </div>
+
+          <div className="editar-field">
+            <label className="editar-label">Endereço:</label>
             <input
               type="text"
               name="endereco"
               value={form.endereco || ""}
               onChange={handleChange}
+              className="editar-input"
             />
-          </label>
+          </div>
 
-          <label>
-            Bairro:
+          <div className="editar-field">
+            <label className="editar-label">Bairro:</label>
             <input
               type="text"
               name="bairro"
               value={form.bairro || ""}
               onChange={handleChange}
+              className="editar-input"
             />
-          </label>
+          </div>
 
-          <label>
-            Cidade:
+          <div className="editar-field">
+            <label className="editar-label">Cidade:</label>
             <input
               type="text"
               name="cidade"
               value={form.cidade || ""}
               onChange={handleChange}
+              className="editar-input"
             />
-          </label>
+          </div>
 
-          <label>
-            CNPJ:
+          <div className="editar-field">
+            <label className="editar-label">CNPJ:</label>
             <input
               type="text"
               name="cnpj"
@@ -156,23 +210,12 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
               onChange={handleChange}
               placeholder="00.000.000/0000-00"
               maxLength={18}
+              className="editar-input"
             />
-          </label>
+          </div>
 
-          <label>
-            CEP:
-            <input
-              type="text"
-              name="cep"
-              value={form.cep || ""}
-              onChange={handleChange}
-              placeholder="00000-000"
-              maxLength={9}
-            />
-          </label>
-
-          <label>
-            Telefone:
+          <div className="editar-field">
+            <label className="editar-label">Telefone:</label>
             <input
               type="text"
               name="telefone"
@@ -180,16 +223,18 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
               onChange={handleChange}
               placeholder="(11) 99999-9999"
               maxLength={15}
+              className="editar-input"
             />
-          </label>
+          </div>
 
-          <label>
-            Tipos de Medicamentos Aceitos:
+          <div className="editar-field">
+            <label className="editar-label">Tipos de Medicamentos Aceitos:</label>
             <div className="editar-checkbox-grid">
               {tiposDisponiveis.map((tipo) => (
-                <label key={tipo.value} className="editar-checkbox-item">
+                <div key={tipo.value} className="editar-checkbox-item">
                   <input
                     type="checkbox"
+                    id={`tipo-${tipo.value}`}
                     value={tipo.value}
                     checked={(form.tiposMedicamentos || []).includes(tipo.value)}
                     onChange={(e) => {
@@ -208,37 +253,37 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
                       }
                     }}
                   />
-                  <span>{tipo.label}</span>
-                </label>
+                  <span className="editar-checkbox-text">{tipo.label}</span>
+                </div>
               ))}
             </div>
-          </label>
+          </div>
 
-
-
-          <label>
-            Tipo de Serviço:
+          <div className="editar-field">
+            <label className="editar-label">Tipo de Serviço:</label>
             <select
               name="tipoServico"
               value={form.tipoServico || "RECEBIMENTO"}
               onChange={handleChange}
+              className="editar-select"
             >
               <option value="RECEBIMENTO">Apenas Recebimento</option>
               <option value="RETIRA">Apenas Retirada em Casa</option>
               <option value="AMBOS">Recebimento e Retirada</option>
             </select>
-          </label>
+          </div>
 
-          <label>
-            Observações:
+          <div className="editar-field">
+            <label className="editar-label">Observações:</label>
             <textarea
               name="observacoes"
               value={form.observacoes || ""}
               onChange={handleChange}
               rows={3}
               placeholder="Ex: Aberto das 09:00 às 22:00. Informações adicionais sobre o ponto de coleta..."
+              className="editar-textarea"
             />
-          </label>
+          </div>
 
           <div className="modal-buttons">
             <button type="button" onClick={onClose} className="btn-cancelar">
@@ -252,6 +297,8 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
       </div>
     </div>
   );
+  
+  return createPortal(modalContent, document.body);
 };
 
 export default EditarModal;

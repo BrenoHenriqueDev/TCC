@@ -3,161 +3,39 @@
   width: 100%;
   min-height: 100vh;
   background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2.5rem 0.5rem;
+  padding: 2rem 1rem;
 }
 
 .dicas-box {
-  width: 100%;
-  max-width: 48rem;
-  background: #8599b8;
-  border-radius: 1rem;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+  max-width: 1200px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
   padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  color: #fff;
 }
 
 .dicas-title {
-  font-size: 1.75rem;
-  font-weight: bold;
-  color: #1e293b;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
   text-align: center;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-.dicas-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.dicas-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.dicas-icon {
-  width: 4rem;
-  height: 4rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2rem;
-}
-.dicas-icon-blue {
-  background: #dbeafe;
-  color: #2563eb;
-}
-.dicas-icon-green {
-  background: #dcfce7;
-  color: #16a34a;
-}
-.dicas-icon-yellow {
-  background: #fef9c3;
-  color: #ca8a04;
-}
-.dicas-icon-red {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.dicas-text {
-  color: #334155;
-  font-size: 1rem;
-} 
-
-.educacao-intro,
 .dicas-intro {
   text-align: center;
-  font-size: 1.1rem;
-  color: #1e293b;
-  margin-bottom: 1.5rem;
+  font-size: 1.2rem;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 2rem;
   line-height: 1.6;
 }
 
-/* Efeito hover nas seções */
-.educacao-section:hover,
-.dicas-item:hover {
-  transform: translateY(-3px);
-  transition: 0.3s ease;
-}
-
-/* Cor verde para ícone adicional */
-.educacao-section-title-green {
-  color: #16a34a;
-}
-.educacao-icon-green {
-  background: #dcfce7;
-  color: #16a34a;
-}
-
-/* Ícone roxo para dicas */
-.dicas-icon-purple {
-  background: #ede9fe;
-  color: #7c3aed;
-}
-.educacao-title,
-.dicas-title {
-  font-size: 2.2rem;
-  font-weight: bold;
-  color: #1e293b;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.educacao-intro,
-.dicas-intro {
-  text-align: center;
-  font-size: 1.25rem;
-  color: #334155;
-  margin-bottom: 2rem;
-  line-height: 1.8;
-}
-
-/* Imagens dentro das seções */
-.educacao-image {
-  width: 100%;
-  max-width: 300px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.educacao-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  align-items: center;
-  margin-bottom: 2.5rem;
-}
-
-.educacao-section.reverse {
-  flex-direction: column-reverse;
-}
-
-@media (min-width: 768px) {
-  .educacao-section {
-    flex-direction: row;
-    justify-content: space-between;
-    gap: 2rem;
-  }
-  .educacao-section.reverse {
-    flex-direction: row-reverse;
-  }
-}
-
-.educacao-section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-/* Grid para dicas */
 .dicas-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -174,14 +52,20 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  background: #f1f5f9;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  transition: transform 0.3s;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
 }
 
 .dicas-item:hover {
-  transform: translateY(-3px);
+  transform: translateY(-5px);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #60a5fa;
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
 }
 
 .dicas-icon {
@@ -191,36 +75,45 @@
 
 .dicas-text {
   font-size: 1.1rem;
-  color: #334155;
+  color: #fff;
   line-height: 1.5;
-}
-.educacao-title,
-.dicas-title {
-  font-size: 2.4rem;
+  font-weight: 500;
 }
 
-.educacao-section-text,
-.dicas-text,
-.educacao-list li,
-.dicas-steps li,
-.dicas-benefits li {
-  font-size: 1.2rem;
-  line-height: 1.8;
-}
-
-.educacao-extra,
 .dicas-extra {
   margin-top: 2rem;
-  background: #8599b8;
-  padding: 1rem;
-  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 1.5rem;
+  border-radius: 12px;
+}
+
+.dicas-section-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #60a5fa;
+  margin-bottom: 1rem;
 }
 
 .dicas-steps {
   list-style: decimal inside;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  color: #e2e8f0;
+}
+
+.dicas-steps li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
 }
 
 .dicas-benefits {
   list-style: disc inside;
+  color: #e2e8f0;
+}
+
+.dicas-benefits li {
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
 }

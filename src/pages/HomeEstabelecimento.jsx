@@ -32,7 +32,7 @@ const HomeEstabelecimento = () => {
     <div className="home-estabelecimento-container">
       {/* Cabeçalho */}
       <div className="home-estabelecimento-header">
-        <h1 className="home-estabelecimento-title">Bem-vindo(a), {nome}! 💊</h1>
+        <h1 className="home-estabelecimento-title">Bem-vindo(a), {nome}! </h1>
         <p className="home-estabelecimento-subtitle">
           Gerencie seus pontos de coleta e acompanhe os agendamentos
         </p>
@@ -46,14 +46,11 @@ const HomeEstabelecimento = () => {
           onClick={() => navigate("/cadastrar-ponto-coleta")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-blue">
-            📍 Cadastrar Ponto de Coleta
+             Cadastrar Ponto de Coleta
           </h2>
           <p className="home-estabelecimento-card-text">
             Adicione um novo ponto de coleta para receber medicamentos vencidos.
           </p>
-          <div className="home-estabelecimento-card-info">
-            {pontosDeColeta.length} ponto(s) cadastrado(s)
-          </div>
         </div>
 
         {/* 2. Gerenciar pontos */}
@@ -62,14 +59,11 @@ const HomeEstabelecimento = () => {
           onClick={() => navigate("/gerenciar-pontos")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-green">
-            ⚙️ Gerenciar Pontos
+             Gerenciar Pontos
           </h2>
           <p className="home-estabelecimento-card-text">
             Edite informações e horários dos seus pontos de coleta.
           </p>
-          <div className="home-estabelecimento-card-info">
-            {pontosDeColeta.length} ponto(s) ativo(s)
-          </div>
         </div>
 
         {/* 3. Histórico */}
@@ -78,14 +72,11 @@ const HomeEstabelecimento = () => {
           onClick={() => navigate("/visualizar-agendamentos")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-yellow">
-            📅 Histórico de Coletas
+             Histórico de Coletas
           </h2>
           <p className="home-estabelecimento-card-text">
             Visualize o histórico de coletas realizadas.
           </p>
-          <div className="home-estabelecimento-card-info">
-            {agendamentos.length} coleta(s) registrada(s)
-          </div>
         </div>
       </div>
     </div>

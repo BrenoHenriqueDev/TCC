@@ -36,7 +36,7 @@ const PontosColeta = () => {
     return (
       <div className="perfil-pontos-cadastrados">
         <h2 className="perfil-pontos-title">
-          📍 Pontos de Coleta Cadastrados
+           Pontos de Coleta Cadastrados
         </h2>
         <p className="perfil-pontos-empty">
           Nenhum ponto de coleta cadastrado ainda.
@@ -48,7 +48,7 @@ const PontosColeta = () => {
   return (
     <div className="perfil-pontos-cadastrados">
       <h2 className="perfil-pontos-title">
-        📍 Pontos de Coleta Cadastrados ({pontos.length})
+         Pontos de Coleta Cadastrados ({pontos.length})
       </h2>
       <div className="perfil-pontos-lista">
         {pontos.map((ponto) => (

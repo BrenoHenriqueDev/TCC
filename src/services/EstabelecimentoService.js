@@ -43,27 +43,44 @@ const rejeitarSolicitacao = async (adminId, estabelecimentoId) => {
     return response.data;
 };
 
-const alterarStatus = async (usuarioId, estabelecimentoId, novoStatus) => {
-    console.log('Alterando status:', { usuarioId, estabelecimentoId, novoStatus });
+const alterarStatus = async (adminId, estabelecimentoId, novoStatus) => {
+    console.log('EstabelecimentoService.alterarStatus chamado:', { adminId, estabelecimentoId, novoStatus });
     
-    // Busca o estabelecimento atual
-    const response = await http.mainInstance.get(API_URL + `/listarUsuario/${usuarioId}`);
-    const estabelecimentos = response.data || [];
+    // Busca todos os estabelecimentos para encontrar o que precisa ser atualizado
+    const listaResponse = await http.mainInstance.get(API_URL + `/listar/${adminId}`);
+    const estabelecimentos = listaResponse.data || [];
     const estabelecimento = estabelecimentos.find(e => e.id === estabelecimentoId);
     
     if (!estabelecimento) {
         throw new Error('Estabelecimento não encontrado');
     }
     
-    // Atualiza o status
+    console.log('Estabelecimento encontrado:', estabelecimento);
+    
+    // Prepara dados completos para atualização, mantendo todos os campos existentes
     const estabelecimentoAtualizado = {
         ...estabelecimento,
-        statusEstabelecimento: novoStatus
+        statusEstabelecimento: novoStatus,
+        // Remove campos que podem causar problemas na atualização
+        id: undefined,
+        usuario: undefined,
+        usuarioId: undefined
     };
     
     console.log('Dados para atualizar:', estabelecimentoAtualizado);
     
-    const updateResponse = await http.mainInstance.put(API_URL + `/atualizar/${usuarioId}/${estabelecimentoId}`, estabelecimentoAtualizado);
+    // Usa o ID do usuário dono do estabelecimento
+    const usuarioId = estabelecimento.usuario?.id;
+    if (!usuarioId) {
+        throw new Error('ID do usuário não encontrado no estabelecimento');
+    }
+    
+    const updateResponse = await http.mainInstance.put(
+        API_URL + `/atualizar/${usuarioId}/${estabelecimentoId}`, 
+        estabelecimentoAtualizado
+    );
+    
+    console.log('Status alterado com sucesso');
     return updateResponse.data;
 };
 

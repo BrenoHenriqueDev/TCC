@@ -446,8 +446,8 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 2px solid #fbbf24;
-  box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+  border: 2px solid #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
 
 .solicitacoes-lista {
@@ -459,7 +459,7 @@
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid #fbbf24;
+  border: 1px solid #3b82f6;
   border-radius: 12px;
   padding: 20px;
   display: flex;
@@ -470,7 +470,7 @@
 
 .solicitacao-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(251, 191, 36, 0.2);
+  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
 }
 
 .solicitacao-info h4 {
@@ -579,6 +579,31 @@
   margin-top: 10px;
 }
 
+.status-change-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+}
+
+.btn-alterar-status {
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #60a5fa, #1e40af);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-alterar-status:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(96, 165, 250, 0.4);
+}
+
 .status-select {
   padding: 6px 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -588,7 +613,8 @@
   font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.3s ease;
-  min-width: 120px;
+  flex: 1;
+  min-width: 100px;
 }
 
 .status-select:focus {
