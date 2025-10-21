@@ -21,17 +21,20 @@ html {
 
 .cadastro-unificado-box {
   width: 100%;
-  max-width: 500px;
-  background: #fff;
+  max-width: 600px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.75rem;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
-  padding: 2rem 2.5rem;
+  padding: 2.5rem 3rem;
   margin: 0.5rem 0;
 }
 
 .cadastro-unificado-title {
   font-size: 1.75rem;
-  color: #1e293b;
+  color: #fff;
   text-align: center;
   font-weight: bold;
   margin-bottom: 1.5rem;
@@ -40,7 +43,7 @@ html {
 /* Abas */
 .cadastro-unificado-tabs {
   display: flex;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   margin-bottom: 1rem;
 }
 
@@ -49,7 +52,7 @@ html {
   padding: 0.75rem 1rem;
   background: none;
   border: none;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
@@ -58,11 +61,11 @@ html {
 }
 
 .cadastro-unificado-tab:hover {
-  color: #2563eb;
+  color: #60a5fa;
 }
 
 .cadastro-unificado-tab.active {
-  color: #2563eb;
+  color: #60a5fa;
   font-weight: 600;
 }
 
@@ -73,14 +76,14 @@ html {
   left: 0;
   right: 0;
   height: 2px;
-  background: #2563eb;
+  background: #60a5fa;
   border-radius: 1px;
 }
 
 /* Subtítulo */
 .cadastro-unificado-subtitle {
   font-size: 0.9rem;
-  color: #64748b;
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
   margin-bottom: 1.5rem;
   font-weight: 400;
@@ -97,7 +100,7 @@ html {
   display: block;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #334155;
+  color: #fff;
   margin-bottom: 0.25rem;
 }
 
@@ -106,19 +109,24 @@ html {
   display: block;
   width: 95%;
   padding: 0.625rem 0.875rem;
-  border: 1px solid #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
   font-size: 0.9rem;
   outline: none;
   transition: border 0.2s, box-shadow 0.2s;
-  background: #f8fafc;
 }
 
 .cadastro-unificado-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px #2563eb33;
-  background: #fff;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.cadastro-unificado-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .cadastro-unificado-input-error {
@@ -142,14 +150,14 @@ html {
   font-size: 0.9rem;
   font-weight: 600;
   color: #fff;
-  background: #2563eb;
+  background: #60a5fa;
   cursor: pointer;
   transition: background 0.2s;
   margin-top: 0.5rem;
 }
 
 .cadastro-unificado-btn:hover {
-  background: #1d4ed8;
+  background: #3b82f6;
 }
 
 /* Responsividade */

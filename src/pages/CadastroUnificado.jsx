@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/HookLogin";
 import "../css/CadastroUnificado.css";
-import UsuarioService from '../services/UsuarioService.js';
+import UsuarioService from "../services/UsuarioService.js";
 
 function CadastroUnificado() {
   const [tipoCadastro] = useState("usuario"); // apenas "usuario"
@@ -26,10 +26,12 @@ function CadastroUnificado() {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
       const data = await response.json();
       if (!data.erro) {
-        const enderecoCompleto = `${data.logradouro || ''}, ${data.bairro || ''}, ${data.localidade || ''} - ${data.uf || ''}`;
+        const enderecoCompleto = `${data.logradouro || ""}, ${
+          data.bairro || ""
+        }, ${data.localidade || ""} - ${data.uf || ""}`;
         setForm((prev) => ({ ...prev, endereco: enderecoCompleto }));
       }
-    } catch  {
+    } catch {
       alert("CEP não encontrado");
     }
   };
@@ -60,36 +62,46 @@ function CadastroUnificado() {
     if (!form.nome.trim()) novosErros.nome = "Nome é obrigatório.";
     if (!form.email.trim()) novosErros.email = "E-mail é obrigatório.";
     else if (!emailValido(form.email)) novosErros.email = "E-mail inválido.";
-    else if (emailJaCadastrado(form.email, tipoCadastro)) novosErros.email = "E-mail já cadastrado.";
+    else if (emailJaCadastrado(form.email, tipoCadastro))
+      novosErros.email = "E-mail já cadastrado.";
     if (!form.senha) novosErros.senha = "Senha é obrigatória.";
-    else if (form.senha.length < 6) novosErros.senha = "Senha deve ter pelo menos 6 caracteres.";
+    else if (form.senha.length < 6)
+      novosErros.senha = "Senha deve ter pelo menos 6 caracteres.";
     if (!form.confirmarSenha) novosErros.confirmarSenha = "Confirme a senha.";
-    if (form.senha && form.confirmarSenha && form.senha !== form.confirmarSenha) {
+    if (
+      form.senha &&
+      form.confirmarSenha &&
+      form.senha !== form.confirmarSenha
+    ) {
       novosErros.confirmarSenha = "As senhas não coincidem.";
     }
     return novosErros;
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  const validacao = validar();
-  setErros(validacao);
-  if (Object.keys(validacao).length === 0) {
-    try {
-      const response = await UsuarioService.signup(form.nome, form.email, form.senha, { nivelAcesso: 'USER' });
-      const userData = response.data;
-      localStorage.setItem("usuarioLogado", JSON.stringify(userData));
-      alert("Cadastro realizado com sucesso!");
-      login(userData.nivelAcesso || 'USER');
-      navigate("/");
-      limparFormulario();
-    } catch (error) {
-      alert("Erro ao realizar cadastro. Tente novamente.");
-      console.error(error);
+    e.preventDefault();
+    const validacao = validar();
+    setErros(validacao);
+    if (Object.keys(validacao).length === 0) {
+      try {
+        const response = await UsuarioService.signup(
+          form.nome,
+          form.email,
+          form.senha,
+          { nivelAcesso: "USER" }
+        );
+        const userData = response.data;
+        localStorage.setItem("usuarioLogado", JSON.stringify(userData));
+        alert("Cadastro realizado com sucesso!");
+        login(userData.nivelAcesso || "USER");
+        navigate("/");
+        limparFormulario();
+      } catch (error) {
+        alert("Erro ao realizar cadastro. Tente novamente.");
+        console.error(error);
+      }
     }
-  }
-};
-
+  };
 
   const limparFormulario = () => {
     setForm({
@@ -109,11 +121,6 @@ function CadastroUnificado() {
     <div className="cadastro-unificado-container">
       <div className="cadastro-unificado-box">
         <h1 className="cadastro-unificado-title">Cadastro</h1>
-
-        {/* Título único */}
-        <div className="cadastro-unificado-header">
-          <h2>Cadastro de Usuário</h2>
-        </div>
 
         {/* Subtítulo */}
         <p className="cadastro-unificado-subtitle">

@@ -11,8 +11,8 @@ import HistoricoAgendamentos from "../components/HistoricoAgendamentos";
 import PontosColeta from "../components/PontosColeta";
 import "../css/Perfil.css";
 import ModalAlterarSenha from "./AlterarSenha";
-import ModalEditarInfo from "../components/EditarInfo";
-import ModalExcluirConta from "../components/ExcluirConta";
+
+
 import UsuarioService from "../services/UsuarioService";
 import SolicitarFarmacia from "../components/SolicitarFarmacia";
 
@@ -47,45 +47,7 @@ function Perfil() {
 
 
 
-  const handleDelete = async () => {
-    // Torne a função assíncrona
-    if (!usuario || !usuario.id) {
-      console.error("ID do usuário não encontrado para exclusão na API.");
-      setModalAberto(null);
-      return;
-    }
-    try {
-      await UsuarioService.remove(usuario.id);
 
-      const chave =
-        usuario.tipo === "usuario" ? "usuarios" : "estabelecimentos";
-      const lista = JSON.parse(localStorage.getItem(chave)) || [];
-
-      // Remove o usuário atual da lista
-      const novaLista = lista.filter((u) => u.email !== usuario.email);
-      localStorage.setItem(chave, JSON.stringify(novaLista));
-
-      // Remove agendamentos ou pontos cadastrados
-      if (usuario.tipo === "usuario") {
-        localStorage.removeItem(`agendamentos_${usuario.email}`);
-      } else {
-        localStorage.removeItem(`pontos_${usuario.email}`);
-      }
-
-      // Remove o login atual
-      localStorage.removeItem("usuarioLogado");
-
-      // Fecha o modal
-      setModalAberto(null);
-
-      alert("Conta excluída com sucesso!");
-      window.location.href = "/login";
-    } catch (error) {
-      console.error("Erro ao excluir conta via API:", error);
-      alert("Falha ao excluir a conta. Tente novamente.");
-      setModalAberto(null); // Fecha o modal em caso de falha
-    }
-  };
 
   return !usuario ? (
     <div className="loading-screen">
@@ -162,13 +124,7 @@ function Perfil() {
                 </div>
               )}
             </div>
-            <button
-              className="perfil-info-edit-btn"
-              onClick={() => setModalAberto("editarInfo")}
-            >
-              <FaEdit />
-              Editar Informações
-            </button>
+
           </div>
 
           {/* Histórico de Agendamentos */}
@@ -197,9 +153,12 @@ function Perfil() {
 
             <button
               className="perfil-config-btn perfil-config-btn-danger"
-              onClick={() => setModalAberto("excluirConta")}
+              onClick={() => {
+                UsuarioService.logout();
+                window.location.href = "/login";
+              }}
             >
-              Excluir Conta
+              Sair da Conta
             </button>
           </div>
         </div>
@@ -216,32 +175,9 @@ function Perfil() {
         />
       )}
 
-      {modalAberto === "editarInfo" && (
-        <ModalEditarInfo
-          aberto={true}
-          usuario={usuario}
-          onClose={() => setModalAberto(false)}
-          onSave={async (dadosAtualizados) => {
-            try {
-              await UsuarioService.update(usuario.id, dadosAtualizados);
-              // Recarrega os dados atualizados da API
-              const dadosAtualizadosAPI = await UsuarioService.findById(usuario.id);
-              setUsuario(dadosAtualizadosAPI);
-              setModalAberto(null);
-            } catch (error) {
-              console.error("Erro ao atualizar usuário:", error);
-            }
-          }}
-        />
-      )}
 
-      {modalAberto === "excluirConta" && (
-        <ModalExcluirConta
-          isOpen={true}
-          onConfirm={handleDelete}
-          onCancel={() => setModalAberto(null)}
-        />
-      )}
+
+
 
       {modalAberto === "solicitarFarmacia" && (
         <div className="modal-overlay">

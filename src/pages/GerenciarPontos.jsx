@@ -96,7 +96,7 @@ const GerenciarPontos = () => {
               }`}
             >
               <h2 className="gerenciar-ponto-nome">{ponto.nome}</h2>
-              <p className="gerenciar-ponto-endereco">{ponto.complemento}, {ponto.numero}</p>
+              <p className="gerenciar-ponto-endereco">{ponto.endereço || ponto.complemento}, {ponto.numero}</p>
               <p className="gerenciar-ponto-info">
                 <strong>CEP:</strong> {ponto.cep} <br />
                 <strong>Tipo:</strong> {ponto.coleta} <br />

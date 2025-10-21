@@ -12,13 +12,15 @@
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
   padding: 2rem;
   border-radius: 12px;
   max-width: 400px;
   width: 90%;
-  color: #334155;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .modal-header {
@@ -30,7 +32,7 @@
 
 .modal-title {
   font-size: 1.5rem;
-  color: #334155;
+  color: #fff;
   margin: 0;
 }
 
@@ -68,26 +70,28 @@
 
 .modal-label {
   margin-bottom: 0.5rem;
-  color: #334155;
+  color: #fff;
   font-weight: 500;
 }
 
 .modal-input {
   padding: 0.75rem;
   border-radius: 6px;
-  border: 1px solid #60a5fa;
-  background: rgba(255, 255, 255, 0.1);
-  color: #334155;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
   font-size: 1rem;
 }
 
 .modal-input:focus {
   outline: none;
-  border-color: #0073ff;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .modal-input::placeholder {
-  color: #334155;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .modal-input-error {
@@ -123,22 +127,22 @@
 }
 
 .modal-btn-cancelar {
-  background: #ef4444;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .modal-btn-cancelar:hover {
-  background: #ed1616;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .modal-btn-confirmar {
-  background: #60a5fa;
-  color: #fff;
+  background: linear-gradient(135deg, #3A6EB7, #2A5A9A) !important;
+  color: #fff !important;
 }
 
 .modal-btn-confirmar:hover {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #2A5A9A, #1e4a7a);
 }
 
 .modal-btn-confirmar:disabled {

@@ -8,7 +8,9 @@
   margin-top: 0;
   overflow: hidden;
   border-radius: 0;
-  background: linear-gradient(135deg, #5c80f8 0%, #1e293b 50%, #334155 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   box-shadow: none;
   min-height: 600px;
   height: 70vh;

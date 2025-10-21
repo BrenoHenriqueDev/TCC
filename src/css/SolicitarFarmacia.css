@@ -2,29 +2,25 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
-  background: linear-gradient(135deg, #3A6EB7 0%, #2A5A9A 100%);
   min-height: 100vh;
 }
 
 .solicitar-farmacia-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 20px;
   padding: 2.5rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .solicitar-farmacia-title {
-  color: #2d3748;
+  color: #fff !important;
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
   margin-bottom: 2rem;
-  background: linear-gradient(135deg, #3A6EB7, #2A5A9A);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .solicitar-farmacia-alert {
@@ -52,7 +48,7 @@
 .solicitar-farmacia-label {
   display: block;
   margin-bottom: 0.5rem;
-  color: #2d3748;
+  color: #fff !important;
   font-weight: 600;
   font-size: 0.95rem;
 }
@@ -61,30 +57,32 @@
 .solicitar-farmacia-textarea {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background: rgba(255, 255, 255, 0.9);
+  box-sizing: border-box;
 }
 
 .solicitar-farmacia-input:focus,
 .solicitar-farmacia-textarea:focus {
   outline: none;
-  border-color: #3A6EB7;
-  box-shadow: 0 0 0 3px rgba(58, 110, 183, 0.1);
-  background: white;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.3) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
 }
 
 .solicitar-farmacia-input::placeholder,
 .solicitar-farmacia-textarea::placeholder {
-  color: #a0aec0;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .solicitar-farmacia-small {
   display: block;
   margin-top: 0.25rem;
-  color: #718096;
+  color: #e2e8f0 !important;
   font-size: 0.875rem;
 }
 
@@ -111,8 +109,8 @@
 }
 
 .solicitar-farmacia-btn {
-  background: linear-gradient(135deg, #3A6EB7, #2A5A9A);
-  color: white;
+  background: linear-gradient(135deg, #3A6EB7, #2A5A9A) !important;
+  color: white !important;
   border: none;
   padding: 1rem 2rem;
   border-radius: 12px;
@@ -125,6 +123,7 @@
 }
 
 .solicitar-farmacia-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2A5A9A, #1e4a7a) !important;
   transform: translateY(-2px);
   box-shadow: 0 10px 25px rgba(58, 110, 183, 0.3);
 }

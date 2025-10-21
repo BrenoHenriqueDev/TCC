@@ -36,7 +36,7 @@
 }
 
 .cadastrar-ponto-form {
-  background: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: 2rem;
@@ -47,7 +47,7 @@
 
 .cadastrar-ponto-section {
   margin-bottom: 2rem;
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   padding: 1.5rem;
@@ -176,7 +176,7 @@ select.cadastrar-ponto-input option {
 }
 
 .cadastrar-ponto-horario-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -319,7 +319,7 @@ select.cadastrar-ponto-input option {
   display: flex;
   align-items: center;
   padding: 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0.1) 100%);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -348,7 +348,7 @@ select.cadastrar-ponto-input option {
 }
 
 .cadastrar-ponto-textarea {
-  width: 100%;
+  width: 90%;
   padding: 0.75rem;
   border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -356,6 +356,11 @@ select.cadastrar-ponto-input option {
   color: #fff;
   resize: vertical;
   min-height: 100px;
+  box-sizing: border-box;
+}
+
+.cadastrar-ponto-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .cadastrar-ponto-textarea:focus {
@@ -386,14 +391,14 @@ select.cadastrar-ponto-input option {
   padding: 0.75rem 1.5rem;
   border-radius: 6px;
   border: none;
-  background: #60a5fa;
+  background: linear-gradient(135deg, #3A6EB7, #2A5A9A);
   color: #fff;
   cursor: pointer;
   font-weight: 600;
 }
 
 .cadastrar-ponto-btn-submit:hover {
-  background: #3b82f6;
+  background: linear-gradient(135deg, #2A5A9A, #1e4a7a);
 }
 
 .cadastrar-ponto-btn-submit:disabled {

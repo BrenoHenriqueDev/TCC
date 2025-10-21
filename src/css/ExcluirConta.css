@@ -14,14 +14,18 @@
   
   /* Caixa do modal */
   .modal {
-    background-color: #fff;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     padding: 24px 32px;
-    border-radius: 8px;
+    border-radius: 12px;
     max-width: 400px;
     width: 90%;
     text-align: center;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     animation: fadeIn 0.3s ease-in-out;
+    color: #fff !important;
   }
   
   /* Animação de entrada */
@@ -47,29 +51,35 @@
   
   /* Botão "Sim" */
   .btn.btn-danger {
-    background-color: #e53935;
-    color: white;
+    background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+    color: white !important;
     border: none;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
   }
   
   .btn.btn-danger:hover {
-    background-color: #c62828;
+    background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    transform: translateY(-1px);
   }
   
   /* Botão "Não" */
   .btn.btn-secondary {
-    background-color: #4ef856;
-    color: #333;
-    border: none;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
   }
   
   .btn.btn-secondary:hover {
-    background-color: #3fc045;
+    background: rgba(255, 255, 255, 0.2) !important;
+    transform: translateY(-1px);
   }
   

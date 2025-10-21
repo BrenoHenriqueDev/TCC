@@ -66,7 +66,7 @@ const findByNome = (nome) => {
 };
 
 const remove = (id) => {
-  return http.mainInstance.delete(API_URL + `delete/${id}`);
+  return http.mainInstance.delete(API_URL + `excluirConta/${id}`);
 };
 
 const updateNivelAcesso = (adminId, usuarioId, novoNivel) => {

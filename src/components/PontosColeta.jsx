@@ -55,7 +55,7 @@ const PontosColeta = () => {
           <div key={ponto.id} className="perfil-ponto-item">
             <div className="perfil-ponto-info">
               <h4>{ponto.nome || "Ponto de Coleta"}</h4>
-              <p>{ponto.complemento} {ponto.numero && `, ${ponto.numero}`}</p>
+              <p>{ponto.endereço || ponto.complemento} {ponto.numero && `, ${ponto.numero}`}</p>
               {ponto.telefone && <p>📞 {ponto.telefone}</p>}
               <span className={`perfil-ponto-status ${ponto.statusEstabelecimento?.toLowerCase() || 'ativo'}`}>
                 {ponto.statusEstabelecimento || "Ativo"}

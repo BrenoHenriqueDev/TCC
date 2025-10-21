@@ -81,17 +81,12 @@ export default function Header() {
               </Link>
             </>
           ) : (
-            <>
-              <Link
-                to="/perfil"
-                className={isCurrentPage("/perfil") ? current : general}
-              >
-                Perfil
-              </Link>
-              <button onClick={logout} className="header-logout-btn">
-                Sair
-              </button>
-            </>
+            <Link
+              to="/perfil"
+              className={isCurrentPage("/perfil") ? current : general}
+            >
+              Perfil
+            </Link>
           )}
         </nav>
       </div>

@@ -26,21 +26,7 @@ const HomeEstabelecimento = () => {
     }
   }, [logado?.email]);
 
-  const handleCardHover = (e, isEntering) => {
-    if (isEntering) {
-      e.target.style.background = "rgba(255, 255, 255, 0.2)";
-      e.target.style.transform = "translateY(-4px)";
-      e.target.style.boxShadow = "0 8px 25px rgba(0, 0, 0, 0.3)";
-      e.target.style.border = "1px solid rgba(255, 255, 255, 0.4)";
-      e.target.style.scale = "1.02";
-    } else {
-      e.target.style.background = "rgba(255, 255, 255, 0.1)";
-      e.target.style.transform = "translateY(0)";
-      e.target.style.boxShadow = "none";
-      e.target.style.border = "1px solid rgba(255, 255, 255, 0.2)";
-      e.target.style.scale = "1";
-    }
-  };
+
 
   return (
     <div className="home-estabelecimento-container">
@@ -57,8 +43,6 @@ const HomeEstabelecimento = () => {
         {/* 1. Cadastrar novo ponto */}
         <div
           className="home-estabelecimento-card"
-          onMouseEnter={(e) => handleCardHover(e, true)}
-          onMouseLeave={(e) => handleCardHover(e, false)}
           onClick={() => navigate("/cadastrar-ponto-coleta")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-blue">
@@ -75,8 +59,6 @@ const HomeEstabelecimento = () => {
         {/* 2. Gerenciar pontos */}
         <div
           className="home-estabelecimento-card"
-          onMouseEnter={(e) => handleCardHover(e, true)}
-          onMouseLeave={(e) => handleCardHover(e, false)}
           onClick={() => navigate("/gerenciar-pontos")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-green">
@@ -92,9 +74,7 @@ const HomeEstabelecimento = () => {
 
         {/* 3. Histórico */}
         <div
-          className="home-estabelecimento-card d-flex"
-          onMouseEnter={(e) => handleCardHover(e, true)}
-          onMouseLeave={(e) => handleCardHover(e, false)}
+          className="home-estabelecimento-card"
           onClick={() => navigate("/visualizar-agendamentos")}
         >
           <h2 className="home-estabelecimento-card-title home-estabelecimento-card-title-yellow">
