@@ -4,6 +4,7 @@ import "../css/EditarPonto.css";
 
 const EditarModal = ({ ponto, onClose, onSave }) => {
   const [form, setForm] = useState(ponto || {});
+  const [imagemPreview, setImagemPreview] = useState(null);
 
   const formatarCnpj = (cnpj) => {
     if (!cnpj) return "";
@@ -37,6 +38,10 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
         tiposMedicamentos: ponto.tiposMedicamentos || [],
         tipoServico: ponto.coleta || ponto.tipoServico || "RECEBIMENTO"
       });
+      // Definir preview da imagem existente
+      if (ponto.foto || ponto.imagem || ponto.fotografia) {
+        setImagemPreview(ponto.foto || ponto.imagem || ponto.fotografia);
+      }
     }
     
     // Desabilita scroll do body quando modal abre
@@ -96,6 +101,32 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
       console.log('CEP completo, iniciando busca...');
       buscarCep(numeros);
     }
+  };
+
+  const handleImagemChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Imagem muito grande. Máximo 5MB.");
+        return;
+      }
+      if (!file.type.startsWith('image/')) {
+        alert("Apenas imagens são permitidas.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64 = event.target.result;
+        setForm(prev => ({ ...prev, foto: base64 }));
+        setImagemPreview(base64);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removerImagem = () => {
+    setForm(prev => ({ ...prev, foto: "" }));
+    setImagemPreview(null);
   };
 
   const handleChange = (e) => {
@@ -271,6 +302,38 @@ const EditarModal = ({ ponto, onClose, onSave }) => {
               <option value="RETIRA">Apenas Retirada em Casa</option>
               <option value="AMBOS">Recebimento e Retirada</option>
             </select>
+          </div>
+
+          <div className="editar-field">
+            <label className="editar-label">Foto do Estabelecimento:</label>
+            <div className="editar-imagem-container">
+              {imagemPreview ? (
+                <div className="editar-imagem-preview">
+                  <img src={imagemPreview} alt="Preview" className="editar-imagem" />
+                  <button 
+                    type="button" 
+                    onClick={removerImagem}
+                    className="editar-remover-imagem"
+                  >
+                    × Remover
+                  </button>
+                </div>
+              ) : (
+                <div className="editar-upload-area">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImagemChange}
+                    className="editar-file-input"
+                    id="imagem-upload-editar"
+                  />
+                  <label htmlFor="imagem-upload-editar" className="editar-upload-label">
+                    📷 Clique para adicionar imagem
+                    <small>Máximo 5MB - JPG, PNG, GIF</small>
+                  </label>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="editar-field">

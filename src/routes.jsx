@@ -9,6 +9,7 @@ import HomeEstabelecimento from "./pages/HomeEstabelecimento";
 import CadastrarPontoColeta from "./pages/CadastrarPontoColeta";
 import GerenciarPontos from "./pages/GerenciarPontos";
 import VisualizarAgendamentos from "./pages/VisualizarAgendamentos";
+import Mensagens from "./pages/Mensagens";
 
 import Editar from "./components/EditarPonto";
 import Admin from "./pages/Admin";
@@ -35,6 +36,7 @@ export default function AppRoutes() {
         <Route path="/gerenciar-pontos" element={<GerenciarPontos />} />
         <Route path="/visualizar-agendamentos" element={<VisualizarAgendamentos />} />
         <Route path="/editar" element={<Editar />} />
+        <Route path="/mensagens" element={<Mensagens />} />
 
         <Route path="/admin" element={<Admin />} />
       </Routes>

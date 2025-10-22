@@ -94,9 +94,10 @@ const validarCNPJ = async (cnpj) => {
     dados.cnae_fiscal === "47.71-7-01" ||
     dados.cnae_fiscal === "4771701" ||
     dados.cnae_fiscal_descricao?.toLowerCase().includes("farmácia") ||
-    dados.cnae_fiscal_descricao?.toLowerCase().includes("drogaria") ||
-    dados.razao_social?.toLowerCase().includes("farmácia") ||
-    dados.razao_social?.toLowerCase().includes("drogaria");
+   // dados.cnae_fiscal_descricao?.toLowerCase().includes("drogaria") ||
+    dados.razao_social?.toLowerCase().includes("farmácia") 
+    //dados.razao_social?.toLowerCase().includes("drogaria");
+    ;
 
   return {
     valido: true,

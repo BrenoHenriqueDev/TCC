@@ -65,6 +65,14 @@ export default function Header() {
               </Link>
             </>
           )}
+          {isAdmin && (
+            <Link
+              to="/mensagens"
+              className={isCurrentPage("/mensagens") ? current : general}
+            >
+              Mensagens
+            </Link>
+          )}
           {!isAuthenticated ? (
             <>
               <Link

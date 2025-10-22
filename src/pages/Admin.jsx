@@ -69,6 +69,7 @@ function Admin() {
       if (usuarioLogado && usuarioLogado.id) {
         const dados = await EstabelecimentoService.listarTodosComCNPJ(usuarioLogado.id);
         setEstabelecimentos(dados || []);
+
       }
     } catch (error) {
       console.error("Erro ao carregar estabelecimentos:", error);
@@ -461,7 +462,7 @@ function Admin() {
                         <h4>{estab.nome}</h4>
                         <p><strong>CNPJ:</strong> 
                           <span 
-                            style={{cursor: 'pointer', color: '#667eea', textDecoration: 'underline'}}
+                            style={{cursor: 'pointer', color: '#00ff88', fontWeight: 'bold', textDecoration: 'underline'}}
                             onClick={() => {
                               setCnpjValidacao(estab.cnpj);
                               navigator.clipboard.writeText(estab.cnpj);
