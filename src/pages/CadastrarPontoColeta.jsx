@@ -156,24 +156,38 @@ const CadastrarPontoColeta = () => {
 
   const handleImagemChange = (e) => {
     const file = e.target.files[0];
+    console.log('Arquivo selecionado:', file);
+    
     if (file) {
+      console.log('Tamanho do arquivo:', file.size, 'bytes');
+      console.log('Tipo do arquivo:', file.type);
+      console.log('Nome do arquivo:', file.name);
+      
       // Validar tamanho (máximo 5MB)
       if (file.size > 5 * 1024 * 1024) {
+        console.log('Erro: Arquivo muito grande');
         alert("Imagem muito grande. Máximo 5MB.");
         return;
       }
       
       // Validar tipo
       if (!file.type.startsWith('image/')) {
+        console.log('Erro: Tipo de arquivo inválido');
         alert("Apenas imagens são permitidas.");
         return;
       }
       
+      console.log('Iniciando conversão para base64...');
       const reader = new FileReader();
       reader.onload = (event) => {
         const base64 = event.target.result;
+        console.log('Base64 gerado, tamanho:', base64.length);
         setForm(prev => ({ ...prev, imagem: base64 }));
         setImagemPreview(base64);
+      };
+      reader.onerror = (error) => {
+        console.error('Erro ao ler arquivo:', error);
+        alert('Erro ao processar a imagem.');
       };
       reader.readAsDataURL(file);
     }
@@ -230,6 +244,13 @@ const CadastrarPontoColeta = () => {
           return;
         }
 
+        // Converter imagem base64 para bytes se existir
+        let fotoBytes = null;
+        if (form.imagem) {
+          const base64Data = form.imagem.split(',')[1]; // Remove o prefixo data:image/...
+          fotoBytes = base64Data;
+        }
+
         const estabelecimento = {
           nome: form.nome.trim(),
           cnpj: form.cnpj.replace(/\D/g, ""),
@@ -243,7 +264,7 @@ const CadastrarPontoColeta = () => {
           longitude: form.longitude ? parseFloat(form.longitude) : null,
           tipo: "FARMACIA",
           coleta: form.tipoServico,
-          imagem: form.imagem || null
+          fotoEst: fotoBytes
         };
 
         await EstabelecimentoService.cadastrar(usuario.id, estabelecimento);

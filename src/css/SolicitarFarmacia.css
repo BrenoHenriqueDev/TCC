@@ -1,8 +1,8 @@
 .solicitar-farmacia-container {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 2rem;
-  min-height: 100vh;
+  padding: 1.5rem;
+  min-height: auto;
 }
 
 .solicitar-farmacia-card {
@@ -11,7 +11,7 @@
   -webkit-backdrop-filter: blur(16px) !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 20px;
-  padding: 2.5rem;
+  padding: 2rem;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
@@ -20,7 +20,15 @@
   font-size: 2rem;
   font-weight: 700;
   text-align: center;
+  margin-bottom: 1rem;
+}
+
+.solicitar-farmacia-subtitle {
+  color: #e2e8f0 !important;
+  font-size: 1rem;
+  text-align: center;
   margin-bottom: 2rem;
+  line-height: 1.5;
 }
 
 .solicitar-farmacia-alert {
@@ -64,6 +72,12 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   box-sizing: border-box;
+}
+
+.solicitar-farmacia-textarea {
+  resize: vertical;
+  min-height: 120px;
+  font-family: inherit;
 }
 
 .solicitar-farmacia-input:focus,
@@ -136,6 +150,10 @@
 
 .solicitar-farmacia-btn:active {
   transform: translateY(0);
+}
+
+.cnpj-input-small {
+  width: 90% !important;
 }
 
 @media (max-width: 768px) {

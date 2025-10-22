@@ -4,11 +4,27 @@ const API_URL = "estabelecimento";
 
 // Funções para estabelecimentos
 const cadastrar = (usuarioId, estabelecimento) => {
+    console.log('EstabelecimentoService.cadastrar chamado:', { usuarioId, estabelecimento });
+    
+    // Sempre enviar como JSON, o backend converte base64 para bytes
+    if (estabelecimento.fotoEst) {
+        console.log('Enviando com imagem via JSON, tamanho base64:', estabelecimento.fotoEst.length);
+    } else {
+        console.log('Enviando sem imagem via JSON...');
+        // Remover campo fotoEst se estiver vazio
+        const { fotoEst, ...estabelecimentoSemFoto } = estabelecimento;
+        return http.mainInstance.post(API_URL + `/cadastrar/${usuarioId}`, estabelecimentoSemFoto);
+    }
+    
     return http.mainInstance.post(API_URL + `/cadastrar/${usuarioId}`, estabelecimento);
 };
 
 const solicitarCadastro = (usuarioId, estabelecimento) => {
     return http.mainInstance.post(`estabelecimento/solicitar/${usuarioId}`, estabelecimento);
+};
+
+const solicitarPermissaoFarmacia = (usuarioId, solicitacao) => {
+    return http.mainInstance.post(`estabelecimento/solicitar-farmacia/${usuarioId}`, solicitacao);
 };
 
 const listarPorUsuario = (usuarioId) => {
@@ -87,6 +103,7 @@ const alterarStatus = async (adminId, estabelecimentoId, novoStatus) => {
 const EstabelecimentoService = {
     cadastrar,
     solicitarCadastro,
+    solicitarPermissaoFarmacia,
     listarPorUsuario,
     listarTodos,
     listarTodosComCNPJ,

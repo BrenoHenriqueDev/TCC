@@ -14,8 +14,13 @@ const HomeEstabelecimento = () => {
     nome = logado.nome || "Farmácia";
   }
 
-  // Carregar dados do localStorage
+  // Verificar acesso e carregar dados
   React.useEffect(() => {
+    if (!logado || logado.nivelAcesso !== "FARMACIA") {
+      navigate("/");
+      return;
+    }
+    
     if (logado && logado.email) {
       const pontosSalvos =
         JSON.parse(localStorage.getItem(`pontos_${logado.email}`)) || [];
@@ -24,7 +29,7 @@ const HomeEstabelecimento = () => {
       setPontosDeColeta(pontosSalvos);
       setAgendamentos(agendamentosSalvos);
     }
-  }, [logado?.email]);
+  }, [navigate]);
 
 
 

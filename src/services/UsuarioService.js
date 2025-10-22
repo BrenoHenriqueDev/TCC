@@ -54,10 +54,10 @@ const reativar = (id) => {
 
 const alterarSenha = async (id, senhaAtual, novaSenha) => {
   const formData = new FormData();
-  formData.append('senhaAtual', senhaAtual);
-  formData.append('novaSenha', novaSenha);
-  
-  console.log('UsuarioService - alterarSenha:', { id, senhaAtual, novaSenha });
+  formData.append("senhaAtual", senhaAtual);
+  formData.append("novaSenha", novaSenha);
+
+  console.log("UsuarioService - alterarSenha:", { id, senhaAtual, novaSenha });
   return http.multipartInstance.put(API_URL + `alterarSenha/${id}`, formData);
 };
 
@@ -65,47 +65,50 @@ const findByNome = (nome) => {
   return http.mainInstance.get(API_URL + `findByNome?nome=${nome}`);
 };
 
-const remove = (id) => {
-  return http.mainInstance.delete(API_URL + `excluirConta/${id}`);
+const remove = (adminId, id) => {
+  return http.mainInstance.delete(API_URL + `delete/${adminId}/${id}`);
 };
 
 const updateNivelAcesso = (adminId, usuarioId, novoNivel) => {
-  return http.mainInstance.put(API_URL + `alterarNivel/${adminId}/${usuarioId}?novoNivel=${novoNivel}`);
+  return http.mainInstance.put(
+    API_URL + `alterarNivel/${adminId}/${usuarioId}?novoNivel=${novoNivel}`
+  );
 };
 
 const validarCNPJ = async (cnpj) => {
-  const cnpjLimpo = cnpj.replace(/[^\d]/g, '');
+  const cnpjLimpo = cnpj.replace(/[^\d]/g, "");
   if (cnpjLimpo.length !== 14) {
     throw new Error("CNPJ deve ter 14 dígitos");
   }
-  
-  const response = await fetch(`https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`);
+
+  const response = await fetch(
+    `https://brasilapi.com.br/api/cnpj/v1/${cnpjLimpo}`
+  );
   const dados = await response.json();
-  
+
   if (!dados.cnpj) {
     throw new Error("CNPJ inválido");
   }
-  
-  const isFarmacia = dados.cnae_fiscal === '47.71-7-01' || 
-                    dados.cnae_fiscal === '4771701' ||
-                    dados.cnae_fiscal_descricao?.toLowerCase().includes('farmácia') ||
-                    dados.cnae_fiscal_descricao?.toLowerCase().includes('drogaria') ||
-                    dados.razao_social?.toLowerCase().includes('farmácia') ||
-                    dados.razao_social?.toLowerCase().includes('drogaria');
-  
+
+  const isFarmacia =
+    dados.cnae_fiscal === "47.71-7-01" ||
+    dados.cnae_fiscal === "4771701" ||
+    dados.cnae_fiscal_descricao?.toLowerCase().includes("farmácia") ||
+    dados.cnae_fiscal_descricao?.toLowerCase().includes("drogaria") ||
+    dados.razao_social?.toLowerCase().includes("farmácia") ||
+    dados.razao_social?.toLowerCase().includes("drogaria");
+
   return {
     valido: true,
     isFarmacia,
     dados: {
       razaoSocial: dados.razao_social,
-      nomeFantasia: dados.nome_fantasia || 'N/A',
+      nomeFantasia: dados.nome_fantasia || "N/A",
       situacao: dados.descricao_situacao_cadastral,
-      atividade: dados.cnae_fiscal_descricao
-    }
+      atividade: dados.cnae_fiscal_descricao,
+    },
   };
 };
-
-
 
 const UsuarioService = {
   findAll,

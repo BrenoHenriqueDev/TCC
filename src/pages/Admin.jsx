@@ -3,12 +3,14 @@ import { useAuth } from "../hooks/HookLogin";
 import { useNavigate } from "react-router-dom";
 import UsuarioService from "../services/UsuarioService";
 import EstabelecimentoService from "../services/EstabelecimentoService";
+import MensagemService from "../services/MensagemService";
 import "../css/Admin.css";
 
 function Admin() {
   const [usuarios, setUsuarios] = useState([]);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
   const [solicitacoesPendentes, setSolicitacoesPendentes] = useState([]);
+  const [solicitacoesFarmacia, setSolicitacoesFarmacia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState("");
   const [cnpjValidacao, setCnpjValidacao] = useState("");
@@ -19,19 +21,22 @@ function Admin() {
   const [paginaUsuarios, setPaginaUsuarios] = useState(1);
   const [paginaEstabelecimentos, setPaginaEstabelecimentos] = useState(1);
   const [paginaSolicitacoes, setPaginaSolicitacoes] = useState(1);
+  const [paginaSolicitacoesFarmacia, setPaginaSolicitacoesFarmacia] = useState(1);
   const itensPorPagina = 5;
   const { userType } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (userType !== "ADMIN") {
+    const logado = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (!logado || logado.nivelAcesso !== "ADMIN") {
       navigate("/");
       return;
     }
     carregarUsuarios();
     carregarEstabelecimentos();
     carregarSolicitacoesPendentes();
-  }, [userType, navigate]);
+    carregarSolicitacoesFarmacia();
+  }, [navigate]);
 
   const carregarUsuarios = async () => {
     try {
@@ -82,6 +87,20 @@ function Admin() {
     }
   };
 
+  const carregarSolicitacoesFarmacia = async () => {
+    try {
+      const response = await MensagemService.findAll();
+      console.log('Todas as mensagens:', response.data);
+      const solicitacoesFarmacia = response.data.filter(msg => 
+        msg.texto && msg.texto.includes('SOLICITAÇÃO FARMÁCIA')
+      ) || [];
+      console.log('Solicitações de farmácia filtradas:', solicitacoesFarmacia);
+      setSolicitacoesFarmacia(solicitacoesFarmacia);
+    } catch (error) {
+      console.error("Erro ao carregar solicitações de farmácia:", error);
+    }
+  };
+
   const aprovarSolicitacao = async (estabelecimentoId) => {
     try {
       const usuarioLogado = UsuarioService.getCurrentUser();
@@ -91,6 +110,7 @@ function Admin() {
         carregarSolicitacoesPendentes();
         carregarEstabelecimentos();
         carregarUsuarios();
+        carregarSolicitacoesFarmacia();
       }
     } catch (error) {
       console.error("Erro ao aprovar solicitação:", error);
@@ -162,12 +182,17 @@ function Admin() {
   const excluirUsuario = async (usuarioId, nomeUsuario) => {
     if (window.confirm(`Tem certeza que deseja excluir o usuário "${nomeUsuario}"? Esta ação não pode ser desfeita.`)) {
       try {
-        await UsuarioService.remove(usuarioId);
+        const usuarioLogado = UsuarioService.getCurrentUser();
+        await UsuarioService.remove(usuarioLogado.id, usuarioId);
         alert("Usuário excluído com sucesso!");
         carregarUsuarios();
       } catch (error) {
         console.error("Erro ao excluir usuário:", error);
-        alert("Erro ao excluir usuário");
+        if (error.response?.status === 500) {
+          alert("Erro: Não é possível excluir este usuário. Ele tem agendamentos pendentes.");
+        } else {
+          alert("Erro ao excluir usuário: " + (error.response?.data || error.message));
+        }
       }
     }
   };
@@ -222,6 +247,41 @@ function Admin() {
     paginaSolicitacoes * itensPorPagina
   );
 
+  const solicitacoesFarmaciaPendentes = solicitacoesFarmacia.filter(s => s.statusMensagem === 'ATIVO');
+  console.log('Solicitações pendentes:', solicitacoesFarmaciaPendentes);
+  const totalPaginasSolicitacoesFarmacia = Math.ceil(solicitacoesFarmaciaPendentes.length / itensPorPagina);
+  const solicitacoesFarmaciaPaginadas = solicitacoesFarmaciaPendentes.slice(
+    (paginaSolicitacoesFarmacia - 1) * itensPorPagina,
+    paginaSolicitacoesFarmacia * itensPorPagina
+  );
+
+  const aprovarSolicitacaoFarmacia = async (id, email) => {
+    try {
+      const usuario = usuarios.find(u => u.email === email);
+      if (usuario) {
+        await UsuarioService.updateNivelAcesso(UsuarioService.getCurrentUser().id, usuario.id, 'FARMACIA');
+        await MensagemService.deleteById(id);
+        alert("Solicitação aprovada! Usuário agora é FARMÁCIA.");
+        carregarSolicitacoesFarmacia();
+        carregarUsuarios();
+      }
+    } catch (error) {
+      console.error("Erro ao aprovar solicitação:", error);
+      alert("Erro ao aprovar solicitação");
+    }
+  };
+
+  const rejeitarSolicitacaoFarmacia = async (id) => {
+    try {
+      await MensagemService.deleteById(id);
+      alert("Solicitação rejeitada.");
+      carregarSolicitacoesFarmacia();
+    } catch (error) {
+      console.error("Erro ao rejeitar solicitação:", error);
+      alert("Erro ao rejeitar solicitação");
+    }
+  };
+
   if (loading) return <div className="admin-loading">Carregando...</div>;
 
   // Debug temporário
@@ -237,6 +297,69 @@ function Admin() {
         </div>
         
         <div className="admin-grid">
+          {/* Seção de Solicitações de Farmácia */}
+          {solicitacoesFarmaciaPendentes.length > 0 && (
+            <div className="admin-section solicitacoes-farmacia">
+              <div className="section-header">
+                <div className="section-icon">🏥</div>
+                <h2 className="section-title">Solicitações de Farmácia ({solicitacoesFarmaciaPendentes.length})</h2>
+              </div>
+              
+              <div className="solicitacoes-lista">
+                {solicitacoesFarmaciaPaginadas.map((solicitacao) => (
+                  <div key={solicitacao.id} className="solicitacao-card farmacia-card">
+                    <div className="solicitacao-info">
+                      <h4>{solicitacao.emissor}</h4>
+                      <p><strong>Email:</strong> {solicitacao.email}</p>
+                      <div className="justificativa-container">
+                        <p><strong>Solicitação:</strong></p>
+                        <div className="justificativa-texto">{solicitacao.texto}</div>
+                      </div>
+                      <span className="status-badge pendente">{solicitacao.statusMensagem}</span>
+                    </div>
+                    
+                    <div className="solicitacao-actions">
+                      <button 
+                        onClick={() => aprovarSolicitacaoFarmacia(solicitacao.id, solicitacao.email)}
+                        className="btn-aprovar"
+                      >
+                        ✅ Aprovar
+                      </button>
+                      <button 
+                        onClick={() => rejeitarSolicitacaoFarmacia(solicitacao.id)}
+                        className="btn-rejeitar"
+                      >
+                        ❌ Rejeitar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {totalPaginasSolicitacoesFarmacia > 1 && (
+                <div className="paginacao">
+                  <button 
+                    onClick={() => setPaginaSolicitacoesFarmacia(prev => Math.max(prev - 1, 1))}
+                    disabled={paginaSolicitacoesFarmacia === 1}
+                    className="paginacao-btn"
+                  >
+                    ← Anterior
+                  </button>
+                  <span className="paginacao-info">
+                    Página {paginaSolicitacoesFarmacia} de {totalPaginasSolicitacoesFarmacia}
+                  </span>
+                  <button 
+                    onClick={() => setPaginaSolicitacoesFarmacia(prev => Math.min(prev + 1, totalPaginasSolicitacoesFarmacia))}
+                    disabled={paginaSolicitacoesFarmacia === totalPaginasSolicitacoesFarmacia}
+                    className="paginacao-btn"
+                  >
+                    Próxima →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Seção de Solicitações Pendentes */}
           {solicitacoesPendentes.length > 0 && (
             <div className="admin-section solicitacoes-pendentes">

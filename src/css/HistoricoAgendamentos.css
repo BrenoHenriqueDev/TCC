@@ -107,18 +107,23 @@
 }
 
 .historico-status-pendente {
-  background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
-  color: #d63031;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+  color: white !important;
 }
 
 .historico-status-concluido {
-  background: linear-gradient(135deg, #55efc4, #00b894);
-  color: #00695c;
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  color: white !important;
 }
 
 .historico-status-cancelado {
-  background: linear-gradient(135deg, #fd79a8, #e84393);
-  color: #ffffff;
+  background: linear-gradient(135deg, #ff7675, #d63031) !important;
+  color: white !important;
+}
+
+.historico-status-ativo {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b) !important;
+  color: white !important;
 }
 
 .historico-retirada-info {

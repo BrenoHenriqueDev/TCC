@@ -34,6 +34,18 @@ const solicitarPermissaoFarmacia = (dadosUsuario) => {
     return http.mainInstance.post(API_URL + "solicitarFarmacia", dadosUsuario);
 };
 
+const listarSolicitacoesFarmacia = () => {
+    return http.mainInstance.get(API_URL + "solicitacoesFarmacia");
+};
+
+const aprovarSolicitacaoFarmacia = (id) => {
+    return http.mainInstance.put(API_URL + `aprovarFarmacia/${id}`);
+};
+
+const rejeitarSolicitacaoFarmacia = (id) => {
+    return http.mainInstance.put(API_URL + `rejeitarFarmacia/${id}`);
+};
+
 const MensagemService = {
     getTest,
     findById,
@@ -43,6 +55,9 @@ const MensagemService = {
     save,
     deleteById,
     solicitarPermissaoFarmacia,
+    listarSolicitacoesFarmacia,
+    aprovarSolicitacaoFarmacia,
+    rejeitarSolicitacaoFarmacia,
 };
 
 export default MensagemService;

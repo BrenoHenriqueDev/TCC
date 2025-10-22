@@ -396,7 +396,7 @@
 
 .paginacao-btn {
   padding: 10px 16px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(135deg, #3A6EB7, #2A5A9A);
   color: white;
   border: none;
   border-radius: 8px;
@@ -407,8 +407,9 @@
 }
 
 .paginacao-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #2A5A9A, #1e4a7a);
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 5px 15px rgba(58, 110, 183, 0.4);
 }
 
 .paginacao-btn:disabled {
@@ -440,6 +441,41 @@
     max-width: 200px;
   }
 }
+/* Estilos para Solicitações de Farmácia */
+.solicitacoes-farmacia {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0.2) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 2px solid #10b981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+.farmacia-card {
+  border: 1px solid #10b981;
+}
+
+.farmacia-card:hover {
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+}
+
+.justificativa-container {
+  margin: 10px 0;
+}
+
+.justificativa-texto {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  border-left: 3px solid #10b981;
+  color: #e2e8f0;
+  font-style: italic;
+  line-height: 1.4;
+  margin-top: 5px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
 /* Estilos para Solicitações Pendentes */
 .solicitacoes-pendentes {
   grid-column: 1 / -1;

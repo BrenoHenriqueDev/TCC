@@ -11,10 +11,7 @@ const mainInstance = axios.create({
 });
 
 const multipartInstance = axios.create({
-  baseURL: API_URL,
-  headers: {
-    "Content-type": "multipart/form-data"
-  }
+  baseURL: API_URL
 });
 
 const apiCep = axios.create( {
