@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../hooks/HookLogin";
 import { useNavigate } from "react-router-dom";
 import UsuarioService from "../services/UsuarioService";
@@ -35,9 +35,9 @@ function Admin() {
     carregarEstabelecimentos();
     carregarSolicitacoesPendentes();
     carregarSolicitacoesFarmacia();
-  }, [navigate]);
+  }, [carregarUsuarios, navigate]);
 
-  const carregarUsuarios = async () => {
+  const carregarUsuarios = useCallback(async () => {
     try {
       const usuarioLogado = UsuarioService.getCurrentUser();
       if (!usuarioLogado || !usuarioLogado.id) {
@@ -58,7 +58,7 @@ function Admin() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   const carregarEstabelecimentos = async () => {
     try {

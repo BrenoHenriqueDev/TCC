@@ -12,7 +12,7 @@ const cadastrar = (usuarioId, estabelecimento) => {
     } else {
         console.log('Enviando sem imagem via JSON...');
         // Remover campo fotoEst se estiver vazio
-        const { fotoEst, ...estabelecimentoSemFoto } = estabelecimento;
+        const { fotoEst: _fotoEst, ...estabelecimentoSemFoto } = estabelecimento;
         return http.mainInstance.post(API_URL + `/cadastrar/${usuarioId}`, estabelecimentoSemFoto);
     }
     
@@ -59,11 +59,11 @@ const rejeitarSolicitacao = async (adminId, estabelecimentoId) => {
     return response.data;
 };
 
-const alterarStatus = async (adminId, estabelecimentoId, novoStatus) => {
-    console.log('EstabelecimentoService.alterarStatus chamado:', { adminId, estabelecimentoId, novoStatus });
+const alterarStatus = async (usuarioId, estabelecimentoId, novoStatus) => {
+    console.log('EstabelecimentoService.alterarStatus chamado:', { usuarioId, estabelecimentoId, novoStatus });
     
-    // Busca todos os estabelecimentos para encontrar o que precisa ser atualizado
-    const listaResponse = await http.mainInstance.get(API_URL + `/listar/${adminId}`);
+    // Busca todos os estabelecimentos do usuário
+    const listaResponse = await http.mainInstance.get(API_URL + `/listarUsuario/${usuarioId}`);
     const estabelecimentos = listaResponse.data || [];
     const estabelecimento = estabelecimentos.find(e => e.id === estabelecimentoId);
     
@@ -84,12 +84,6 @@ const alterarStatus = async (adminId, estabelecimentoId, novoStatus) => {
     };
     
     console.log('Dados para atualizar:', estabelecimentoAtualizado);
-    
-    // Usa o ID do usuário dono do estabelecimento
-    const usuarioId = estabelecimento.usuario?.id;
-    if (!usuarioId) {
-        throw new Error('ID do usuário não encontrado no estabelecimento');
-    }
     
     const updateResponse = await http.mainInstance.put(
         API_URL + `/atualizar/${usuarioId}/${estabelecimentoId}`, 
