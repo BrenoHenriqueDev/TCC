@@ -9,7 +9,7 @@ import "../css/Admin.css";
 function Admin() {
   const [usuarios, setUsuarios] = useState([]);
   const [estabelecimentos, setEstabelecimentos] = useState([]);
-  const [solicitacoesPendentes, setSolicitacoesPendentes] = useState([]);
+
   const [solicitacoesFarmacia, setSolicitacoesFarmacia] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filtro, setFiltro] = useState("");
@@ -20,7 +20,7 @@ function Admin() {
   // Estados para paginação
   const [paginaUsuarios, setPaginaUsuarios] = useState(1);
   const [paginaEstabelecimentos, setPaginaEstabelecimentos] = useState(1);
-  const [paginaSolicitacoes, setPaginaSolicitacoes] = useState(1);
+
   const itensPorPagina = 5;
   const { userType } = useAuth();
   const navigate = useNavigate();
@@ -33,9 +33,8 @@ function Admin() {
     }
     carregarUsuarios();
     carregarEstabelecimentos();
-    carregarSolicitacoesPendentes();
     carregarSolicitacoesFarmacia();
-  }, [carregarUsuarios, navigate]);
+  }, [navigate]);
 
   const carregarUsuarios = useCallback(async () => {
     try {
@@ -60,7 +59,7 @@ function Admin() {
     }
   }, [navigate]);
 
-  const carregarEstabelecimentos = async () => {
+  const carregarEstabelecimentos = useCallback(async () => {
     try {
       const usuarioLogado = UsuarioService.getCurrentUser();
       if (usuarioLogado && usuarioLogado.id) {
@@ -72,23 +71,9 @@ function Admin() {
     } catch (error) {
       console.error("Erro ao carregar estabelecimentos:", error);
     }
-  };
+  }, []);
 
-  const carregarSolicitacoesPendentes = async () => {
-    try {
-      const usuarioLogado = UsuarioService.getCurrentUser();
-      if (usuarioLogado && usuarioLogado.id) {
-        const dados = await EstabelecimentoService.listarSolicitacoesPendentes(
-          usuarioLogado.id
-        );
-        setSolicitacoesPendentes(dados || []);
-      }
-    } catch (error) {
-      console.error("Erro ao carregar solicitações pendentes:", error);
-    }
-  };
-
-  const carregarSolicitacoesFarmacia = async () => {
+  const carregarSolicitacoesFarmacia = useCallback(async () => {
     try {
       const response = await MensagemService.listarTodas();
       console.log("Todas as mensagens:", response.data);
@@ -97,51 +82,14 @@ function Admin() {
           (msg) =>
             msg.texto &&
             msg.texto.includes("SOLICITAÇÃO FARMÁCIA") &&
-            msg.statusMensagem === "PENDENTE"
+            msg.statusMensagem === "ATIVO"
         ) || [];
       console.log("Solicitações de farmácia filtradas:", solicitacoesFarmacia);
       setSolicitacoesFarmacia(solicitacoesFarmacia);
     } catch (error) {
       console.error("Erro ao carregar solicitações de farmácia:", error);
     }
-  };
-
-  const aprovarSolicitacao = async (estabelecimentoId) => {
-    try {
-      const usuarioLogado = UsuarioService.getCurrentUser();
-      if (usuarioLogado && usuarioLogado.id) {
-        await EstabelecimentoService.aprovarSolicitacao(
-          usuarioLogado.id,
-          estabelecimentoId
-        );
-        alert("Solicitação aprovada com sucesso!");
-        carregarSolicitacoesPendentes();
-        carregarEstabelecimentos();
-        carregarUsuarios();
-        carregarSolicitacoesFarmacia();
-      }
-    } catch (error) {
-      console.error("Erro ao aprovar solicitação:", error);
-      alert("Erro ao aprovar solicitação");
-    }
-  };
-
-  const rejeitarSolicitacao = async (estabelecimentoId) => {
-    try {
-      const usuarioLogado = UsuarioService.getCurrentUser();
-      if (usuarioLogado && usuarioLogado.id) {
-        await EstabelecimentoService.rejeitarSolicitacao(
-          usuarioLogado.id,
-          estabelecimentoId
-        );
-        alert("Solicitação rejeitada com sucesso!");
-        carregarSolicitacoesPendentes();
-      }
-    } catch (error) {
-      console.error("Erro ao rejeitar solicitação:", error);
-      alert("Erro ao rejeitar solicitação");
-    }
-  };
+  }, []);
 
   const alterarStatusEstabelecimento = async (
     estabelecimentoId,
@@ -167,9 +115,6 @@ function Admin() {
         )
       );
       await carregarEstabelecimentos();
-      if (novoStatus === "PENDENTE") {
-        carregarSolicitacoesPendentes();
-      }
     } catch (error) {
       console.error("Erro ao alterar status:", error);
       alert(`Erro ao alterar status: ${error.message || error}`);
@@ -301,14 +246,6 @@ function Admin() {
     paginaEstabelecimentos * itensPorPagina
   );
 
-  const totalPaginasSolicitacoes = Math.ceil(
-    solicitacoesPendentes.length / itensPorPagina
-  );
-  const solicitacoesPaginadas = solicitacoesPendentes.slice(
-    (paginaSolicitacoes - 1) * itensPorPagina,
-    paginaSolicitacoes * itensPorPagina
-  );
-
   if (loading) return <div className="admin-loading">Carregando...</div>;
 
   return (
@@ -401,82 +338,6 @@ function Admin() {
               </div>
             )}
           </div>
-
-          {/* Seção de Solicitações Pendentes */}
-          {solicitacoesPendentes.length > 0 && (
-            <div className="admin-section solicitacoes-pendentes">
-              <div className="section-header">
-                <div className="section-icon">⏳</div>
-                <h2 className="section-title">
-                  Solicitações Pendentes ({solicitacoesPendentes.length})
-                </h2>
-              </div>
-
-              <div className="solicitacoes-lista">
-                {solicitacoesPaginadas.map((solicitacao) => (
-                  <div key={solicitacao.id} className="solicitacao-card">
-                    <div className="solicitacao-info">
-                      <h4>{solicitacao.nome}</h4>
-                      <p>
-                        <strong>CNPJ:</strong> {solicitacao.cnpj}
-                      </p>
-                      <p>
-                        <strong>Solicitante:</strong>{" "}
-                        {solicitacao.usuario?.nome}
-                      </p>
-                      <p>
-                        <strong>Email:</strong> {solicitacao.usuario?.email}
-                      </p>
-                      <span className="status-badge pendente">PENDENTE</span>
-                    </div>
-
-                    <div className="solicitacao-actions">
-                      <button
-                        onClick={() => aprovarSolicitacao(solicitacao.id)}
-                        className="btn-aprovar"
-                      >
-                        ✅ Aprovar
-                      </button>
-                      <button
-                        onClick={() => rejeitarSolicitacao(solicitacao.id)}
-                        className="btn-rejeitar"
-                      >
-                        ❌ Rejeitar
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {totalPaginasSolicitacoes > 1 && (
-                <div className="paginacao">
-                  <button
-                    onClick={() =>
-                      setPaginaSolicitacoes((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={paginaSolicitacoes === 1}
-                    className="paginacao-btn"
-                  >
-                    ← Anterior
-                  </button>
-                  <span className="paginacao-info">
-                    Página {paginaSolicitacoes} de {totalPaginasSolicitacoes}
-                  </span>
-                  <button
-                    onClick={() =>
-                      setPaginaSolicitacoes((prev) =>
-                        Math.min(prev + 1, totalPaginasSolicitacoes)
-                      )
-                    }
-                    disabled={paginaSolicitacoes === totalPaginasSolicitacoes}
-                    className="paginacao-btn"
-                  >
-                    Próxima →
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
 
           {/* Seção de Validação de CNPJ */}
           <div className="admin-section">
