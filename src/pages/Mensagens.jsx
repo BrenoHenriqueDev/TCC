@@ -26,7 +26,13 @@ const Mensagens = () => {
       const response = await MensagemService.listarTodas();
       console.log('Resposta da API:', response);
       console.log('Dados das mensagens:', response.data);
-      setMensagens(response.data || []);
+      
+      // Filtrar para excluir solicitações de farmácia
+      const mensagensFiltradas = (response.data || []).filter(
+        (msg) => !msg.texto || !msg.texto.includes("SOLICITAÇÃO FARMÁCIA")
+      );
+      
+      setMensagens(mensagensFiltradas);
     } catch (error) {
       console.error("Erro ao carregar mensagens:", error);
       setMensagens([]);

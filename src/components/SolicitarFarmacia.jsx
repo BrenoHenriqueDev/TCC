@@ -57,7 +57,7 @@ const SolicitarFarmacia = () => {
         statusMensagem: "PENDENTE"
       };
 
-      await MensagemService.save(solicitacaoData);
+      await MensagemService.salvar(solicitacaoData);
       
       alert("Solicitação enviada com sucesso! Aguarde a análise do administrador.");
       setMessage("Solicitação enviada com sucesso! Aguarde a análise do administrador.");
