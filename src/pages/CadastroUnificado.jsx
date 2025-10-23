@@ -43,27 +43,39 @@ function CadastroUnificado() {
     if (id === "cep" && (value.length === 8 || value.length === 9)) {
       buscarEnderecoPorCep(value);
     }
+    // Limpa erro do email quando usuário começa a digitar
+    if (id === "email" && erros.email) {
+      setErros(prev => ({ ...prev, email: "" }));
+    }
   };
 
-  // Validação de e-mail
+  // Valida email quando o usuário sai do campo
+  const handleEmailBlur = () => {
+    if (form.email && !emailValido(form.email)) {
+      setErros(prev => ({ ...prev, email: "E-mail inválido. Use apenas: gmail.com, hotmail.com, outlook.com, yahoo.com, uol.com.br, terra.com.br" }));
+    } else if (form.email && emailValido(form.email)) {
+      setErros(prev => ({ ...prev, email: "" }));
+    }
+  };
+
+  // Validação de e-mail rigorosa
   const emailValido = (email) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    const dominiosValidos = ['gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'uol.com.br', 'terra.com.br'];
+    const dominio = email.split('@')[1];
+    return regex.test(email) && dominiosValidos.includes(dominio);
   };
 
-  // Verifica se o e-mail já está cadastrado para o tipo
-  const emailJaCadastrado = (email, tipo) => {
-    const chave = tipo === "usuario" ? "usuarios" : "estabelecimentos";
-    const lista = JSON.parse(localStorage.getItem(chave)) || [];
-    return lista.some((item) => item.email === email);
-  };
+
 
   const validar = () => {
     const novosErros = {};
     if (!form.nome.trim()) novosErros.nome = "Nome é obrigatório.";
-    if (!form.email.trim()) novosErros.email = "E-mail é obrigatório.";
-    else if (!emailValido(form.email)) novosErros.email = "E-mail inválido.";
-    else if (emailJaCadastrado(form.email, tipoCadastro))
-      novosErros.email = "E-mail já cadastrado.";
+    if (!form.email.trim()) {
+      novosErros.email = "E-mail é obrigatório.";
+    } else if (!emailValido(form.email)) {
+      novosErros.email = "E-mail inválido. Use apenas: gmail.com, hotmail.com, outlook.com, yahoo.com, uol.com.br, terra.com.br";
+    }
     if (!form.senha) novosErros.senha = "Senha é obrigatória.";
     else if (form.senha.length < 6)
       novosErros.senha = "Senha deve ter pelo menos 6 caracteres.";
@@ -97,7 +109,11 @@ function CadastroUnificado() {
         navigate("/");
         limparFormulario();
       } catch (error) {
-        alert("Erro ao realizar cadastro. Tente novamente.");
+        if (error.response?.status === 409 || error.response?.data?.includes("email") || error.response?.data?.includes("Email")) {
+          setErros({ email: "Este e-mail já está cadastrado." });
+        } else {
+          alert("Erro ao realizar cadastro. Tente novamente.");
+        }
         console.error(error);
       }
     }
@@ -161,10 +177,11 @@ function CadastroUnificado() {
               id="email"
               value={form.email}
               onChange={handleChange}
+              onBlur={handleEmailBlur}
               className={`cadastro-unificado-input${
                 erros.email ? " cadastro-unificado-input-error" : ""
               }`}
-              placeholder="Digite seu e-mail"
+              placeholder="Digite seu e-mail (ex: exemplo@gmail.com)"
             />
             {erros.email && (
               <p className="cadastro-unificado-error">{erros.email}</p>
